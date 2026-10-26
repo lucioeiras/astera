@@ -1,6 +1,6 @@
 import { useAppTheme } from '@/lib/theme';
 import { decodeHTML } from 'entities';
-import { FilePdfIcon } from 'phosphor-react-native';
+import { FileText } from 'lucide-react-native';
 import { memo, useState } from 'react';
 import { Text, View } from 'react-native';
 
@@ -54,7 +54,7 @@ export const PdfCard = memo(function PdfCard({
       {!hideTitleAndAuthor && (
         <View className="w-full items-center my-3 px-5">
           <View className="flex-row items-center justify-center gap-2">
-            <FilePdfIcon size={14} color={themeColors.red} weight="duotone" />
+            <FileText size={14} color={themeColors.red} strokeWidth={2} />
             <Text
               className="font-sans-medium text-sm leading-[1.4] text-theme-foreground text-center"
               numberOfLines={1}

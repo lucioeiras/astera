@@ -1,5 +1,5 @@
 import { useAppTheme } from '@/lib/theme';
-import { CaretDownIcon, CaretUpIcon, CheckIcon } from 'phosphor-react-native';
+import { ChevronDown, ChevronUp, Check } from 'lucide-react-native';
 import { useState } from 'react';
 import { Pressable, ScrollView, View, Text } from 'react-native';
 import { translate, useLocalization } from '@/lib/i18n';
@@ -14,7 +14,7 @@ export function ProfileSelect({ label, value, options, onSelect }: Props) {
   const { colors: themeColors } = useAppTheme();
   useLocalization();
   const [open, setOpen] = useState(false);
-  const Caret = open ? CaretUpIcon : CaretDownIcon;
+  const Caret = open ? ChevronUp : ChevronDown;
   return (
     <View className="relative shrink-0" style={{ zIndex: open ? 20 : 0 }}>
       <Pressable
@@ -72,7 +72,7 @@ export function ProfileSelect({ label, value, options, onSelect }: Props) {
                 <Text className="font-sans-medium text-sm text-theme-heading">
                   {translate(option.label)}
                 </Text>
-                {option.value === value && <CheckIcon size={16} color={themeColors.foreground} />}
+                {option.value === value && <Check size={16} color={themeColors.foreground} />}
               </Pressable>
             ))}
           </ScrollView>

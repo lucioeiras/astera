@@ -1,6 +1,6 @@
 import { useAppTheme } from '@/lib/theme';
 import { localDayKey } from '@/lib/library/activity';
-import { CaretLeftIcon, CaretRightIcon } from 'phosphor-react-native';
+import { ChevronLeft, ChevronRight } from 'lucide-react-native';
 import { Pressable, Text, View } from 'react-native';
 import { translate, useLocalization } from '@/lib/i18n';
 
@@ -34,7 +34,7 @@ export function ActivityCalendar({ month, byDay, onChangeMonth, onPressDate }: P
           className="h-12 w-12 items-start justify-center"
           onPress={() => onChangeMonth(new Date(month.getFullYear(), month.getMonth() - 1, 1))}
         >
-          <CaretLeftIcon size={18} color={themeColors.body} />
+          <ChevronLeft size={18} color={themeColors.body} />
         </Pressable>
         <Text className="font-sans-semibold text-base text-theme-foreground">
           {month.toLocaleDateString(locale, { month: 'long', year: 'numeric' })}
@@ -45,7 +45,7 @@ export function ActivityCalendar({ month, byDay, onChangeMonth, onPressDate }: P
           className="h-12 w-12 items-end justify-center"
           onPress={() => onChangeMonth(new Date(month.getFullYear(), month.getMonth() + 1, 1))}
         >
-          <CaretRightIcon size={18} color={themeColors.body} />
+          <ChevronRight size={18} color={themeColors.body} />
         </Pressable>
       </View>
       <View className="mb-2 flex-row">

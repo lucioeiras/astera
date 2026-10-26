@@ -1,10 +1,5 @@
 import { Image } from 'expo-image';
-import {
-  BookmarkSimpleIcon,
-  CheckCircleIcon,
-  ClockIcon,
-  ProhibitIcon,
-} from 'phosphor-react-native';
+import { Bookmark, CircleCheck, Clock, Ban } from 'lucide-react-native';
 import { Pressable, Text, View } from 'react-native';
 
 import { useAppTheme } from '@/lib/theme';
@@ -13,10 +8,10 @@ import type { LibraryItem, MediaProgressStatus } from '@/lib/library/types';
 import { translate, useLocalization } from '@/lib/i18n';
 
 const statusIcons = {
-  want: BookmarkSimpleIcon,
-  'in-progress': ClockIcon,
-  completed: CheckCircleIcon,
-  abandoned: ProhibitIcon,
+  want: Bookmark,
+  'in-progress': Clock,
+  completed: CircleCheck,
+  abandoned: Ban,
 } as const;
 
 type Props = {
@@ -94,7 +89,7 @@ export function FolderTile({
         </View>
 
         <View className="max-w-full flex-row items-center justify-center gap-1.5 px-2">
-          {StatusIcon && <StatusIcon size={15} color={titleColor} weight="bold" />}
+          {StatusIcon && <StatusIcon size={15} color={titleColor} strokeWidth={2.5} />}
           <Text
             className="flex-shrink text-center font-sans-semibold text-sm text-theme-foreground"
             style={titleColor ? { color: titleColor } : undefined}

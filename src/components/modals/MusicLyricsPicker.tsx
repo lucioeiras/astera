@@ -1,14 +1,7 @@
 import { ThemedModal as Modal } from '@/components/ThemedModal';
 import { useAppTheme } from '@/lib/theme';
 import { Image as ExpoImage } from 'expo-image';
-import {
-  ArrowLeftIcon,
-  MagnifyingGlassIcon,
-  MusicNotesIcon,
-  MusicNotesPlusIcon,
-  WarningIcon,
-  XIcon,
-} from 'phosphor-react-native';
+import { ArrowLeft, Search, Music2, ListMusic, TriangleAlert, X } from 'lucide-react-native';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -193,9 +186,9 @@ export function MusicLyricsPicker({ visible, onClose, onSelect }: Props) {
             accessibilityLabel={translate(song ? 'Back to song search' : 'Close lyrics picker')}
           >
             {song ? (
-              <ArrowLeftIcon size={24} color={themeColors.foreground} />
+              <ArrowLeft size={24} color={themeColors.foreground} />
             ) : (
-              <XIcon size={24} color={themeColors.foreground} />
+              <X size={24} color={themeColors.foreground} />
             )}
           </Pressable>
           <View className="flex-1 items-center px-2 gap-0.5">
@@ -226,7 +219,7 @@ export function MusicLyricsPicker({ visible, onClose, onSelect }: Props) {
                 />
               ) : (
                 <View className="w-14 h-14 rounded-lg bg-theme-raised items-center justify-center">
-                  <MusicNotesIcon size={25} color={themeColors.secondary} />
+                  <Music2 size={25} color={themeColors.secondary} />
                 </View>
               )}
               <View className="flex-1 gap-1">
@@ -283,10 +276,10 @@ export function MusicLyricsPicker({ visible, onClose, onSelect }: Props) {
                 onPress={handleConfirm}
                 disabled={!selectedCount}
                 icon={
-                  <MusicNotesPlusIcon
+                  <ListMusic
                     size={20}
                     color={selectedCount ? themeColors.foreground : themeColors.muted}
-                    weight="bold"
+                    strokeWidth={2.5}
                   />
                 }
                 text={translate('Add to note')}
@@ -306,7 +299,7 @@ export function MusicLyricsPicker({ visible, onClose, onSelect }: Props) {
               </Text>
             </View>
             <View className="flex-row items-center gap-4 px-8 py-5 border-t border-b border-theme-raised">
-              <MagnifyingGlassIcon size={20} color={themeColors.body} />
+              <Search size={20} color={themeColors.body} />
               <TextInput
                 ref={searchInputRef}
                 value={query}
@@ -323,7 +316,7 @@ export function MusicLyricsPicker({ visible, onClose, onSelect }: Props) {
 
             {notice ? (
               <View className="py-5 px-8 border-b border-theme-raised flex-row items-center gap-3">
-                <WarningIcon size={14} color={themeColors.heading} />
+                <TriangleAlert size={14} color={themeColors.heading} />
                 <Text className="font-sans text-sm text-theme-heading">{notice}</Text>
               </View>
             ) : null}
@@ -350,7 +343,7 @@ export function MusicLyricsPicker({ visible, onClose, onSelect }: Props) {
                     />
                   ) : (
                     <View className="w-12 h-12 rounded-md bg-theme-raised items-center justify-center">
-                      <MusicNotesIcon size={22} color={themeColors.secondary} />
+                      <Music2 size={22} color={themeColors.secondary} />
                     </View>
                   )}
                   <View className="flex-1 gap-1">
@@ -394,7 +387,7 @@ export function MusicLyricsPicker({ visible, onClose, onSelect }: Props) {
                   accessibilityLabel={translate('Cancel loading lyrics')}
                   className="mt-4 flex-row items-center justify-center gap-2 rounded-xl border border-theme-border px-8 py-3 active:bg-theme-surface"
                 >
-                  <XIcon size={18} color={themeColors.foreground} weight="bold" />
+                  <X size={18} color={themeColors.foreground} strokeWidth={2.5} />
                   <Text className="font-sans-semibold text-base text-theme-foreground">
                     <LocalizedText>Cancel</LocalizedText>
                   </Text>

@@ -1,5 +1,5 @@
 import { useAppTheme } from '@/lib/theme';
-import { CaretLeftIcon, CaretRightIcon } from 'phosphor-react-native';
+import { ChevronLeft, ChevronRight } from 'lucide-react-native';
 import { useMemo, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
@@ -62,7 +62,7 @@ export function LogCalendarGrid<T extends CalendarLog>({
           className="h-10 items-center justify-center"
           style={{ width: '14.2857%' }}
         >
-          <CaretLeftIcon size={18} color={themeColors.body} />
+          <ChevronLeft size={18} color={themeColors.body} />
         </Pressable>
         <View className="items-center justify-center" style={{ width: '71.4286%' }}>
           <Text className="font-sans-semibold text-base text-theme-foreground">
@@ -81,7 +81,7 @@ export function LogCalendarGrid<T extends CalendarLog>({
           className="h-10 items-center justify-center"
           style={{ width: '14.2857%' }}
         >
-          <CaretRightIcon size={18} color={themeColors.body} />
+          <ChevronRight size={18} color={themeColors.body} />
         </Pressable>
       </View>
 

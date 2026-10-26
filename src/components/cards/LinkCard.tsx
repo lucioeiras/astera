@@ -2,7 +2,7 @@ import { useAppTheme } from '@/lib/theme';
 import { decodeHTML } from 'entities';
 import { Image as ExpoImage } from 'expo-image';
 import { cssInterop } from 'nativewind';
-import { LinkIcon } from 'phosphor-react-native';
+import { LinkIcon } from 'lucide-react-native';
 import { Text, View } from 'react-native';
 
 cssInterop(ExpoImage, { className: 'style' });
@@ -51,7 +51,7 @@ export const LinkCard = ({ favicon, siteTitle, description, url, title }: LinkCa
       </View>
 
       <View className="flex-row items-center gap-2 mt-2">
-        <LinkIcon size={14} color={themeColors.body} weight="bold" />
+        <LinkIcon size={14} color={themeColors.body} strokeWidth={2.5} />
         <Text className="font-sans-semibold text-sm text-theme-body" numberOfLines={1}>
           {getShortUrl(url)}
         </Text>

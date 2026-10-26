@@ -1,18 +1,18 @@
 import { useAppTheme } from '@/lib/theme';
 import { router } from 'expo-router';
 import {
-  ArrowLeftIcon,
-  ArrowsLeftRightIcon,
-  CircleIcon,
-  CpuIcon,
-  DownloadSimpleIcon,
-  FolderOpenIcon,
-  MicrophoneIcon,
-  TextTIcon,
-  TranslateIcon,
-  TrashSimpleIcon,
-  XCircleIcon,
-} from 'phosphor-react-native';
+  ArrowLeft,
+  ArrowLeftRight,
+  Circle,
+  Cpu,
+  Download,
+  FolderOpen,
+  Mic,
+  Type,
+  Languages,
+  Trash2,
+  CircleX,
+} from 'lucide-react-native';
 import { useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -103,7 +103,7 @@ export default function SettingsScreen() {
           <Button
             accessibilityLabel={t('Back to profile')}
             size="small"
-            icon={<ArrowLeftIcon size={20} color={themeColors.foreground} />}
+            icon={<ArrowLeft size={20} color={themeColors.foreground} />}
             onPress={() => (router.canGoBack() ? router.back() : router.replace('/profile'))}
           />
           <Text className="font-sans-semibold text-2xl text-theme-foreground">
@@ -115,7 +115,7 @@ export default function SettingsScreen() {
 
         <View className="gap-4 border-b border-theme-raised px-8 pb-6">
           <View className="flex-row items-center gap-2">
-            <TranslateIcon size={16} color={themeColors.heading} />
+            <Languages size={16} color={themeColors.heading} />
             <Text className="font-sans-semibold text-sm uppercase tracking-wider text-theme-heading">
               <LocalizedText>Language</LocalizedText>
             </Text>
@@ -152,7 +152,7 @@ export default function SettingsScreen() {
 
         <View className="gap-4 border-t border-b border-theme-raised px-8 py-6">
           <View className="flex-row items-center gap-2">
-            <CircleIcon size={16} color={themeColors.heading} />
+            <Circle size={16} color={themeColors.heading} />
             <Text className="font-sans-semibold text-sm uppercase tracking-wider text-theme-heading">
               <LocalizedText>Current space</LocalizedText>
             </Text>
@@ -175,7 +175,7 @@ export default function SettingsScreen() {
             }}
             className="min-h-14 flex-row items-center gap-4 py-2 active:opacity-70"
           >
-            <FolderOpenIcon size={20} color={themeColors.body} />
+            <FolderOpen size={20} color={themeColors.body} />
             <View className="flex-1">
               <Text className="font-sans text-xs text-theme-muted">
                 <LocalizedText>Folder</LocalizedText>
@@ -190,14 +190,14 @@ export default function SettingsScreen() {
             {openingFolder ? (
               <ActivityIndicator size="small" color={themeColors.muted} />
             ) : (
-              <ArrowsLeftRightIcon size={20} color={themeColors.secondary} />
+              <ArrowLeftRight size={20} color={themeColors.secondary} />
             )}
           </Pressable>
         </View>
 
         <View className="gap-4 px-8 pt-6">
           <View className="flex-row items-center gap-2">
-            <TextTIcon size={16} color={themeColors.heading} />
+            <Type size={16} color={themeColors.heading} />
             <Text className="font-sans-semibold text-sm uppercase tracking-wider text-theme-heading">
               <LocalizedText>AI Model for Texts</LocalizedText>
             </Text>
@@ -209,7 +209,7 @@ export default function SettingsScreen() {
             </LocalizedText>
           </Text>
           <View className="flex-row items-center gap-3 py-2">
-            <CpuIcon size={20} color={themeColors.body} />
+            <Cpu size={20} color={themeColors.body} />
             <View className="min-w-0 flex-1">
               <Text
                 className="font-sans text-lg leading-tight text-theme-foreground"
@@ -231,11 +231,11 @@ export default function SettingsScreen() {
               }
               icon={
                 isDownloading ? (
-                  <XCircleIcon size={20} color={themeColors.heading} />
+                  <CircleX size={20} color={themeColors.heading} />
                 ) : isDownloaded ? (
-                  <TrashSimpleIcon size={20} color={themeColors.red} />
+                  <Trash2 size={20} color={themeColors.red} />
                 ) : (
-                  <DownloadSimpleIcon size={20} color={themeColors.blue} weight="bold" />
+                  <Download size={20} color={themeColors.blue} strokeWidth={2.5} />
                 )
               }
               onPress={
@@ -283,7 +283,7 @@ export default function SettingsScreen() {
 
         <View className="gap-4 border-t border-theme-raised px-8 pt-6">
           <View className="flex-row items-center gap-2">
-            <MicrophoneIcon size={16} color={themeColors.heading} />
+            <Mic size={16} color={themeColors.heading} />
             <Text className="font-sans-semibold text-sm uppercase tracking-wider text-theme-heading">
               <LocalizedText>AI Model for Audio</LocalizedText>
             </Text>
@@ -294,7 +294,7 @@ export default function SettingsScreen() {
             </LocalizedText>
           </Text>
           <View className="flex-row items-center gap-3 py-2">
-            <CpuIcon size={20} color={themeColors.body} />
+            <Cpu size={20} color={themeColors.body} />
             <View className="min-w-0 flex-1">
               <Text
                 className="font-sans text-lg leading-tight text-theme-foreground"
@@ -316,11 +316,11 @@ export default function SettingsScreen() {
               }
               icon={
                 whisper.isDownloading ? (
-                  <XCircleIcon size={20} color={themeColors.heading} />
+                  <CircleX size={20} color={themeColors.heading} />
                 ) : whisper.isDownloaded ? (
-                  <TrashSimpleIcon size={20} color={themeColors.red} />
+                  <Trash2 size={20} color={themeColors.red} />
                 ) : (
-                  <DownloadSimpleIcon size={20} color={themeColors.blue} weight="bold" />
+                  <Download size={20} color={themeColors.blue} strokeWidth={2.5} />
                 )
               }
               onPress={

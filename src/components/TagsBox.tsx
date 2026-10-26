@@ -1,30 +1,33 @@
+import type { ComponentType } from 'react';
 import { useAppTheme } from '@/lib/theme';
 import {
-  ArticleIcon,
-  ArrowsClockwiseIcon,
-  BookOpenIcon,
-  BookmarkSimpleIcon,
-  CheckCircleIcon,
-  ClockIcon,
-  FilePdfIcon,
-  FilmSlateIcon,
-  FolderIcon,
-  GameControllerIcon,
-  HashIcon,
-  ImageIcon,
-  LinkIcon,
-  MusicNotesIcon,
-  NotePencilIcon,
-  ProhibitIcon,
-  QuotesIcon,
   RedditLogoIcon,
-  TagIcon,
   TwitterLogoIcon,
   TiktokLogoIcon,
-  XIcon,
   YoutubeLogoIcon,
-  VideoCameraIcon,
 } from 'phosphor-react-native';
+import {
+  Newspaper,
+  RefreshCw,
+  BookOpen,
+  Bookmark,
+  CircleCheck,
+  Clock,
+  FileText,
+  Clapperboard,
+  Folder,
+  Gamepad2,
+  Hash,
+  ImageIcon,
+  LinkIcon,
+  Music2,
+  SquarePen,
+  Ban,
+  Quote,
+  Tag,
+  X,
+  Video,
+} from 'lucide-react-native';
 import { useRef, useState } from 'react';
 import {
   type LayoutChangeEvent,
@@ -41,24 +44,27 @@ import type { LibraryItemType } from '@/lib/library/types';
 import { translate, useLocalization } from '@/lib/i18n';
 
 const cardTypeTags = {
-  note: { label: 'Note', icon: NotePencilIcon },
-  quote: { label: 'Quote', icon: QuotesIcon },
+  note: { label: 'Note', icon: SquarePen },
+  quote: { label: 'Quote', icon: Quote },
   image: { label: 'Image', icon: ImageIcon },
-  pdf: { label: 'PDF', icon: FilePdfIcon },
-  video: { label: 'Video', icon: VideoCameraIcon },
-  audio: { label: 'Recorded audio', icon: MusicNotesIcon },
+  pdf: { label: 'PDF', icon: FileText },
+  video: { label: 'Video', icon: Video },
+  audio: { label: 'Recorded audio', icon: Music2 },
   link: { label: 'Link', icon: LinkIcon },
-  article: { label: 'Article', icon: ArticleIcon },
+  article: { label: 'Article', icon: Newspaper },
   youtube: { label: 'YouTube', icon: YoutubeLogoIcon },
   tiktok: { label: 'TikTok', icon: TiktokLogoIcon },
   tweet: { label: 'Tweet', icon: TwitterLogoIcon },
   reddit: { label: 'Reddit', icon: RedditLogoIcon },
-  book: { label: 'Book', icon: BookOpenIcon },
-  music: { label: 'Music', icon: MusicNotesIcon },
-  movie: { label: 'Movie', icon: FilmSlateIcon },
-  tvshow: { label: 'TV show', icon: FilmSlateIcon },
-  game: { label: 'Game', icon: GameControllerIcon },
-} satisfies Record<LibraryItemType, { label: string; icon: typeof TagIcon }>;
+  book: { label: 'Book', icon: BookOpen },
+  music: { label: 'Music', icon: Music2 },
+  movie: { label: 'Movie', icon: Clapperboard },
+  tvshow: { label: 'TV show', icon: Clapperboard },
+  game: { label: 'Game', icon: Gamepad2 },
+} satisfies Record<
+  LibraryItemType,
+  { label: string; icon: ComponentType<{ size?: number; color?: string }> }
+>;
 
 export type TagsBoxProps = {
   /** Current array of tags */
@@ -263,10 +269,10 @@ export function TagsBox({
     },
   } as const;
   const priorityTagIcons = {
-    want: BookmarkSimpleIcon,
-    'in-progress': ClockIcon,
-    completed: CheckCircleIcon,
-    abandoned: ProhibitIcon,
+    want: Bookmark,
+    'in-progress': Clock,
+    completed: CircleCheck,
+    abandoned: Ban,
   } as const;
   const PriorityTagIcon = priorityTag ? priorityTagIcons[priorityTag.icon] : null;
   const cardTypeTag = cardType ? cardTypeTags[cardType] : null;
@@ -276,7 +282,7 @@ export function TagsBox({
     <View onLayout={onLayout} className={baseContainerClass}>
       {/* Header */}
       <View className="flex-row items-center gap-2">
-        <TagIcon size={14} color={themeColors.heading} weight="bold" />
+        <Tag size={14} color={themeColors.heading} strokeWidth={2.5} />
         <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
           {title ?? `Tags${tags.length > 0 ? ` (${tags.length})` : ''}`}
         </Text>
@@ -303,14 +309,14 @@ export function TagsBox({
             <PriorityTagIcon
               size={14}
               color={priorityTagStyles[priorityTag.tone].icon}
-              weight="bold"
+              strokeWidth={2.5}
             />
             <Text
               className={`font-sans-medium text-base ${priorityTagStyles[priorityTag.tone].text}`}
             >
               {priorityTag.label}
             </Text>
-            <ArrowsClockwiseIcon size={12} color={priorityTagStyles[priorityTag.tone].icon} />
+            <RefreshCw size={12} color={priorityTagStyles[priorityTag.tone].icon} />
           </Pressable>
         ) : null}
 
@@ -323,7 +329,13 @@ export function TagsBox({
             })}
             className="flex-row items-center gap-2 rounded-full bg-theme-muted/15 px-3 py-1 active:opacity-70"
           >
-            <CardTypeIcon size={12} color={themeColors.secondary} weight="bold" />
+            <CardTypeIcon
+              size={12}
+              color={themeColors.secondary}
+              {...(['youtube', 'tiktok', 'tweet', 'reddit'].includes(cardType)
+                ? { weight: 'bold' as const }
+                : { strokeWidth: 2.5 })}
+            />
             <Text className="font-sans-medium text-base text-theme-body">{cardTypeTag.label}</Text>
           </Pressable>
         ) : null}
@@ -336,7 +348,7 @@ export function TagsBox({
             : isAuto
               ? themeColors.secondary
               : themeColors.blue;
-          const TagPillIcon = isFolder ? FolderIcon : HashIcon;
+          const TagPillIcon = isFolder ? Folder : Hash;
 
           const pill = (
             <Pressable
@@ -356,13 +368,13 @@ export function TagsBox({
                 isFolder ? 'bg-violet-500/15' : isAuto ? 'bg-theme-muted/15' : 'bg-blue-500/15'
               }`}
             >
-              <TagPillIcon size={12} color={tagColor} weight="bold" />
+              <TagPillIcon size={12} color={tagColor} strokeWidth={2.5} />
               <Text
                 className={`font-sans-medium text-base ${isFolder ? 'text-theme-purple' : isAuto ? 'text-theme-body' : 'text-theme-blue'}`}
               >
                 {tag}
               </Text>
-              {showRemoveIcon && <XIcon size={14} color={tagColor} />}
+              {showRemoveIcon && <X size={14} color={tagColor} />}
             </Pressable>
           );
 

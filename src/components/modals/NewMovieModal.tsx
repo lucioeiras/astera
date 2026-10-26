@@ -1,12 +1,6 @@
 import { useAppTheme, type ThemeColors } from '@/lib/theme';
 import { Image as ExpoImage } from 'expo-image';
-import {
-  CheckIcon,
-  FilmSlateIcon,
-  MagnifyingGlassIcon,
-  NotePencilIcon,
-  XIcon,
-} from 'phosphor-react-native';
+import { Check, Clapperboard, Search, SquarePen, X } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -333,7 +327,7 @@ export function NewMovieModal({
                       contentFit="cover"
                     />
                   ) : (
-                    <FilmSlateIcon size={24} color={themeColors.muted} />
+                    <Clapperboard size={24} color={themeColors.muted} />
                   )}
                 </View>
                 <View className="flex-1 gap-2">
@@ -355,12 +349,12 @@ export function NewMovieModal({
                   accessibilityRole="button"
                   accessibilityLabel={translate('Change movie')}
                 >
-                  <XIcon size={16} color={themeColors.heading} weight="bold" />
+                  <X size={16} color={themeColors.heading} strokeWidth={2.5} />
                 </Pressable>
               </View>
             ) : (
               <View className="flex-row items-center gap-4 py-5 px-8 border-t border-b border-theme-raised">
-                <MagnifyingGlassIcon size={20} color={themeColors.body} />
+                <Search size={20} color={themeColors.body} />
 
                 <TextInput
                   ref={searchInputRef}
@@ -387,7 +381,7 @@ export function NewMovieModal({
                     accessibilityRole="button"
                     accessibilityLabel={translate('Clear search')}
                   >
-                    <XIcon size={12} color={themeColors.heading} weight="bold" />
+                    <X size={12} color={themeColors.heading} strokeWidth={2.5} />
                   </Pressable>
                 ) : null}
               </View>
@@ -422,7 +416,7 @@ export function NewMovieModal({
                             contentFit="cover"
                           />
                         ) : (
-                          <FilmSlateIcon size={24} color={themeColors.muted} />
+                          <Clapperboard size={24} color={themeColors.muted} />
                         )}
                       </View>
 
@@ -448,7 +442,7 @@ export function NewMovieModal({
                   query.trim().length > 1 &&
                   !isSearching && (
                     <View className="py-12 items-center justify-center">
-                      <FilmSlateIcon size={32} color={themeColors.strongBorder} weight="duotone" />
+                      <Clapperboard size={32} color={themeColors.strongBorder} strokeWidth={2} />
                       <Text className="font-sans text-sm text-theme-muted mt-3">
                         <LocalizedText>No movies found for "</LocalizedText>
                         {query}
@@ -482,7 +476,7 @@ export function NewMovieModal({
                 {/* Notes section */}
                 <View className="py-6 px-8 gap-4 border-t border-theme-raised">
                   <View className="flex-row items-center gap-2">
-                    <NotePencilIcon size={14} color={themeColors.heading} weight="bold" />
+                    <SquarePen size={14} color={themeColors.heading} strokeWidth={2.5} />
                     <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
                       <LocalizedText>Note</LocalizedText>
                     </Text>
@@ -513,7 +507,7 @@ export function NewMovieModal({
               accessibilityLabel={translate('Cancel')}
               onPress={handleClose}
               disabled={saving}
-              icon={<XIcon size={20} color={themeColors.foreground} weight="bold" />}
+              icon={<X size={20} color={themeColors.foreground} strokeWidth={2.5} />}
               text={translate('Cancel')}
             />
             <Button
@@ -525,10 +519,10 @@ export function NewMovieModal({
                 saving ? (
                   <ActivityIndicator size={20} color={themeColors.inverse} />
                 ) : (
-                  <CheckIcon
+                  <Check
                     size={20}
                     color={canSave ? themeColors.inverse : themeColors.muted}
-                    weight="bold"
+                    strokeWidth={2.5}
                   />
                 )
               }

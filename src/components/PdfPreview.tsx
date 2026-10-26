@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { ComponentType } from 'react';
-import { FilePdfIcon } from 'phosphor-react-native';
+import { FileText } from 'lucide-react-native';
 import type { PdfProps } from 'react-native-pdf';
 
 type PdfPreviewProps = {
@@ -30,7 +30,7 @@ export function PdfPreview({ uri, width = 80, height = 96, fullReader = false }:
   }, []);
 
   if (!Pdf) {
-    return <FilePdfIcon size={36} color="#ef4444" weight="duotone" />;
+    return <FileText size={36} color="#ef4444" strokeWidth={2} />;
   }
 
   return (

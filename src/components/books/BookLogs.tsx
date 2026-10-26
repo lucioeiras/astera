@@ -1,5 +1,5 @@
 import { useAppTheme } from '@/lib/theme';
-import { HourglassIcon } from 'phosphor-react-native';
+import { Hourglass } from 'lucide-react-native';
 import { useState } from 'react';
 import { Text, View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
@@ -54,7 +54,7 @@ export function BookLogs({
       {/* Header */}
       {readOnly ? (
         <View className="flex-row items-center gap-2 px-6 mt-7">
-          <HourglassIcon size={14} color={themeColors.foreground} weight="bold" />
+          <Hourglass size={14} color={themeColors.foreground} strokeWidth={2.5} />
           <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
             <LocalizedText>Progress</LocalizedText>
           </Text>
@@ -62,7 +62,7 @@ export function BookLogs({
       ) : (
         <View className="flex-row items-center justify-between">
           <View className="flex-row items-center gap-2 px-6">
-            <HourglassIcon size={14} color={themeColors.foreground} weight="bold" />
+            <Hourglass size={14} color={themeColors.foreground} strokeWidth={2.5} />
             <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
               <LocalizedText>Progress</LocalizedText>
             </Text>

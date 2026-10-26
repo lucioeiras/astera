@@ -1,6 +1,6 @@
 import { ThemedModal as Modal } from '@/components/ThemedModal';
 import { useAppTheme } from '@/lib/theme';
-import { GameControllerIcon, XIcon } from 'phosphor-react-native';
+import { Gamepad2, X } from 'lucide-react-native';
 import { useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -49,7 +49,7 @@ export function GameLogs({
   return (
     <View className="border-b border-theme-raised pt-6 gap-5">
       <View className="flex-row items-center gap-2 px-6">
-        <GameControllerIcon size={14} color={themeColors.foreground} weight="bold" />
+        <Gamepad2 size={14} color={themeColors.foreground} strokeWidth={2.5} />
         <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
           <LocalizedText>Play logs</LocalizedText>
         </Text>
@@ -90,7 +90,7 @@ export function GameLogs({
               <Button
                 accessibilityLabel={translate('Close play logs')}
                 size="small"
-                icon={<XIcon size={20} color={themeColors.foreground} />}
+                icon={<X size={20} color={themeColors.foreground} />}
                 onPress={() => setListDate(undefined)}
               />
             </View>

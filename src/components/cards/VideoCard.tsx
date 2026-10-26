@@ -1,5 +1,5 @@
 import { useVideoPlayer, VideoView } from 'expo-video';
-import { PlayIcon } from 'phosphor-react-native';
+import { Play } from 'lucide-react-native';
 import { memo, useEffect, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { translate } from '@/lib/i18n';
@@ -49,7 +49,7 @@ export const VideoCard = memo(function VideoCard({ uri, title }: { uri: string; 
             onPress={() => player.play()}
             className="absolute inset-0 bg-black/50 items-center justify-center"
           >
-            <PlayIcon size={36} color="#FFFFFF" weight="fill" />
+            <Play size={36} color="#FFFFFF" fill="#FFFFFF" />
           </Pressable>
         )}
       </View>

@@ -1,7 +1,7 @@
 import { ThemedModal as Modal } from '@/components/ThemedModal';
 import { useAppTheme, type ThemeColors } from '@/lib/theme';
 import { useAudioPlayer, useAudioPlayerStatus } from 'expo-audio';
-import { CheckIcon, MicrophoneIcon, NotePencilIcon, TextTIcon, XIcon } from 'phosphor-react-native';
+import { Check, Mic, SquarePen, Type, X } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -188,7 +188,7 @@ export function NewAudioModal({ visible, asset, onClose, onDismiss, onSaved }: N
                 }
                 className="h-20 w-20 shrink-0 items-center justify-center rounded-xl bg-theme-surface/80 border border-theme-raised active:opacity-70"
               >
-                <MicrophoneIcon size={24} color="#EF4444" weight="duotone" />
+                <Mic size={24} color="#EF4444" strokeWidth={2} />
                 <Text className="mt-2 font-sans-semibold text-xs text-theme-secondary">
                   {playerStatus.playing ? 'Pause' : durationLabel}
                 </Text>
@@ -204,7 +204,7 @@ export function NewAudioModal({ visible, asset, onClose, onDismiss, onSaved }: N
             </View>
 
             <View className="flex-row items-center gap-4 py-5 px-8 border-b border-theme-raised">
-              <TextTIcon size={20} color={themeColors.body} />
+              <Type size={20} color={themeColors.body} />
               <TextInput
                 ref={titleInputRef}
                 value={title}
@@ -235,7 +235,7 @@ export function NewAudioModal({ visible, asset, onClose, onDismiss, onSaved }: N
 
             <View className="flex-1 py-6 px-8 gap-4">
               <View className="flex-row items-center gap-2">
-                <NotePencilIcon size={14} color={themeColors.heading} weight="bold" />
+                <SquarePen size={14} color={themeColors.heading} strokeWidth={2.5} />
                 <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
                   <LocalizedText>Note</LocalizedText>
                 </Text>
@@ -262,7 +262,7 @@ export function NewAudioModal({ visible, asset, onClose, onDismiss, onSaved }: N
               accessibilityLabel={translate('Cancel')}
               onPress={handleClose}
               disabled={saving}
-              icon={<XIcon size={20} color={themeColors.foreground} weight="bold" />}
+              icon={<X size={20} color={themeColors.foreground} strokeWidth={2.5} />}
               text={translate('Cancel')}
             />
             <Button
@@ -274,10 +274,10 @@ export function NewAudioModal({ visible, asset, onClose, onDismiss, onSaved }: N
                 saving ? (
                   <ActivityIndicator size={20} color={themeColors.inverse} />
                 ) : (
-                  <CheckIcon
+                  <Check
                     size={20}
                     color={canSave ? themeColors.inverse : themeColors.muted}
-                    weight="bold"
+                    strokeWidth={2.5}
                   />
                 )
               }

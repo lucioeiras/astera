@@ -1,12 +1,6 @@
 import { ThemedModal as Modal } from '@/components/ThemedModal';
 import { useAppTheme, type ThemeColors } from '@/lib/theme';
-import {
-  BookIcon,
-  FilmSlateIcon,
-  GameControllerIcon,
-  MusicNoteIcon,
-  TelevisionIcon,
-} from 'phosphor-react-native';
+import { Book, Clapperboard, Gamepad2, Music, Tv } from 'lucide-react-native';
 import { JSX, useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -33,27 +27,27 @@ const tabs = (
   {
     id: 'book',
     label: 'Book',
-    icon: <BookIcon size={20} color={themeColors.foreground} weight="bold" />,
+    icon: <Book size={20} color={themeColors.foreground} strokeWidth={2.5} />,
   },
   {
     id: 'music',
     label: 'Music',
-    icon: <MusicNoteIcon size={20} color={themeColors.foreground} weight="bold" />,
+    icon: <Music size={20} color={themeColors.foreground} strokeWidth={2.5} />,
   },
   {
     id: 'movie',
     label: 'Film',
-    icon: <FilmSlateIcon size={20} color={themeColors.foreground} weight="bold" />,
+    icon: <Clapperboard size={20} color={themeColors.foreground} strokeWidth={2.5} />,
   },
   {
     id: 'tvshow',
     label: 'TV',
-    icon: <TelevisionIcon size={20} color={themeColors.foreground} weight="bold" />,
+    icon: <Tv size={20} color={themeColors.foreground} strokeWidth={2.5} />,
   },
   {
     id: 'game',
     label: 'Game',
-    icon: <GameControllerIcon size={20} color={themeColors.foreground} weight="bold" />,
+    icon: <Gamepad2 size={20} color={themeColors.foreground} strokeWidth={2.5} />,
   },
 ];
 

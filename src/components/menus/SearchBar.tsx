@@ -1,16 +1,16 @@
 import { useAppTheme } from '@/lib/theme';
 import { BlurView } from 'expo-blur';
 import {
-  BookmarkSimpleIcon,
-  CalendarBlankIcon,
-  CheckCircleIcon,
-  ClockIcon,
-  FolderIcon,
-  HashIcon,
-  MagnifyingGlassIcon,
-  ProhibitIcon,
-  XIcon,
-} from 'phosphor-react-native';
+  Bookmark,
+  Calendar,
+  CircleCheck,
+  Clock,
+  Folder,
+  Hash,
+  Search,
+  Ban,
+  X,
+} from 'lucide-react-native';
 import { type ReactNode, type RefObject, useRef } from 'react';
 import {
   KeyboardAvoidingView,
@@ -27,11 +27,11 @@ import { STATUS_FOLDERS } from '@/lib/library/organize';
 import type { MediaProgressStatus } from '@/lib/library/types';
 
 const statusIcons = {
-  want: BookmarkSimpleIcon,
-  'in-progress': ClockIcon,
-  completed: CheckCircleIcon,
-  abandoned: ProhibitIcon,
-} satisfies Record<MediaProgressStatus, typeof FolderIcon>;
+  want: Bookmark,
+  'in-progress': Clock,
+  completed: CircleCheck,
+  abandoned: Ban,
+} satisfies Record<MediaProgressStatus, typeof Folder>;
 
 type SearchFilter = {
   kind: 'tag' | 'folder' | 'date';
@@ -109,7 +109,7 @@ export function SearchBar({
               style={StyleSheet.absoluteFill}
             />
 
-            <MagnifyingGlassIcon size={18} color={themeColors.foreground} weight="bold" />
+            <Search size={18} color={themeColors.foreground} strokeWidth={2.5} />
 
             <View className="flex-1 flex-row flex-nowrap items-center gap-2">
               {filters.map((filter) => {
@@ -120,10 +120,10 @@ export function SearchBar({
                 const Icon = status
                   ? statusIcons[status.key]
                   : isTag
-                    ? HashIcon
+                    ? Hash
                     : filter.kind === 'date'
-                      ? CalendarBlankIcon
-                      : FolderIcon;
+                      ? Calendar
+                      : Folder;
                 const isDate = filter.kind === 'date';
                 const iconColor =
                   (status
@@ -147,7 +147,7 @@ export function SearchBar({
                     className={`max-w-full flex-row items-center gap-1.5 rounded-full px-3 py-1.5 active:opacity-70 ${status ? '' : isTag ? 'bg-blue-500/15' : isDate ? 'bg-amber-500/15' : 'bg-violet-500/15'}`}
                     style={status ? { backgroundColor: `${status.color}26` } : undefined}
                   >
-                    <Icon size={16} color={iconColor} weight="bold" />
+                    <Icon size={16} color={iconColor} strokeWidth={2.5} />
                     <Text
                       numberOfLines={1}
                       className={`max-w-[180px] font-sans-medium text-base ${isTag ? 'text-theme-blue' : isDate ? 'text-theme-amber' : 'text-theme-purple'}`}
@@ -155,7 +155,7 @@ export function SearchBar({
                     >
                       {filter.label}
                     </Text>
-                    <XIcon size={14} color={iconColor} weight="bold" />
+                    <X size={14} color={iconColor} strokeWidth={2.5} />
                   </Pressable>
                 );
               })}
@@ -181,7 +181,7 @@ export function SearchBar({
                 className="p-1.5 rounded-full bg-theme-border items-center justify-center active:opacity-70"
                 accessibilityLabel={translate('Clear search')}
               >
-                <XIcon size={12} color={themeColors.heading} weight="bold" />
+                <X size={12} color={themeColors.heading} strokeWidth={2.5} />
               </Pressable>
             )}
           </View>

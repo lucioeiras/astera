@@ -1,7 +1,8 @@
 import { decodeHTML } from 'entities';
 import { Image as ExpoImage } from 'expo-image';
 import { cssInterop } from 'nativewind';
-import { PlayIcon, TiktokLogoIcon } from 'phosphor-react-native';
+import { TiktokLogoIcon } from 'phosphor-react-native';
+import { Play } from 'lucide-react-native';
 import { Text, View } from 'react-native';
 import { useAppTheme } from '@/lib/theme';
 import { LocalizedText } from '@/components/LocalizedText';
@@ -37,7 +38,7 @@ export function TikTokCard({
       >
         <ExpoImage source={{ uri: thumbnail }} className="w-full h-full" contentFit="cover" />
         <View className="absolute inset-0 bg-black/50 items-center justify-center">
-          <PlayIcon size={compact ? 24 : 36} color="#FFFFFF" weight="fill" />
+          <Play size={compact ? 24 : 36} color="#FFFFFF" fill="#FFFFFF" />
         </View>
       </View>
 

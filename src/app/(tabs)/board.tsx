@@ -2,7 +2,7 @@ import { useAppTheme } from '@/lib/theme';
 import { FlashList, type FlashListRef, type ListRenderItemInfo } from '@shopify/flash-list';
 import { BlurTargetView } from 'expo-blur';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
-import { PlusIcon, WarningIcon } from 'phosphor-react-native';
+import { Plus, TriangleAlert } from 'lucide-react-native';
 import Sortable from 'react-native-sortables';
 import {
   createContext,
@@ -869,7 +869,7 @@ export default function BoardScreen() {
 
         {hasIssues && (
           <View className="mb-4 flex-row gap-2 rounded-xl bg-theme-amber/10 p-3">
-            <WarningIcon size={16} color={themeColors.amber} weight="fill" />
+            <TriangleAlert size={16} color={themeColors.amber} />
             <Text className="flex-1 font-sans text-xs text-theme-amber">
               {state.result.issues.length} <LocalizedText>file(s) skipped:</LocalizedText>{' '}
               {state.result.issues.map((i) => `${i.file} (${i.reason})`).join(', ')}
@@ -969,7 +969,7 @@ export default function BoardScreen() {
           onPress={() => router.push('/add')}
           className="mt-8 flex-row items-center justify-center gap-2 rounded-full bg-theme-foreground px-5 py-3"
         >
-          <PlusIcon size={18} color={themeColors.inverse} />
+          <Plus size={18} color={themeColors.inverse} />
           <Text className="font-sans-semibold text-base text-theme-inverse">
             <LocalizedText>Add new item</LocalizedText>
           </Text>
@@ -1009,7 +1009,7 @@ export default function BoardScreen() {
                 variant="primary"
                 shadowColor={themeColors.foreground}
                 shadowOpacity={0.24}
-                icon={<PlusIcon size={24} color={themeColors.canvas} weight="bold" />}
+                icon={<Plus size={24} color={themeColors.canvas} strokeWidth={2.5} />}
                 onPress={() => router.push('/add')}
               />
             }

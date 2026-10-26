@@ -1,6 +1,6 @@
 import { ThemedModal as Modal } from '@/components/ThemedModal';
 import { useAppTheme } from '@/lib/theme';
-import { PlusIcon, XIcon } from 'phosphor-react-native';
+import { Plus, X } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -207,7 +207,7 @@ export function AddToFolderModal({ visible, items, onClose, onAdded }: Props) {
               saving ? (
                 <ActivityIndicator size={20} color={themeColors.secondary} />
               ) : (
-                <XIcon size={20} color={themeColors.foreground} weight="bold" />
+                <X size={20} color={themeColors.foreground} strokeWidth={2.5} />
               )
             }
             text={translate('Cancel')}
@@ -217,7 +217,7 @@ export function AddToFolderModal({ visible, items, onClose, onAdded }: Props) {
             variant="secondary"
             onPress={() => setIsCreateOpen(true)}
             disabled={saving}
-            icon={<PlusIcon size={20} color={themeColors.foreground} weight="bold" />}
+            icon={<Plus size={20} color={themeColors.foreground} strokeWidth={2.5} />}
             text={translate('New Folder')}
           />
         </ActionFooter>

@@ -1,12 +1,6 @@
 import { useAppTheme, type ThemeColors } from '@/lib/theme';
 import { Image as ExpoImage } from 'expo-image';
-import {
-  CheckIcon,
-  MagnifyingGlassIcon,
-  NotePencilIcon,
-  TelevisionIcon,
-  XIcon,
-} from 'phosphor-react-native';
+import { Check, Search, SquarePen, Tv, X } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -287,7 +281,7 @@ export function NewTvShowModal({
                       contentFit="cover"
                     />
                   ) : (
-                    <TelevisionIcon size={24} color={themeColors.muted} />
+                    <Tv size={24} color={themeColors.muted} />
                   )}
                 </View>
                 <View className="flex-1 gap-2">
@@ -311,12 +305,12 @@ export function NewTvShowModal({
                   accessibilityRole="button"
                   accessibilityLabel={translate('Change TV show')}
                 >
-                  <XIcon size={16} color={themeColors.heading} weight="bold" />
+                  <X size={16} color={themeColors.heading} strokeWidth={2.5} />
                 </Pressable>
               </View>
             ) : (
               <View className="flex-row items-center gap-4 py-5 px-8 border-t border-b border-theme-raised">
-                <MagnifyingGlassIcon size={20} color={themeColors.body} />
+                <Search size={20} color={themeColors.body} />
                 <TextInput
                   ref={searchInputRef}
                   value={query}
@@ -342,7 +336,7 @@ export function NewTvShowModal({
                     accessibilityRole="button"
                     accessibilityLabel={translate('Clear search')}
                   >
-                    <XIcon size={12} color={themeColors.heading} weight="bold" />
+                    <X size={12} color={themeColors.heading} strokeWidth={2.5} />
                   </Pressable>
                 ) : null}
               </View>
@@ -376,7 +370,7 @@ export function NewTvShowModal({
                             contentFit="cover"
                           />
                         ) : (
-                          <TelevisionIcon size={24} color={themeColors.muted} />
+                          <Tv size={24} color={themeColors.muted} />
                         )}
                       </View>
                       <View className="flex-1 gap-1.5">
@@ -400,7 +394,7 @@ export function NewTvShowModal({
                   query.trim().length > 1 &&
                   !isSearching && (
                     <View className="py-12 items-center justify-center">
-                      <TelevisionIcon size={32} color={themeColors.strongBorder} weight="duotone" />
+                      <Tv size={32} color={themeColors.strongBorder} strokeWidth={2} />
                       <Text className="font-sans text-sm text-theme-muted mt-3">
                         <LocalizedText>No TV shows found for "</LocalizedText>
                         {query}
@@ -428,7 +422,7 @@ export function NewTvShowModal({
                 />
                 <View className="py-6 px-8 gap-4 border-t border-theme-raised">
                   <View className="flex-row items-center gap-2">
-                    <NotePencilIcon size={14} color={themeColors.heading} weight="bold" />
+                    <SquarePen size={14} color={themeColors.heading} strokeWidth={2.5} />
                     <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
                       <LocalizedText>Note</LocalizedText>
                     </Text>
@@ -458,7 +452,7 @@ export function NewTvShowModal({
               accessibilityLabel={translate('Cancel')}
               onPress={handleClose}
               disabled={saving}
-              icon={<XIcon size={20} color={themeColors.foreground} weight="bold" />}
+              icon={<X size={20} color={themeColors.foreground} strokeWidth={2.5} />}
               text={translate('Cancel')}
             />
             <Button
@@ -470,10 +464,10 @@ export function NewTvShowModal({
                 saving ? (
                   <ActivityIndicator size={20} color={themeColors.inverse} />
                 ) : (
-                  <CheckIcon
+                  <Check
                     size={20}
                     color={canSave ? themeColors.inverse : themeColors.muted}
-                    weight="bold"
+                    strokeWidth={2.5}
                   />
                 )
               }

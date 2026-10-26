@@ -1,7 +1,7 @@
 import { useAppTheme } from '@/lib/theme';
 import { decodeHTML } from 'entities';
 import { Image as ExpoImage } from 'expo-image';
-import { FilmSlateIcon, GameControllerIcon, UsersThreeIcon } from 'phosphor-react-native';
+import { Clapperboard, Gamepad2, Users } from 'lucide-react-native';
 import { ScrollView, Text, View } from 'react-native';
 
 import { cleanRawgDescription } from '@/lib/games/rawg';
@@ -18,7 +18,7 @@ export function CardMediaDetails({ item }: { item: LibraryItem }) {
       {item.type === 'movie' && Boolean(item.overview) && (
         <View className="py-6 px-6 border-b border-theme-raised gap-3">
           <View className="flex-row items-center gap-2">
-            <FilmSlateIcon size={14} color={themeColors.heading} weight="bold" />
+            <Clapperboard size={14} color={themeColors.heading} strokeWidth={2.5} />
             <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
               <LocalizedText>Overview</LocalizedText>
             </Text>
@@ -32,7 +32,7 @@ export function CardMediaDetails({ item }: { item: LibraryItem }) {
       {item.type === 'tvshow' && Boolean(item.overview) && (
         <View className="py-6 px-6 border-b border-theme-raised gap-3">
           <View className="flex-row items-center gap-2">
-            <FilmSlateIcon size={14} color={themeColors.heading} weight="bold" />
+            <Clapperboard size={14} color={themeColors.heading} strokeWidth={2.5} />
             <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
               <LocalizedText>Overview</LocalizedText>
             </Text>
@@ -48,7 +48,7 @@ export function CardMediaDetails({ item }: { item: LibraryItem }) {
         <View className="py-6 px-6 border-b border-theme-raised gap-3">
           <View className="flex-row items-center justify-between">
             <View className="flex-row items-center gap-2">
-              <UsersThreeIcon size={14} color={themeColors.heading} weight="bold" />
+              <Users size={14} color={themeColors.heading} strokeWidth={2.5} />
               <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
                 <LocalizedText>Cast</LocalizedText>
               </Text>
@@ -112,7 +112,7 @@ export function CardMediaDetails({ item }: { item: LibraryItem }) {
       {item.type === 'game' && (
         <View className="py-6 px-6 border-b border-theme-raised gap-3">
           <View className="flex-row items-center gap-2">
-            <GameControllerIcon size={14} color={themeColors.heading} weight="bold" />
+            <Gamepad2 size={14} color={themeColors.heading} strokeWidth={2.5} />
             <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
               <LocalizedText>About</LocalizedText>
             </Text>

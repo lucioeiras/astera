@@ -14,7 +14,7 @@ import {
 } from '@/lib/library/activity';
 import { useAppTheme } from '@/lib/theme';
 import { router } from 'expo-router';
-import { NutIcon } from 'phosphor-react-native';
+import { Settings } from 'lucide-react-native';
 import { useMemo, useState } from 'react';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -60,7 +60,7 @@ export default function ProfileScreen() {
           <Button
             accessibilityLabel={translate('Settings')}
             size="small"
-            icon={<NutIcon size={20} color={themeColors.foreground} />}
+            icon={<Settings size={20} color={themeColors.foreground} />}
             onPress={() => router.push('/settings')}
           />
         </View>

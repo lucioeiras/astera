@@ -1,5 +1,5 @@
 import { useAppTheme } from '@/lib/theme';
-import { SmileyIcon, StarIcon } from 'phosphor-react-native';
+import { Smile, Star } from 'lucide-react-native';
 import { Pressable, Text, TextInput, View } from 'react-native';
 import { LocalizedText } from '@/components/LocalizedText';
 import { translate, useLocalization } from '@/lib/i18n';
@@ -28,7 +28,7 @@ export function CardReview({
       >
         {!compact && (
           <View className="flex-row items-center gap-2">
-            <SmileyIcon size={16} color={themeColors.body} />
+            <Smile size={16} color={themeColors.body} />
             <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
               <LocalizedText>My review</LocalizedText>
             </Text>
@@ -52,7 +52,7 @@ export function CardReview({
                 key={index}
                 className={`h-7 w-10 justify-center ${compact ? 'items-start' : 'items-center'}`}
               >
-                <StarIcon size={24} color={themeColors.strongBorder} weight="light" />
+                <Star size={24} color={themeColors.strongBorder} strokeWidth={1.5} />
                 {fillWidth > 0 && (
                   <View
                     className="absolute overflow-hidden"
@@ -63,7 +63,7 @@ export function CardReview({
                       height: 24,
                     }}
                   >
-                    <StarIcon size={24} color={themeColors.foreground} weight="fill" />
+                    <Star size={24} color={themeColors.foreground} fill={themeColors.foreground} />
                   </View>
                 )}
                 <Pressable

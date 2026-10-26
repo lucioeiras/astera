@@ -1,14 +1,8 @@
 import { useAppTheme } from '@/lib/theme';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
-import {
-  ArticleIcon,
-  BookOpenIcon,
-  FilmSlateIcon,
-  TelevisionIcon,
-  GameControllerIcon,
-  YoutubeLogoIcon,
-} from 'phosphor-react-native';
+import { YoutubeLogoIcon } from 'phosphor-react-native';
+import { Newspaper, BookOpen, Clapperboard, Tv, Gamepad2 } from 'lucide-react-native';
 import { useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
@@ -113,16 +107,16 @@ function CompletionCover({ item, artwork }: { item: LibraryItem; artwork?: strin
   const title = getRelatedCardTitle(item);
   const Icon =
     item.type === 'book'
-      ? BookOpenIcon
+      ? BookOpen
       : item.type === 'movie'
-        ? FilmSlateIcon
+        ? Clapperboard
         : item.type === 'tvshow'
-          ? TelevisionIcon
+          ? Tv
           : item.type === 'game'
-            ? GameControllerIcon
+            ? Gamepad2
             : item.type === 'youtube'
               ? YoutubeLogoIcon
-              : ArticleIcon;
+              : Newspaper;
   return (
     <Pressable
       accessibilityRole="button"

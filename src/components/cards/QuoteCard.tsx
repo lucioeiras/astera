@@ -1,10 +1,7 @@
 import { useAppTheme } from '@/lib/theme';
 import { decodeHTML } from 'entities';
-import { LinkIcon } from 'phosphor-react-native';
+import { LinkIcon, Quote } from 'lucide-react-native';
 import { Text, View } from 'react-native';
-
-import QuoteClose from '../../../assets/quote-close.svg';
-import QuoteOpen from '../../../assets/quote-open.svg';
 
 type QuoteProps = {
   text: string;
@@ -20,14 +17,19 @@ export const QuoteCard = ({ text, title, linkedTitle }: QuoteProps) => {
   return (
     <View className="w-full items-center">
       <View className="w-full p-6 items-center gap-5 bg-theme-surface/80 rounded-xl">
-        <QuoteOpen />
+        <Quote
+          width={10}
+          height={9}
+          color="#71717B"
+          style={{ transform: [{ rotate: '180deg' }] }}
+        />
         <Text
           className="font-sans-medium text-lg text-center leading-[1.8] text-theme-bright"
           numberOfLines={8}
         >
           {cleanText}
         </Text>
-        <QuoteClose />
+        <Quote width={10} height={9} color="#71717B" />
         {linkedTitle && (
           <View className="flex-row items-center gap-2 pt-2">
             <LinkIcon size={14} color={themeColors.blueSoft} />

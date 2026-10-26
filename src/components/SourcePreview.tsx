@@ -1,6 +1,6 @@
 import { useAppTheme } from '@/lib/theme';
 import { Image as ExpoImage } from 'expo-image';
-import { BookmarkSimpleIcon, MusicNotesIcon, XIcon } from 'phosphor-react-native';
+import { Bookmark, Music2, X } from 'lucide-react-native';
 import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
@@ -144,9 +144,9 @@ export function SourcePreview({
             }}
           />
         ) : pendingMusic ? (
-          <MusicNotesIcon size={compact ? 16 : 24} color={themeColors.muted} />
+          <Music2 size={compact ? 16 : 24} color={themeColors.muted} />
         ) : (
-          <BookmarkSimpleIcon size={compact ? 16 : 24} color={themeColors.muted} />
+          <Bookmark size={compact ? 16 : 24} color={themeColors.muted} />
         )}
       </View>
       <View className={`flex-1 ${compact ? 'gap-1.5' : 'gap-2'}`}>
@@ -194,7 +194,7 @@ export function SourcePreview({
           accessibilityRole="button"
           accessibilityLabel={translate('Remove source')}
         >
-          <XIcon size={16} color={themeColors.heading} weight="bold" />
+          <X size={16} color={themeColors.heading} strokeWidth={2.5} />
         </Pressable>
       )}
     </View>

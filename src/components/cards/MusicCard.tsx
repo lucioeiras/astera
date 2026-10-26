@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useAppTheme, type ThemeColors } from '@/lib/theme';
 import { decodeHTML } from 'entities';
 import { Image as ExpoImage } from 'expo-image';
-import { DiscIcon } from 'phosphor-react-native';
+import { Disc } from 'lucide-react-native';
 import { useState } from 'react';
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import { VinylRecord } from '../effects/VinylRecord';
@@ -86,7 +86,7 @@ export const MusicCard = ({
             />
           ) : (
             <View style={styles.fallbackCover}>
-              <DiscIcon size={40} color={themeColors.muted} weight="duotone" />
+              <Disc size={40} color={themeColors.muted} strokeWidth={2} />
             </View>
           )}
 

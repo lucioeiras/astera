@@ -1,11 +1,6 @@
 import { useAppTheme } from '@/lib/theme';
 import { Tabs } from 'expo-router';
-import {
-  ArrowCounterClockwiseIcon,
-  FolderIcon,
-  UserCircleIcon,
-  SquaresFourIcon,
-} from 'phosphor-react-native';
+import { RotateCcw, Folder, CircleUser, LayoutGrid } from 'lucide-react-native';
 
 import { ProgressiveBlur } from '@/components/effects/ProgressiveBlur';
 import { FloatingTabOverlayProvider } from '@/components/menus/FloatingTabOverlay';
@@ -45,11 +40,7 @@ export default function TabLayout() {
           options={{
             title: translate('Board'),
             tabBarIcon: ({ color, focused }) => (
-              <SquaresFourIcon
-                size={iconSize}
-                color={color as string}
-                weight={focused ? 'fill' : 'regular'}
-              />
+              <LayoutGrid size={iconSize} color={color as string} strokeWidth={focused ? 2.5 : 2} />
             ),
           }}
         />
@@ -58,11 +49,7 @@ export default function TabLayout() {
           options={{
             title: translate('Folders'),
             tabBarIcon: ({ color, focused }) => (
-              <FolderIcon
-                size={iconSize}
-                color={color as string}
-                weight={focused ? 'fill' : 'regular'}
-              />
+              <Folder size={iconSize} color={color as string} strokeWidth={focused ? 2.5 : 2} />
             ),
           }}
         />
@@ -71,11 +58,7 @@ export default function TabLayout() {
           options={{
             title: translate('Review'),
             tabBarIcon: ({ color, focused }) => (
-              <ArrowCounterClockwiseIcon
-                size={iconSize}
-                color={color as string}
-                weight={focused ? 'fill' : 'regular'}
-              />
+              <RotateCcw size={iconSize} color={color as string} strokeWidth={focused ? 2.5 : 2} />
             ),
           }}
         />
@@ -85,11 +68,7 @@ export default function TabLayout() {
           options={{
             title: translate('Profile'),
             tabBarIcon: ({ color, focused }) => (
-              <UserCircleIcon
-                size={iconSize}
-                color={color as string}
-                weight={focused ? 'fill' : 'regular'}
-              />
+              <CircleUser size={iconSize} color={color as string} strokeWidth={focused ? 2.5 : 2} />
             ),
           }}
         />

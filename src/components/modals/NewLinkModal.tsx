@@ -1,6 +1,6 @@
 import { ThemedModal as Modal } from '@/components/ThemedModal';
 import { useAppTheme, type ThemeColors } from '@/lib/theme';
-import { CheckIcon, LinkIcon, NotePencilIcon, TextTIcon, XIcon } from 'phosphor-react-native';
+import { Check, LinkIcon, SquarePen, Type, X } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -336,14 +336,14 @@ export function NewLinkModal({
                   accessibilityRole="button"
                   accessibilityLabel={translate('Clear link')}
                 >
-                  <XIcon size={12} color={themeColors.heading} weight="bold" />
+                  <X size={12} color={themeColors.heading} strokeWidth={2.5} />
                 </Pressable>
               )}
             </View>
 
             {/* Title Input */}
             <View className="flex-row items-center gap-4 py-5 px-8 border-b border-theme-raised">
-              <TextTIcon size={20} color={themeColors.body} />
+              <Type size={20} color={themeColors.body} />
               <TextInput
                 ref={titleInputRef}
                 value={title}
@@ -380,7 +380,7 @@ export function NewLinkModal({
             {/* Notes section */}
             <View className="flex-1 py-6 px-8 gap-4">
               <View className="flex-row items-center gap-2">
-                <NotePencilIcon size={14} color={themeColors.heading} weight="bold" />
+                <SquarePen size={14} color={themeColors.heading} strokeWidth={2.5} />
                 <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
                   <LocalizedText>Note</LocalizedText>
                 </Text>
@@ -409,7 +409,7 @@ export function NewLinkModal({
               accessibilityLabel={translate('Cancel')}
               onPress={handleClose}
               disabled={saving}
-              icon={<XIcon size={20} color={themeColors.foreground} weight="bold" />}
+              icon={<X size={20} color={themeColors.foreground} strokeWidth={2.5} />}
               text={translate('Cancel')}
             />
             <Button
@@ -421,10 +421,10 @@ export function NewLinkModal({
                 saving ? (
                   <ActivityIndicator size={20} color={themeColors.inverse} />
                 ) : (
-                  <CheckIcon
+                  <Check
                     size={20}
                     color={canSave ? themeColors.inverse : themeColors.muted}
-                    weight="bold"
+                    strokeWidth={2.5}
                   />
                 )
               }

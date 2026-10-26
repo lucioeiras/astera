@@ -1,11 +1,5 @@
 import { useAppTheme, type ThemeColors } from '@/lib/theme';
-import {
-  BookIcon,
-  CheckIcon,
-  MagnifyingGlassIcon,
-  NotePencilIcon,
-  XIcon,
-} from 'phosphor-react-native';
+import { Book, Check, Search, SquarePen, X } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -287,7 +281,7 @@ export function NewBookModal({
 
             {/* ISBN Input Section */}
             <View className="flex-row items-center gap-3 py-5 px-8 border-t border-b border-theme-raised">
-              <BookIcon size={22} color={themeColors.body} />
+              <Book size={22} color={themeColors.body} />
 
               <TextInput
                 ref={inputRef}
@@ -317,7 +311,7 @@ export function NewBookModal({
                     accessibilityRole="button"
                     accessibilityLabel={translate('Search ISBN')}
                   >
-                    <MagnifyingGlassIcon size={16} color="#F59E0B" weight="bold" />
+                    <Search size={16} color="#F59E0B" strokeWidth={2.5} />
                   </Pressable>
 
                   <Pressable
@@ -327,7 +321,7 @@ export function NewBookModal({
                     accessibilityRole="button"
                     accessibilityLabel={translate('Clear ISBN')}
                   >
-                    <XIcon size={12} color={themeColors.heading} weight="bold" />
+                    <X size={12} color={themeColors.heading} strokeWidth={2.5} />
                   </Pressable>
                 </View>
               ) : null}
@@ -425,7 +419,7 @@ export function NewBookModal({
             {/* Notes section */}
             <View className="flex-1 py-6 px-8 gap-4">
               <View className="flex-row items-center gap-2">
-                <NotePencilIcon size={14} color={themeColors.heading} weight="bold" />
+                <SquarePen size={14} color={themeColors.heading} strokeWidth={2.5} />
                 <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
                   <LocalizedText>Note</LocalizedText>
                 </Text>
@@ -454,7 +448,7 @@ export function NewBookModal({
               accessibilityLabel={translate('Cancel')}
               onPress={handleClose}
               disabled={saving}
-              icon={<XIcon size={20} color={themeColors.foreground} weight="bold" />}
+              icon={<X size={20} color={themeColors.foreground} strokeWidth={2.5} />}
               text={translate('Cancel')}
             />
             <Button
@@ -466,10 +460,10 @@ export function NewBookModal({
                 saving ? (
                   <ActivityIndicator size={20} color={themeColors.foreground} />
                 ) : (
-                  <CheckIcon
+                  <Check
                     size={20}
                     color={canSave ? themeColors.inverse : themeColors.muted}
-                    weight="bold"
+                    strokeWidth={2.5}
                   />
                 )
               }

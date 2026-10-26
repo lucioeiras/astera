@@ -1,6 +1,6 @@
 import { useAppTheme, type ThemeColors } from '@/lib/theme';
 import { useMemo } from 'react';
-import { CheckIcon } from 'phosphor-react-native';
+import { Check } from 'lucide-react-native';
 import { Pressable, Text, View } from 'react-native';
 
 type MarkdownNoteProps = {
@@ -147,7 +147,7 @@ export function MarkdownNote({
                     }`}
                   >
                     {isTaskChecked && (
-                      <CheckIcon size={16} color={themeColors.inverse} weight="bold" />
+                      <Check size={16} color={themeColors.inverse} strokeWidth={2.5} />
                     )}
                   </View>
                 );

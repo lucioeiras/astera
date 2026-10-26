@@ -1,10 +1,5 @@
 import { useAppTheme, type ThemeColors } from '@/lib/theme';
-import {
-  BookmarkSimpleIcon,
-  CheckCircleIcon,
-  ClockIcon,
-  ProhibitIcon,
-} from 'phosphor-react-native';
+import { Bookmark, CircleCheck, Clock, Ban } from 'lucide-react-native';
 import { Text, View } from 'react-native';
 
 import type { LibraryItem, MediaProgressStatus } from '@/lib/library/types';
@@ -52,10 +47,10 @@ const labels = {
 } as const;
 
 const icons = {
-  want: BookmarkSimpleIcon,
-  'in-progress': ClockIcon,
-  completed: CheckCircleIcon,
-  abandoned: ProhibitIcon,
+  want: Bookmark,
+  'in-progress': Clock,
+  completed: CircleCheck,
+  abandoned: Ban,
 } as const;
 
 const colors = (themeColors: ThemeColors) =>
@@ -88,7 +83,7 @@ export function ProgressStatus({
 
   return (
     <View className={`flex-row items-center gap-1.5 ${align === 'center' ? 'justify-center' : ''}`}>
-      <Icon size={13} color={color} weight="bold" />
+      <Icon size={13} color={color} strokeWidth={2.5} />
       <Text className="font-sans-medium text-xs text-center" style={{ color }} numberOfLines={1}>
         {getProgressLabel(type, currentStatus)}
       </Text>

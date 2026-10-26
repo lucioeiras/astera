@@ -1,6 +1,6 @@
 import { useAppTheme } from '@/lib/theme';
 import { useAudioPlayer, useAudioPlayerStatus } from 'expo-audio';
-import { PauseIcon, PlayIcon } from 'phosphor-react-native';
+import { Pause, Play } from 'lucide-react-native';
 import { memo, useMemo, useState } from 'react';
 import { Pressable, Text, View, type LayoutChangeEvent } from 'react-native';
 
@@ -114,9 +114,9 @@ export const AudioCard = memo(function AudioCard({
         onPress={togglePlayback}
         icon={
           status.playing ? (
-            <PauseIcon size={16} color={themeColors.inverse} weight="fill" />
+            <Pause size={16} color={themeColors.canvas} fill={themeColors.canvas} />
           ) : (
-            <PlayIcon size={16} color={themeColors.foreground} weight="fill" />
+            <Play size={16} color={themeColors.foreground} fill={themeColors.foreground} />
           )
         }
       />

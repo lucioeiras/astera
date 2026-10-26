@@ -1,6 +1,6 @@
 import { ThemedModal as Modal } from '@/components/ThemedModal';
 import { useAppTheme } from '@/lib/theme';
-import { XIcon } from 'phosphor-react-native';
+import { X } from 'lucide-react-native';
 import { Pressable, Text, View } from 'react-native';
 
 import { PdfPreview } from '@/components/PdfPreview';
@@ -33,7 +33,7 @@ export function CardPdfReader({
             accessibilityRole="button"
             accessibilityLabel={translate('Close PDF')}
           >
-            <XIcon size={22} color={themeColors.foreground} />
+            <X size={22} color={themeColors.foreground} />
           </Pressable>
           <Text
             className="flex-1 font-sans-medium text-base text-theme-foreground text-center"

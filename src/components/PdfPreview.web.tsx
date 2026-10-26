@@ -1,4 +1,4 @@
-import { FilePdfIcon } from 'phosphor-react-native';
+import { FileText } from 'lucide-react-native';
 
 type PdfPreviewProps = {
   uri: string;
@@ -7,5 +7,5 @@ type PdfPreviewProps = {
 export function PdfPreview({ uri }: PdfPreviewProps) {
   // Browser-native PDF embedding is inconsistent for local file URIs.
   void uri;
-  return <FilePdfIcon size={36} color="#ef4444" weight="duotone" />;
+  return <FileText size={36} color="#ef4444" strokeWidth={2} />;
 }

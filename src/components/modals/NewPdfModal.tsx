@@ -1,6 +1,6 @@
 import { ThemedModal as Modal } from '@/components/ThemedModal';
 import { useAppTheme, type ThemeColors } from '@/lib/theme';
-import { CheckIcon, FilePdfIcon, NotePencilIcon, TextTIcon, XIcon } from 'phosphor-react-native';
+import { Check, FileText, SquarePen, Type, X } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -221,7 +221,7 @@ export function NewPdfModal({ visible, pdfAsset, onClose, onDismiss, onSaved }: 
                 {pdfAsset?.uri ? (
                   <PdfPreview uri={pdfAsset.uri} />
                 ) : (
-                  <FilePdfIcon size={36} color="#ef4444" weight="duotone" />
+                  <FileText size={36} color="#ef4444" strokeWidth={2} />
                 )}
               </View>
 
@@ -240,7 +240,7 @@ export function NewPdfModal({ visible, pdfAsset, onClose, onDismiss, onSaved }: 
 
             {/* Title Input */}
             <View className="flex-row items-center gap-4 py-5 px-8 border-b border-theme-raised">
-              <TextTIcon size={20} color={themeColors.body} />
+              <Type size={20} color={themeColors.body} />
 
               <TextInput
                 ref={titleInputRef}
@@ -278,7 +278,7 @@ export function NewPdfModal({ visible, pdfAsset, onClose, onDismiss, onSaved }: 
             {/* Notes section */}
             <View className="flex-1 py-6 px-8 gap-4">
               <View className="flex-row items-center gap-2">
-                <NotePencilIcon size={14} color={themeColors.heading} weight="bold" />
+                <SquarePen size={14} color={themeColors.heading} strokeWidth={2.5} />
                 <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
                   <LocalizedText>Note</LocalizedText>
                 </Text>
@@ -307,7 +307,7 @@ export function NewPdfModal({ visible, pdfAsset, onClose, onDismiss, onSaved }: 
               accessibilityLabel={translate('Cancel')}
               onPress={handleClose}
               disabled={saving}
-              icon={<XIcon size={20} color={themeColors.foreground} weight="bold" />}
+              icon={<X size={20} color={themeColors.foreground} strokeWidth={2.5} />}
               text={translate('Cancel')}
             />
             <Button
@@ -319,10 +319,10 @@ export function NewPdfModal({ visible, pdfAsset, onClose, onDismiss, onSaved }: 
                 saving ? (
                   <ActivityIndicator size={20} color={themeColors.inverse} />
                 ) : (
-                  <CheckIcon
+                  <Check
                     size={20}
                     color={canSave ? themeColors.inverse : themeColors.muted}
-                    weight="bold"
+                    strokeWidth={2.5}
                   />
                 )
               }

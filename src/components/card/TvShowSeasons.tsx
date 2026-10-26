@@ -1,13 +1,6 @@
 import { useAppTheme, type ThemeColors } from '@/lib/theme';
 import { Image as ExpoImage } from 'expo-image';
-import {
-  ArrowsClockwiseIcon,
-  BookmarkSimpleIcon,
-  CheckCircleIcon,
-  ClockIcon,
-  ProhibitIcon,
-  TelevisionIcon,
-} from 'phosphor-react-native';
+import { RefreshCw, Bookmark, CircleCheck, Clock, Ban, Tv } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
@@ -28,25 +21,25 @@ const LABELS: Record<MediaProgressStatus, string> = {
 const STATUS_TAGS = (themeColors: ThemeColors) =>
   ({
     want: {
-      Icon: BookmarkSimpleIcon,
+      Icon: Bookmark,
       container: 'bg-blue-500/15',
       text: 'text-theme-blue',
       color: themeColors.blueSoft,
     },
     'in-progress': {
-      Icon: ClockIcon,
+      Icon: Clock,
       container: 'bg-amber-400/15',
       text: 'text-theme-amber',
       color: themeColors.yellow,
     },
     completed: {
-      Icon: CheckCircleIcon,
+      Icon: CircleCheck,
       container: 'bg-emerald-400/15',
       text: 'text-theme-green',
       color: themeColors.green,
     },
     abandoned: {
-      Icon: ProhibitIcon,
+      Icon: Ban,
       container: 'bg-theme-border/60',
       text: 'text-theme-body',
       color: themeColors.secondary,
@@ -80,7 +73,7 @@ export function TvShowSeasons({
   return (
     <View className="gap-6 border-b border-theme-raised px-6 py-6">
       <View className="flex-row items-center gap-2">
-        <TelevisionIcon size={15} color={themeColors.heading} weight="bold" />
+        <Tv size={15} color={themeColors.heading} strokeWidth={2.5} />
         <Text className="font-sans-semibold text-sm uppercase tracking-wider text-theme-heading">
           <LocalizedText>Seasons</LocalizedText>
         </Text>
@@ -144,14 +137,14 @@ export function TvShowSeasons({
                       className={`flex-row items-center gap-1 rounded-full px-2.5 py-1 active:opacity-70 ${statusTag.container}`}
                       hitSlop={4}
                     >
-                      <StatusIcon size={12} color={statusTag.color} weight="bold" />
+                      <StatusIcon size={12} color={statusTag.color} strokeWidth={2.5} />
                       <Text
                         className={`font-sans-medium text-xs ${statusTag.text}`}
                         numberOfLines={1}
                       >
                         {translate(LABELS[status])}
                       </Text>
-                      <ArrowsClockwiseIcon size={10} color={statusTag.color} />
+                      <RefreshCw size={10} color={statusTag.color} />
                     </Pressable>
                   </View>
                 </View>

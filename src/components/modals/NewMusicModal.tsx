@@ -1,13 +1,6 @@
 import { useAppTheme, type ThemeColors } from '@/lib/theme';
 import { Image as ExpoImage } from 'expo-image';
-import {
-  CheckIcon,
-  DiscIcon,
-  MagnifyingGlassIcon,
-  MusicNotesIcon,
-  NotePencilIcon,
-  XIcon,
-} from 'phosphor-react-native';
+import { Check, Disc, Search, Music2, SquarePen, X } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -328,12 +321,12 @@ export function NewMusicModal({
                   accessibilityRole="button"
                   accessibilityLabel={translate('Change music selection')}
                 >
-                  <XIcon size={16} color={themeColors.heading} weight="bold" />
+                  <X size={16} color={themeColors.heading} strokeWidth={2.5} />
                 </Pressable>
               </View>
             ) : (
               <View className="flex-row items-center gap-4 py-5 px-8 border-t border-b border-theme-raised">
-                <MagnifyingGlassIcon size={20} color={themeColors.body} />
+                <Search size={20} color={themeColors.body} />
 
                 <TextInput
                   ref={searchInputRef}
@@ -360,7 +353,7 @@ export function NewMusicModal({
                     accessibilityRole="button"
                     accessibilityLabel={translate('Clear search')}
                   >
-                    <XIcon size={12} color={themeColors.heading} weight="bold" />
+                    <X size={12} color={themeColors.heading} strokeWidth={2.5} />
                   </Pressable>
                 ) : null}
               </View>
@@ -390,7 +383,7 @@ export function NewMusicModal({
                         />
                       ) : (
                         <View className="w-full h-full items-center justify-center">
-                          <DiscIcon size={24} color={themeColors.muted} />
+                          <Disc size={24} color={themeColors.muted} />
                         </View>
                       )}
                     </View>
@@ -423,7 +416,7 @@ export function NewMusicModal({
 
                 {results.length === 0 && query.trim().length > 1 && !isSearching && (
                   <View className="py-12 items-center justify-center">
-                    <MusicNotesIcon size={32} color={themeColors.strongBorder} weight="duotone" />
+                    <Music2 size={32} color={themeColors.strongBorder} strokeWidth={2} />
                     <Text className="font-sans text-sm text-theme-muted mt-3">
                       <LocalizedText>No songs or albums found for "</LocalizedText>
                       {query}
@@ -457,7 +450,7 @@ export function NewMusicModal({
                 {/* Notes section */}
                 <View className="py-6 px-8 gap-4 border-t border-theme-raised">
                   <View className="flex-row items-center gap-2">
-                    <NotePencilIcon size={14} color={themeColors.heading} weight="bold" />
+                    <SquarePen size={14} color={themeColors.heading} strokeWidth={2.5} />
                     <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
                       <LocalizedText>Note</LocalizedText>
                     </Text>
@@ -493,7 +486,7 @@ export function NewMusicModal({
               accessibilityLabel={translate('Cancel')}
               onPress={handleClose}
               disabled={saving}
-              icon={<XIcon size={20} color={themeColors.foreground} weight="bold" />}
+              icon={<X size={20} color={themeColors.foreground} strokeWidth={2.5} />}
               text={translate('Cancel')}
             />
             <Button
@@ -507,10 +500,10 @@ export function NewMusicModal({
                 saving ? (
                   <ActivityIndicator size={20} color={themeColors.inverse} />
                 ) : (
-                  <CheckIcon
+                  <Check
                     size={20}
                     color={canSave ? themeColors.inverse : themeColors.muted}
-                    weight="bold"
+                    strokeWidth={2.5}
                   />
                 )
               }

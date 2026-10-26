@@ -1,7 +1,7 @@
 import { ThemedModal as Modal } from '@/components/ThemedModal';
 import { useAppTheme } from '@/lib/theme';
 import { FlashList } from '@shopify/flash-list';
-import { CheckIcon, MagnifyingGlassIcon, XIcon } from 'phosphor-react-native';
+import { Check, Search, X } from 'lucide-react-native';
 import { useMemo, useRef, useState } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -79,7 +79,7 @@ export function RelatedCardsPicker({
           </Text>
         </View>
         <View className="flex-row items-center gap-4 border-t border-b border-theme-raised px-6 mb-4 py-5">
-          <MagnifyingGlassIcon size={20} color={themeColors.heading} />
+          <Search size={20} color={themeColors.heading} />
           <TextInput
             value={query}
             onChangeText={setQuery}
@@ -97,7 +97,7 @@ export function RelatedCardsPicker({
               accessibilityLabel={translate('Clear search')}
               hitSlop={12}
             >
-              <XIcon size={20} color={themeColors.heading} />
+              <X size={20} color={themeColors.heading} />
             </Pressable>
           )}
         </View>
@@ -147,13 +147,13 @@ export function RelatedCardsPicker({
             <View className="flex-row items-center gap-2">
               <Button
                 accessibilityLabel={translate('Cancel related cards')}
-                icon={<XIcon size={24} color={themeColors.foreground} weight="bold" />}
+                icon={<X size={24} color={themeColors.foreground} strokeWidth={2.5} />}
                 disabled={saving}
                 onPress={close}
               />
               <Button
                 accessibilityLabel={translate('Save related cards')}
-                icon={<CheckIcon size={24} color={themeColors.foreground} weight="bold" />}
+                icon={<Check size={24} color={themeColors.foreground} strokeWidth={2.5} />}
                 variant="primary"
                 disabled={saving}
                 onPress={() => {

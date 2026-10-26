@@ -1,5 +1,5 @@
 import { Pressable, Text, View } from 'react-native';
-import { SunIcon } from 'phosphor-react-native';
+import { Sun } from 'lucide-react-native';
 import { useLocalization } from '@/lib/i18n';
 import { useAppTheme, type ThemePreference } from '@/lib/theme';
 
@@ -15,7 +15,7 @@ export function AppearanceSettings() {
   return (
     <View className="gap-4 border-b border-theme-raised px-8 pb-6 mb-6">
       <View className="flex-row items-center gap-2">
-        <SunIcon size={16} color={colors.heading} />
+        <Sun size={16} color={colors.heading} />
         <Text className="font-sans-semibold text-sm uppercase tracking-wider text-theme-heading">
           {t('Appearance')}
         </Text>

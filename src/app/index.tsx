@@ -1,12 +1,6 @@
 import { useAppTheme } from '@/lib/theme';
 import { router } from 'expo-router';
-import {
-  CaretRightIcon,
-  CloudIcon,
-  DeviceMobileIcon,
-  FolderPlusIcon,
-  TrashSimpleIcon,
-} from 'phosphor-react-native';
+import { ChevronRight, Cloud, Smartphone, FolderPlus, Trash2 } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -127,7 +121,7 @@ export default function FolderSelectScreen() {
           {opening ? (
             <ActivityIndicator size={20} color={themeColors.inverse} />
           ) : (
-            <FolderPlusIcon size={20} color={themeColors.inverse} />
+            <FolderPlus size={20} color={themeColors.inverse} />
           )}
           <Text className="font-sans-semibold text-lg text-theme-canvas">
             <LocalizedText>Select a folder</LocalizedText>
@@ -155,13 +149,9 @@ export default function FolderSelectScreen() {
                   <View className="flex-1 flex-row items-center gap-3.5 mr-2">
                     <View className="h-11 w-11 items-center justify-center rounded-xl bg-theme-raised/70">
                       {isLocal ? (
-                        <DeviceMobileIcon
-                          size={22}
-                          color={themeColors.secondary}
-                          weight="duotone"
-                        />
+                        <Smartphone size={22} color={themeColors.secondary} strokeWidth={2} />
                       ) : (
-                        <CloudIcon size={22} color={themeColors.secondary} weight="duotone" />
+                        <Cloud size={22} color={themeColors.secondary} strokeWidth={2} />
                       )}
                     </View>
 
@@ -198,10 +188,10 @@ export default function FolderSelectScreen() {
                         className="p-2 rounded-lg active:opacity-60"
                         accessibilityLabel={translate('Remove from recent folders')}
                       >
-                        <TrashSimpleIcon size={18} color={themeColors.muted} />
+                        <Trash2 size={18} color={themeColors.muted} />
                       </Pressable>
                     )}
-                    <CaretRightIcon size={18} color={themeColors.muted} />
+                    <ChevronRight size={18} color={themeColors.muted} />
                   </View>
                 </Pressable>
               );

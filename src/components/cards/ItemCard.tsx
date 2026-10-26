@@ -1,5 +1,5 @@
 import { useAppTheme } from '@/lib/theme';
-import { CheckIcon } from 'phosphor-react-native';
+import { Check } from 'lucide-react-native';
 import { memo } from 'react';
 import { Pressable, View } from 'react-native';
 
@@ -289,7 +289,7 @@ export const ItemCard = memo(function ItemCard({
                 : 'bg-theme-surface border-2 border-theme-foreground'
             }`}
           >
-            {isSelected && <CheckIcon size={12} color="#FFFFFF" weight="bold" />}
+            {isSelected && <Check size={12} color="#FFFFFF" strokeWidth={2.5} />}
           </View>
         </View>
       )}

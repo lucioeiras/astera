@@ -1,7 +1,7 @@
 import { useAppTheme } from '@/lib/theme';
 import { BlurView } from 'expo-blur';
 import { router, useFocusEffect } from 'expo-router';
-import { CheckIcon, XIcon } from 'phosphor-react-native';
+import { Check, X } from 'lucide-react-native';
 import { memo, useCallback, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
@@ -301,7 +301,7 @@ export default function ReviewScreen() {
               <Button
                 accessibilityLabel={translate('Delete card')}
                 variant="secondary"
-                icon={<XIcon size={20} weight="bold" />}
+                icon={<X size={20} strokeWidth={2.5} />}
                 text={translate('Delete')}
                 onPress={() => beginSwipe('delete')}
                 disabled={!currentItem || !!outgoingItem}
@@ -309,7 +309,7 @@ export default function ReviewScreen() {
               <Button
                 accessibilityLabel={translate('Keep card')}
                 variant="secondary"
-                icon={<CheckIcon size={20} weight="bold" />}
+                icon={<Check size={20} strokeWidth={2.5} />}
                 text={translate('Keep')}
                 onPress={() => beginSwipe('keep')}
                 disabled={!currentItem || !!outgoingItem}

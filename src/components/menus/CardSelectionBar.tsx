@@ -1,5 +1,5 @@
 import { useAppTheme } from '@/lib/theme';
-import { FolderPlusIcon, PushPinSimpleIcon, TrashSimpleIcon, XIcon } from 'phosphor-react-native';
+import { FolderPlus, Pin, Trash2, X } from 'lucide-react-native';
 import { Text, View } from 'react-native';
 
 import { Button } from '@/components/Button';
@@ -49,14 +49,14 @@ export function CardSelectionBar({
           <Button
             accessibilityLabel={translate('Cancel selection')}
             variant="secondary"
-            icon={<XIcon size={24} color={themeColors.foreground} weight="bold" />}
+            icon={<X size={24} color={themeColors.foreground} strokeWidth={2.5} />}
             onPress={onCancel}
           />
           <Button
             accessibilityLabel={translate('Add selected cards to folder')}
             variant="secondary"
             contentColor={themeColors.foreground}
-            icon={<FolderPlusIcon size={24} color={themeColors.foreground} weight="bold" />}
+            icon={<FolderPlus size={24} color={themeColors.foreground} strokeWidth={2.5} />}
             disabled={!hasSelection}
             onPress={onAddToFolder}
           />
@@ -65,7 +65,7 @@ export function CardSelectionBar({
               accessibilityLabel={pinActionLabel}
               variant="secondary"
               contentColor={themeColors.foreground}
-              icon={<PushPinSimpleIcon size={24} color={themeColors.foreground} weight="bold" />}
+              icon={<Pin size={24} color={themeColors.foreground} strokeWidth={2.5} />}
               disabled={!hasSelection}
               onPress={onTogglePin}
             />
@@ -76,10 +76,10 @@ export function CardSelectionBar({
             shadowColor="#EF4444"
             shadowOpacity={hasSelection ? 0.2 : 0}
             icon={
-              <TrashSimpleIcon
+              <Trash2
                 size={24}
                 color={hasSelection ? '#EF4444' : themeColors.secondary}
-                weight="bold"
+                strokeWidth={2.5}
               />
             }
             disabled={!hasSelection}

@@ -1,27 +1,27 @@
 import { ThemedModal as Modal } from '@/components/ThemedModal';
 import { useAppTheme, type ThemeColors } from '@/lib/theme';
 import {
-  ArrowLeftIcon,
-  BookmarkSimpleIcon,
-  CheckIcon,
-  EyeIcon,
-  InfoIcon,
-  ListBulletsIcon,
-  ListChecksIcon,
-  ListNumbersIcon,
-  MusicNotesIcon,
-  NotePencilIcon,
-  ParagraphIcon,
-  QuotesIcon,
-  TextBIcon,
-  TextHOneIcon,
-  TextHThreeIcon,
-  TextHTwoIcon,
-  TextItalicIcon,
-  TextTIcon,
-  UserIcon,
-  XIcon,
-} from 'phosphor-react-native';
+  ArrowLeft,
+  Bookmark,
+  Check,
+  Eye,
+  Info,
+  List,
+  ListChecks,
+  ListOrdered,
+  Music2,
+  SquarePen,
+  Pilcrow,
+  Quote,
+  Bold,
+  Heading1,
+  Heading3,
+  Heading2,
+  Italic,
+  Type,
+  User,
+  X,
+} from 'lucide-react-native';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -334,42 +334,42 @@ export function NewNoteModal({
     {
       label: 'H1',
       type: 'heading-1',
-      icon: <TextHOneIcon size={20} color={themeColors.foreground} weight="bold" />,
+      icon: <Heading1 size={20} color={themeColors.foreground} strokeWidth={2.5} />,
     },
     {
       label: 'H2',
       type: 'heading-2',
-      icon: <TextHTwoIcon size={20} color={themeColors.foreground} weight="bold" />,
+      icon: <Heading2 size={20} color={themeColors.foreground} strokeWidth={2.5} />,
     },
     {
       label: 'H3',
       type: 'heading-3',
-      icon: <TextHThreeIcon size={20} color={themeColors.foreground} weight="bold" />,
+      icon: <Heading3 size={20} color={themeColors.foreground} strokeWidth={2.5} />,
     },
     {
       label: 'Text',
       type: 'paragraph',
-      icon: <ParagraphIcon size={20} color={themeColors.foreground} weight="bold" />,
+      icon: <Pilcrow size={20} color={themeColors.foreground} strokeWidth={2.5} />,
     },
     {
       label: 'Bullet list',
       type: 'bullet',
-      icon: <ListBulletsIcon size={20} color={themeColors.foreground} weight="bold" />,
+      icon: <List size={20} color={themeColors.foreground} strokeWidth={2.5} />,
     },
     {
       label: 'Numbered list',
       type: 'numbered',
-      icon: <ListNumbersIcon size={20} color={themeColors.foreground} weight="bold" />,
+      icon: <ListOrdered size={20} color={themeColors.foreground} strokeWidth={2.5} />,
     },
     {
       label: 'To-do list',
       type: 'todo',
-      icon: <ListChecksIcon size={20} color={themeColors.foreground} weight="bold" />,
+      icon: <ListChecks size={20} color={themeColors.foreground} strokeWidth={2.5} />,
     },
     {
       label: 'Quote',
       type: 'quote',
-      icon: <QuotesIcon size={20} color={themeColors.foreground} weight="bold" />,
+      icon: <Quote size={20} color={themeColors.foreground} strokeWidth={2.5} />,
     },
   ];
 
@@ -453,7 +453,7 @@ export function NewNoteModal({
 
               {/* Title Section */}
               <View className="flex-row items-center gap-4 py-5 px-8 border-t border-b border-theme-raised">
-                <TextTIcon size={20} color={themeColors.body} />
+                <Type size={20} color={themeColors.body} />
 
                 <TextInput
                   ref={titleInputRef}
@@ -473,7 +473,7 @@ export function NewNoteModal({
 
               {isQuote && (
                 <View className="flex-row items-center gap-4 py-5 px-8 border-b border-theme-raised">
-                  <UserIcon size={20} color={themeColors.body} />
+                  <User size={20} color={themeColors.body} />
                   <TextInput
                     ref={authorInputRef}
                     value={author}
@@ -525,7 +525,7 @@ export function NewNoteModal({
                   accessibilityLabel={translate('Add source')}
                   className="flex-row items-center gap-4 py-5 px-8 border-b border-theme-raised"
                 >
-                  <BookmarkSimpleIcon size={20} color={themeColors.foreground} />
+                  <Bookmark size={20} color={themeColors.foreground} />
                   <Text className="font-sans-semibold text-lg text-theme-foreground">
                     <LocalizedText>Add source</LocalizedText>
                   </Text>
@@ -546,19 +546,19 @@ export function NewNoteModal({
                   accessibilityLabel={translate('Cancel formatting')}
                   onPress={() => setIsFormattingOpen(false)}
                   disabled={saving}
-                  icon={<ArrowLeftIcon size={20} color={themeColors.foreground} weight="bold" />}
+                  icon={<ArrowLeft size={20} color={themeColors.foreground} strokeWidth={2.5} />}
                 />
                 <Button
                   accessibilityLabel={translate('Bold')}
                   onPress={() => applyFormatting('bold')}
                   disabled={saving}
-                  icon={<TextBIcon size={20} color={themeColors.foreground} weight="bold" />}
+                  icon={<Bold size={20} color={themeColors.foreground} strokeWidth={2.5} />}
                 />
                 <Button
                   accessibilityLabel={translate('Italic')}
                   onPress={() => applyFormatting('italic')}
                   disabled={saving}
-                  icon={<TextItalicIcon size={20} color={themeColors.foreground} weight="bold" />}
+                  icon={<Italic size={20} color={themeColors.foreground} strokeWidth={2.5} />}
                 />
                 {formattingControls.map(({ label, type, icon }) => (
                   <Button
@@ -576,14 +576,14 @@ export function NewNoteModal({
                   accessibilityLabel={translate('Cancel')}
                   onPress={handleClose}
                   disabled={saving}
-                  icon={<XIcon size={20} color={themeColors.foreground} weight="bold" />}
+                  icon={<X size={20} color={themeColors.foreground} strokeWidth={2.5} />}
                 />
                 {view === 'editor' && !isPreviewingMarkdown && (
                   <Button
                     accessibilityLabel={translate('Open text formatting')}
                     onPress={() => setIsFormattingOpen(true)}
                     disabled={saving}
-                    icon={<TextTIcon size={20} color={themeColors.foreground} weight="bold" />}
+                    icon={<Type size={20} color={themeColors.foreground} strokeWidth={2.5} />}
                   />
                 )}
                 {view === 'editor' && (
@@ -592,10 +592,10 @@ export function NewNoteModal({
                     onPress={() => setIsLyricsPickerOpen(true)}
                     disabled={saving}
                     icon={
-                      <MusicNotesIcon
+                      <Music2
                         size={20}
                         color={lyricsSong ? '#3B82F6' : themeColors.foreground}
-                        weight="bold"
+                        strokeWidth={2.5}
                       />
                     }
                   />
@@ -610,9 +610,9 @@ export function NewNoteModal({
                     disabled={saving}
                     icon={
                       isPreviewingMarkdown ? (
-                        <NotePencilIcon size={20} color={themeColors.foreground} weight="bold" />
+                        <SquarePen size={20} color={themeColors.foreground} strokeWidth={2.5} />
                       ) : (
-                        <EyeIcon size={20} color={themeColors.foreground} weight="bold" />
+                        <Eye size={20} color={themeColors.foreground} strokeWidth={2.5} />
                       )
                     }
                   />
@@ -622,10 +622,10 @@ export function NewNoteModal({
                     accessibilityLabel={translate('Note info')}
                     onPress={handleSwitchToInfo}
                     icon={
-                      <InfoIcon
+                      <Info
                         size={20}
                         color={hasInfo ? '#3B82F6' : themeColors.foreground}
-                        weight="bold"
+                        strokeWidth={2.5}
                       />
                     }
                   />
@@ -633,7 +633,7 @@ export function NewNoteModal({
                   <Button
                     accessibilityLabel={translate('Back to note editor')}
                     onPress={handleSwitchToEditor}
-                    icon={<NotePencilIcon size={20} color={themeColors.foreground} weight="bold" />}
+                    icon={<SquarePen size={20} color={themeColors.foreground} strokeWidth={2.5} />}
                     text={translate('Note')}
                   />
                 )}
@@ -647,10 +647,10 @@ export function NewNoteModal({
                     saving ? (
                       <ActivityIndicator size={20} color={themeColors.inverse} />
                     ) : (
-                      <CheckIcon
+                      <Check
                         size={20}
                         color={canSave ? themeColors.inverse : themeColors.muted}
-                        weight="bold"
+                        strokeWidth={2.5}
                       />
                     )
                   }

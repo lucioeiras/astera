@@ -7,13 +7,7 @@ import * as MediaLibrary from 'expo-media-library';
 import { router } from 'expo-router';
 import * as Sharing from 'expo-sharing';
 import * as WebBrowser from 'expo-web-browser';
-import {
-  BookmarkSimpleIcon,
-  NotePencilIcon,
-  SubtitlesIcon,
-  TextTIcon,
-  UserIcon,
-} from 'phosphor-react-native';
+import { Bookmark, SquarePen, Captions, Type, User } from 'lucide-react-native';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -937,7 +931,7 @@ export function CardDetailContent({
 
             {/* Title Section */}
             <View className="flex-row items-center gap-4 py-5 px-6 border-b border-theme-raised">
-              <TextTIcon size={20} color={themeColors.body} />
+              <Type size={20} color={themeColors.body} />
               <TextInput
                 value={title}
                 onChangeText={setTitle}
@@ -968,7 +962,7 @@ export function CardDetailContent({
                 className="py-6 px-6 border-b border-theme-raised gap-4"
               >
                 <View className="flex-row items-center gap-2">
-                  <SubtitlesIcon size={14} color={themeColors.heading} />
+                  <Captions size={14} color={themeColors.heading} />
                   <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
                     <LocalizedText>Transcript</LocalizedText>
                   </Text>
@@ -1018,7 +1012,7 @@ export function CardDetailContent({
 
             {item.type === 'quote' && (
               <View className="flex-row items-center gap-4 py-5 px-6 border-b border-theme-raised">
-                <UserIcon size={20} color={themeColors.heading} />
+                <User size={20} color={themeColors.heading} />
 
                 <TextInput
                   value={quoteAuthor}
@@ -1105,7 +1099,7 @@ export function CardDetailContent({
             {isNoteOrQuote && linkedContent && isLinkableItem(linkedContent) && (
               <View className="py-6 px-6 border-b border-theme-raised gap-5">
                 <View className="flex-row items-center gap-2">
-                  <BookmarkSimpleIcon size={16} color={themeColors.heading} />
+                  <Bookmark size={16} color={themeColors.heading} />
                   <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
                     <LocalizedText>Source</LocalizedText>
                   </Text>
@@ -1128,7 +1122,7 @@ export function CardDetailContent({
             {isLinkableItem(item) && linkedNotes.length > 0 && (
               <View className="py-6 px-6 border-b border-theme-raised gap-4">
                 <View className="flex-row items-center gap-2">
-                  <NotePencilIcon size={15} color={themeColors.heading} />
+                  <SquarePen size={15} color={themeColors.heading} />
                   <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
                     <LocalizedText>Linked notes (</LocalizedText>
                     {linkedNotes.length}
@@ -1234,7 +1228,7 @@ export function CardDetailContent({
               className="py-6 px-6 border-b border-theme-raised gap-4"
             >
               <View className="flex-row items-center gap-2">
-                <NotePencilIcon size={14} color={themeColors.heading} weight="bold" />
+                <SquarePen size={14} color={themeColors.heading} strokeWidth={2.5} />
                 <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
                   <LocalizedText>Notes</LocalizedText>
                 </Text>

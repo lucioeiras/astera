@@ -1,11 +1,9 @@
 import { useAppTheme } from '@/lib/theme';
 import { Image as ExpoImage } from 'expo-image';
-import { DiscIcon } from 'phosphor-react-native';
+import { Disc, Quote } from 'lucide-react-native';
 import { useCallback, useRef, useState } from 'react';
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 
-import QuoteClose from '@/../assets/quote-close.svg';
-import QuoteOpen from '@/../assets/quote-open.svg';
 import { ItemCard } from '@/components/cards/ItemCard';
 import { MarkdownNote } from '@/components/card/MarkdownNote';
 import { VinylRecord } from '@/components/effects/VinylRecord';
@@ -108,7 +106,7 @@ export function CardPreview({
                 />
               ) : (
                 <View className="w-full h-full items-center justify-center bg-theme-raised">
-                  <DiscIcon size={64} color={themeColors.muted} weight="duotone" />
+                  <Disc size={64} color={themeColors.muted} strokeWidth={2} />
                 </View>
               )}
 
@@ -146,7 +144,7 @@ export function CardPreview({
         <View className="w-full max-w-lg px-2">
           {item.type === 'quote' ? (
             <View className="items-center w-full py-2">
-              <QuoteOpen width={18} height={18} />
+              <Quote size={18} color="#71717B" style={{ transform: [{ rotate: '180deg' }] }} />
               <TextInput
                 value={editedText}
                 onChangeText={onTextChange}
@@ -159,7 +157,7 @@ export function CardPreview({
                 style={{ backgroundColor: 'transparent' }}
                 underlineColorAndroid="transparent"
               />
-              <QuoteClose width={18} height={18} />
+              <Quote size={18} color="#71717B" />
             </View>
           ) : (
             <MarkdownNote markdown={editedText} onMarkdownChange={onTextChange} />

@@ -11,14 +11,7 @@ import {
 import { File } from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
 import { router, useLocalSearchParams } from 'expo-router';
-import {
-  FilePdfIcon,
-  FilmSlateIcon,
-  ImagesSquareIcon,
-  LinkIcon,
-  MicrophoneIcon,
-  NotePencilIcon,
-} from 'phosphor-react-native';
+import { FileText, Clapperboard, Images, LinkIcon, Mic, SquarePen } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -319,7 +312,7 @@ export default function AddElementScreen() {
               onPress={handleOpenNote}
               className="p-6 max-w-80 justify-between h-40 w-40 bg-theme-foreground active:opacity-80 rounded-xl"
             >
-              <NotePencilIcon size={24} color={themeColors.inverse} weight="duotone" />
+              <SquarePen size={24} color={themeColors.inverse} strokeWidth={2} />
               <Text className="font-sans-semibold text-lg text-theme-canvas">
                 <LocalizedText>A thought to remember</LocalizedText>
               </Text>
@@ -329,7 +322,7 @@ export default function AddElementScreen() {
               onPress={handleOpenLink}
               className="p-6 max-w-80 justify-between h-40 w-40 bg-theme-surface active:opacity-80 rounded-xl"
             >
-              <LinkIcon size={24} color={themeColors.foreground} weight="duotone" />
+              <LinkIcon size={24} color={themeColors.foreground} strokeWidth={2} />
               <Text className="font-sans-semibold text-lg text-theme-foreground">
                 <LocalizedText>Found on the web</LocalizedText>
               </Text>
@@ -346,7 +339,7 @@ export default function AddElementScreen() {
                 {isPickingPdf ? (
                   <ActivityIndicator size={24} color={themeColors.foreground} />
                 ) : (
-                  <FilePdfIcon size={24} color={themeColors.foreground} weight="duotone" />
+                  <FileText size={24} color={themeColors.foreground} strokeWidth={2} />
                 )}
               </AddActionIconSlot>
               <Text className="font-sans-semibold text-lg text-theme-foreground">
@@ -363,7 +356,7 @@ export default function AddElementScreen() {
                 {isPickingMedia ? (
                   <ActivityIndicator size={24} color={themeColors.foreground} />
                 ) : (
-                  <ImagesSquareIcon size={24} color={themeColors.foreground} weight="duotone" />
+                  <Images size={24} color={themeColors.foreground} strokeWidth={2} />
                 )}
               </AddActionIconSlot>
               <Text className="font-sans-semibold text-lg text-theme-foreground">
@@ -384,10 +377,10 @@ export default function AddElementScreen() {
                 {isRecordingAction ? (
                   <ActivityIndicator size={24} color={themeColors.foreground} />
                 ) : (
-                  <MicrophoneIcon
+                  <Mic
                     size={24}
                     color={recorderState.isRecording ? themeColors.red : themeColors.foreground}
-                    weight="duotone"
+                    strokeWidth={2}
                   />
                 )}
               </AddActionIconSlot>
@@ -410,7 +403,7 @@ export default function AddElementScreen() {
               accessibilityRole="button"
               className="p-6 max-w-80 justify-between h-40 w-40 bg-theme-surface active:opacity-80 rounded-xl"
             >
-              <FilmSlateIcon size={24} color={themeColors.foreground} weight="duotone" />
+              <Clapperboard size={24} color={themeColors.foreground} strokeWidth={2} />
               <Text className="font-sans-semibold text-lg text-theme-foreground">
                 <LocalizedText>To watch, read, or play</LocalizedText>
               </Text>

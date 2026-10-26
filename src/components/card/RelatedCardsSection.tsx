@@ -4,7 +4,7 @@ import { Text, View } from 'react-native';
 
 import { getRelatedItems } from '@/lib/library/related';
 import type { LibraryItem } from '@/lib/library/types';
-import { ShareNetworkIcon } from 'phosphor-react-native';
+import { Share2 } from 'lucide-react-native';
 import { RelatedCardTile } from './RelatedCardTile';
 import { LocalizedText } from '@/components/LocalizedText';
 
@@ -16,7 +16,7 @@ export function RelatedCardsSection({ item, items }: { item: LibraryItem; items:
   return (
     <View className="py-6 border-t border-theme-raised gap-6" testID="related-cards-section">
       <View className="flex-row items-center gap-2 px-6">
-        <ShareNetworkIcon size={16} color={themeColors.heading} />
+        <Share2 size={16} color={themeColors.heading} />
         <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
           <LocalizedText>Related cards (</LocalizedText>
           {related.length}

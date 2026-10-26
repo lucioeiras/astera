@@ -2,14 +2,7 @@ import { ThemedModal as Modal } from '@/components/ThemedModal';
 import { useAppTheme, type ThemeColors } from '@/lib/theme';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
-import {
-  BookOpenIcon,
-  GameControllerIcon,
-  SquaresFourIcon,
-  CaretLeftIcon,
-  CaretRightIcon,
-  XIcon,
-} from 'phosphor-react-native';
+import { BookOpen, Gamepad2, LayoutGrid, ChevronLeft, ChevronRight, X } from 'lucide-react-native';
 import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -69,9 +62,9 @@ export function LogActivityCalendarSection({ items }: { items: LibraryItem[] }) 
       >
         {(
           [
-            { type: null, label: 'All', icon: SquaresFourIcon },
-            { type: 'book', label: 'Books', icon: BookOpenIcon },
-            { type: 'game', label: 'Games', icon: GameControllerIcon },
+            { type: null, label: 'All', icon: LayoutGrid },
+            { type: 'book', label: 'Books', icon: BookOpen },
+            { type: 'game', label: 'Games', icon: Gamepad2 },
           ] as const
         ).map(({ type, label, icon }) => (
           <TypeFilterButton
@@ -114,7 +107,7 @@ export function LogActivityCalendarSection({ items }: { items: LibraryItem[] }) 
             setMonth(new Date(year, month.getMonth() - 1, 1));
           }}
         >
-          <CaretLeftIcon size={18} color={themeColors.body} />
+          <ChevronLeft size={18} color={themeColors.body} />
         </Pressable>
         <Text className="font-sans-semibold text-base text-theme-foreground">
           {month.toLocaleDateString(locale, { month: 'long', year: 'numeric' })}
@@ -128,7 +121,7 @@ export function LogActivityCalendarSection({ items }: { items: LibraryItem[] }) 
             setMonth(new Date(year, month.getMonth() + 1, 1));
           }}
         >
-          <CaretRightIcon size={18} color={themeColors.body} />
+          <ChevronRight size={18} color={themeColors.body} />
         </Pressable>
       </View>
       <View className="mb-2 flex-row">
@@ -248,7 +241,7 @@ export function LogActivityCalendarSection({ items }: { items: LibraryItem[] }) 
               <Button
                 accessibilityLabel={translate('Close activity cards')}
                 size="small"
-                icon={<XIcon size={20} color={themeColors.foreground} />}
+                icon={<X size={20} color={themeColors.foreground} />}
                 onPress={() => setSelectedDay(null)}
               />
             </View>
@@ -301,9 +294,9 @@ function ActivityCover({ book }: { book: LoggedItem }) {
   ) : (
     <View className="flex-1 items-center justify-center rounded-sm bg-theme-raised">
       {book.type === 'book' ? (
-        <BookOpenIcon size={14} color={themeColors.secondary} />
+        <BookOpen size={14} color={themeColors.secondary} />
       ) : (
-        <GameControllerIcon size={14} color={themeColors.secondary} />
+        <Gamepad2 size={14} color={themeColors.secondary} />
       )}
     </View>
   );

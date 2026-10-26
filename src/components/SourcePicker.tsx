@@ -1,7 +1,7 @@
 import { ThemedModal as Modal } from '@/components/ThemedModal';
 import { useAppTheme } from '@/lib/theme';
 import { FlashList, type ListRenderItemInfo } from '@shopify/flash-list';
-import { MagnifyingGlassIcon, XIcon } from 'phosphor-react-native';
+import { Search, X } from 'lucide-react-native';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -80,7 +80,7 @@ export function SourcePicker({ visible, items, selectedId, onSelect, onClose }: 
 
         {/* Search Bar */}
         <View className="flex-row items-center gap-4 border-t border-b border-theme-raised px-6 mb-4 py-5">
-          <MagnifyingGlassIcon size={20} color={themeColors.heading} />
+          <Search size={20} color={themeColors.heading} />
           <TextInput
             ref={inputRef}
             value={query}
@@ -99,7 +99,7 @@ export function SourcePicker({ visible, items, selectedId, onSelect, onClose }: 
               className="p-1.5 rounded-full bg-theme-raised items-center justify-center active:opacity-70"
               accessibilityLabel={translate('Clear search')}
             >
-              <XIcon size={12} color={themeColors.heading} weight="bold" />
+              <X size={12} color={themeColors.heading} strokeWidth={2.5} />
             </Pressable>
           )}
         </View>
@@ -136,7 +136,7 @@ export function SourcePicker({ visible, items, selectedId, onSelect, onClose }: 
             <View className="flex-row items-center gap-2">
               <Button
                 accessibilityLabel={translate('Cancel related cards')}
-                icon={<XIcon size={24} color={themeColors.foreground} weight="bold" />}
+                icon={<X size={24} color={themeColors.foreground} strokeWidth={2.5} />}
                 onPress={onClose}
                 text={translate('Cancel')}
               />

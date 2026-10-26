@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { ThemedModal as Modal } from '@/components/ThemedModal';
 import { useAppTheme, type ThemeColors } from '@/lib/theme';
-import { CheckIcon, FolderIcon, XIcon } from 'phosphor-react-native';
+import { Check, Folder, X } from 'lucide-react-native';
 import { useState } from 'react';
 import {
   ActivityIndicator,
@@ -88,7 +88,7 @@ export function NewFolderModal({ visible, onClose, onCreate }: NewFolderModalPro
             </View>
 
             <View className="flex-row items-center gap-4 py-5 px-8 border-t border-b border-theme-raised">
-              <FolderIcon size={20} color={themeColors.body} />
+              <Folder size={20} color={themeColors.body} />
               <TextInput
                 autoFocus
                 value={name}
@@ -111,7 +111,7 @@ export function NewFolderModal({ visible, onClose, onCreate }: NewFolderModalPro
                   accessibilityRole="button"
                   accessibilityLabel={translate('Clear folder name')}
                 >
-                  <XIcon size={12} color={themeColors.heading} weight="bold" />
+                  <X size={12} color={themeColors.heading} strokeWidth={2.5} />
                 </Pressable>
               )}
             </View>
@@ -122,7 +122,7 @@ export function NewFolderModal({ visible, onClose, onCreate }: NewFolderModalPro
               accessibilityLabel={translate('Cancel')}
               onPress={handleClose}
               disabled={saving}
-              icon={<XIcon size={20} color={themeColors.foreground} weight="bold" />}
+              icon={<X size={20} color={themeColors.foreground} strokeWidth={2.5} />}
               text={translate('Cancel')}
             />
 
@@ -135,10 +135,10 @@ export function NewFolderModal({ visible, onClose, onCreate }: NewFolderModalPro
                 saving ? (
                   <ActivityIndicator size={20} color={themeColors.inverse} />
                 ) : (
-                  <CheckIcon
+                  <Check
                     size={20}
                     color={canSave ? themeColors.inverse : themeColors.muted}
-                    weight="bold"
+                    strokeWidth={2.5}
                   />
                 )
               }

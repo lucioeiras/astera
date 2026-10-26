@@ -1,6 +1,6 @@
 import { useAppTheme } from '@/lib/theme';
 import { router, useFocusEffect } from 'expo-router';
-import { PlusIcon } from 'phosphor-react-native';
+import { Plus } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -53,7 +53,7 @@ export default function OrganizeScreen() {
           <Button
             accessibilityLabel={translate('Create folder')}
             variant="secondary"
-            icon={<PlusIcon size={20} color={themeColors.foreground} weight="bold" />}
+            icon={<Plus size={20} color={themeColors.foreground} strokeWidth={2.5} />}
             text={translate('New Folder')}
             disabled={saved?.source !== sourceId}
             onPress={() => setIsCreateOpen(true)}
