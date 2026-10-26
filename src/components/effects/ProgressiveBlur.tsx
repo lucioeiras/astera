@@ -1,3 +1,4 @@
+import { useAppTheme } from '@/lib/theme';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { BlurView, type BlurTint } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -18,11 +19,11 @@ type ProgressiveBlurProps = {
   intensity?: number;
   /**
    * Blur tint.
-   * @default 'dark'
+   * @default Current theme
    */
   tint?: BlurTint;
   /**
-   * Maximum opacity of the soft dark gradient layer at the bottom (0 to 1).
+   * Maximum opacity of the theme gradient layer at the bottom (0 to 1).
    * Increases contrast and readability of tab bar items over bright content.
    * @default 0.85
    */
@@ -38,11 +39,12 @@ type ProgressiveBlurProps = {
 export function ProgressiveBlur({
   height = 160,
   intensity = 100,
-  tint = 'dark',
+  tint,
   darkLayerOpacity = 0.85,
   includeBottomInset = true,
   style,
 }: ProgressiveBlurProps): ReactElement {
+  const { colors, isDark } = useAppTheme();
   const insets = useSafeAreaInsets();
   const totalHeight = height + (includeBottomInset ? insets.bottom : 0);
   const maxDarkOpacity = Math.min(Math.max(darkLayerOpacity, 0), 1);
@@ -70,17 +72,33 @@ export function ProgressiveBlur({
           />
         }
       >
-        <BlurView intensity={intensity} tint={tint} style={StyleSheet.absoluteFill} />
+        <BlurView
+          intensity={intensity}
+          tint={tint ?? (isDark ? 'dark' : 'light')}
+          style={StyleSheet.absoluteFill}
+        />
       </MaskedView>
 
       {maxDarkOpacity > 0 && (
         <LinearGradient
           colors={[
-            'rgba(9, 9, 11, 0)',
-            `rgba(9, 9, 11, ${(maxDarkOpacity * 0.4).toFixed(3)})`,
-            `rgba(9, 9, 11, ${(maxDarkOpacity * 0.6).toFixed(3)})`,
-            `rgba(9, 9, 11, ${(maxDarkOpacity * 0.8).toFixed(3)})`,
-            `rgba(9, 9, 11, ${maxDarkOpacity.toFixed(3)})`,
+            colors.canvas + '00',
+            colors.canvas +
+              Math.round(maxDarkOpacity * 0.4 * 255)
+                .toString(16)
+                .padStart(2, '0'),
+            colors.canvas +
+              Math.round(maxDarkOpacity * 0.6 * 255)
+                .toString(16)
+                .padStart(2, '0'),
+            colors.canvas +
+              Math.round(maxDarkOpacity * 0.8 * 255)
+                .toString(16)
+                .padStart(2, '0'),
+            colors.canvas +
+              Math.round(maxDarkOpacity * 255)
+                .toString(16)
+                .padStart(2, '0'),
           ]}
           locations={[0, 0.35, 0.65, 0.85, 1]}
           style={StyleSheet.absoluteFill}

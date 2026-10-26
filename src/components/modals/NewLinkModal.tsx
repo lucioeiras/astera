@@ -1,10 +1,11 @@
+import { ThemedModal as Modal } from '@/components/ThemedModal';
+import { useAppTheme, type ThemeColors } from '@/lib/theme';
 import { CheckIcon, LinkIcon, NotePencilIcon, TextTIcon, XIcon } from 'phosphor-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
   KeyboardAvoidingView,
-  Modal,
   Platform,
   Pressable,
   ScrollView,
@@ -42,6 +43,8 @@ export function NewLinkModal({
   onDismiss,
   onSaved,
 }: NewLinkModalProps) {
+  const { colors: themeColors } = useAppTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
   useLocalization();
   const { addLinkItem, getTags } = useLibrary();
   const insets = useSafeAreaInsets();
@@ -291,10 +294,10 @@ export function NewLinkModal({
           >
             {/* Header */}
             <View className="gap-3 p-8 pt-0">
-              <Text className="font-sans-semibold text-2xl text-white">
+              <Text className="font-sans-semibold text-2xl text-theme-foreground">
                 <LocalizedText>Add a new link</LocalizedText>
               </Text>
-              <Text className="font-sans text-base text-zinc-400 leading-relaxed">
+              <Text className="font-sans text-base text-theme-secondary leading-relaxed">
                 <LocalizedText>
                   You can add any link, but YouTube videos, Tweets, Reddit posts, and articles have
                   special views.
@@ -303,15 +306,15 @@ export function NewLinkModal({
             </View>
 
             {/* Link Input */}
-            <View className="flex-row items-center gap-4 py-5 px-8 border-t border-b border-zinc-800">
-              <LinkIcon size={20} color="#D4D4D8" />
+            <View className="flex-row items-center gap-4 py-5 px-8 border-t border-b border-theme-raised">
+              <LinkIcon size={20} color={themeColors.body} />
 
               <TextInput
                 ref={inputRef}
                 value={url}
                 onChangeText={handleUrlChange}
                 placeholder={translate('Type or paste your link here')}
-                placeholderTextColor="#71717A"
+                placeholderTextColor={themeColors.muted}
                 autoCapitalize="none"
                 autoCorrect={false}
                 keyboardType="url"
@@ -319,7 +322,7 @@ export function NewLinkModal({
                 onSubmitEditing={() => {
                   titleInputRef.current?.focus();
                 }}
-                className="flex-1 font-sans text-xl text-white leading-tight"
+                className="flex-1 font-sans text-xl text-theme-foreground leading-tight"
                 style={styles.borderlessInput}
                 underlineColorAndroid="transparent"
                 clearButtonMode="never"
@@ -329,29 +332,29 @@ export function NewLinkModal({
                 <Pressable
                   onPress={handleClearUrl}
                   hitSlop={10}
-                  className="p-1.5 rounded-full bg-zinc-800 items-center justify-center active:opacity-70"
+                  className="p-1.5 rounded-full bg-theme-raised items-center justify-center active:opacity-70"
                   accessibilityRole="button"
                   accessibilityLabel={translate('Clear link')}
                 >
-                  <XIcon size={12} color="#E4E4E7" weight="bold" />
+                  <XIcon size={12} color={themeColors.heading} weight="bold" />
                 </Pressable>
               )}
             </View>
 
             {/* Title Input */}
-            <View className="flex-row items-center gap-4 py-5 px-8 border-b border-zinc-800">
-              <TextTIcon size={20} color="#D4D4D8" />
+            <View className="flex-row items-center gap-4 py-5 px-8 border-b border-theme-raised">
+              <TextTIcon size={20} color={themeColors.body} />
               <TextInput
                 ref={titleInputRef}
                 value={title}
                 onChangeText={setTitle}
                 placeholder={translate('Add a title here...')}
-                placeholderTextColor="#71717A"
+                placeholderTextColor={themeColors.muted}
                 returnKeyType="next"
                 onSubmitEditing={() => {
                   tagsInputRef.current?.focus();
                 }}
-                className="flex-1 font-sans text-xl text-white leading-tight"
+                className="flex-1 font-sans text-xl text-theme-foreground leading-tight"
                 style={styles.borderlessInput}
                 underlineColorAndroid="transparent"
               />
@@ -377,8 +380,8 @@ export function NewLinkModal({
             {/* Notes section */}
             <View className="flex-1 py-6 px-8 gap-4">
               <View className="flex-row items-center gap-2">
-                <NotePencilIcon size={14} color="#E4E4E7" weight="bold" />
-                <Text className="font-sans-semibold text-sm tracking-wider uppercase text-zinc-200">
+                <NotePencilIcon size={14} color={themeColors.heading} weight="bold" />
+                <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
                   <LocalizedText>Note</LocalizedText>
                 </Text>
               </View>
@@ -389,10 +392,10 @@ export function NewLinkModal({
                   value={note}
                   onChangeText={setNote}
                   placeholder={translate('Add a text note to this link...')}
-                  placeholderTextColor="#71717A"
+                  placeholderTextColor={themeColors.muted}
                   multiline
                   textAlignVertical="top"
-                  className="w-full font-sans text-base text-zinc-100 leading-relaxed min-h-[96px]"
+                  className="w-full font-sans text-base text-theme-bright leading-relaxed min-h-[96px]"
                   style={styles.borderlessInput}
                   underlineColorAndroid="transparent"
                 />
@@ -406,7 +409,7 @@ export function NewLinkModal({
               accessibilityLabel={translate('Cancel')}
               onPress={handleClose}
               disabled={saving}
-              icon={<XIcon size={20} color="#FFFFFF" weight="bold" />}
+              icon={<XIcon size={20} color={themeColors.foreground} weight="bold" />}
               text={translate('Cancel')}
             />
             <Button
@@ -416,9 +419,13 @@ export function NewLinkModal({
               disabled={!canSave}
               icon={
                 saving ? (
-                  <ActivityIndicator size={20} color="#000000" />
+                  <ActivityIndicator size={20} color={themeColors.inverse} />
                 ) : (
-                  <CheckIcon size={20} color={canSave ? '#000000' : '#71717A'} weight="bold" />
+                  <CheckIcon
+                    size={20}
+                    color={canSave ? themeColors.inverse : themeColors.muted}
+                    weight="bold"
+                  />
                 )
               }
               text={translate('Save link')}
@@ -430,19 +437,20 @@ export function NewLinkModal({
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    width: '100%',
-    backgroundColor: '#09090B',
-  },
-  scrollContent: {
-    flexGrow: 1,
-    paddingVertical: 20,
-    paddingBottom: 40,
-  },
-  borderlessInput: {
-    borderWidth: 0,
-    backgroundColor: 'transparent',
-  },
-});
+const createStyles = (themeColors: ThemeColors) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      width: '100%',
+      backgroundColor: themeColors.canvas,
+    },
+    scrollContent: {
+      flexGrow: 1,
+      paddingVertical: 20,
+      paddingBottom: 40,
+    },
+    borderlessInput: {
+      borderWidth: 0,
+      backgroundColor: 'transparent',
+    },
+  });

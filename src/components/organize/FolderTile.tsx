@@ -7,7 +7,8 @@ import {
 } from 'phosphor-react-native';
 import { Pressable, Text, View } from 'react-native';
 
-import { getItemArtwork, STATUS_FOLDERS } from '@/lib/library/organize';
+import { useAppTheme } from '@/lib/theme';
+import { getItemArtwork } from '@/lib/library/organize';
 import type { LibraryItem, MediaProgressStatus } from '@/lib/library/types';
 import { translate, useLocalization } from '@/lib/i18n';
 
@@ -41,6 +42,7 @@ export function FolderTile({
   onLongPress,
   onToggleHighlight,
 }: Props) {
+  const { colors } = useAppTheme();
   useLocalization();
   const displayTitle = status ? translate(title) : title;
   const artwork = items
@@ -49,7 +51,12 @@ export function FolderTile({
     .slice(0, 3);
   const StatusIcon = status ? statusIcons[status] : null;
   const titleColor = status
-    ? STATUS_FOLDERS.find((folder) => folder.key === status)?.color
+    ? {
+        want: colors.blueSoft,
+        'in-progress': colors.yellow,
+        completed: colors.green,
+        abandoned: colors.secondary,
+      }[status]
     : undefined;
 
   return (
@@ -69,17 +76,17 @@ export function FolderTile({
         className="w-full items-center"
       >
         <View className="mb-[9px] h-[136px] w-[136px]">
-          <View className="absolute left-4 top-2 h-[116px] w-[104px] -translate-x-[9px] translate-y-[5px] -rotate-[11deg] overflow-hidden rounded-[10px] border border-zinc-800">
+          <View className="absolute left-4 top-2 h-[116px] w-[104px] -translate-x-[9px] translate-y-[5px] -rotate-[11deg] overflow-hidden rounded-[10px] border border-theme-raised">
             {artwork[2] && (
               <Image source={{ uri: artwork[2] }} contentFit="cover" className="h-full w-full" />
             )}
           </View>
-          <View className="absolute left-4 top-2 h-[116px] w-[104px] translate-x-[9px] translate-y-[3px] rotate-[9deg] overflow-hidden rounded-[10px] border border-zinc-800 bg-zinc-900/50">
+          <View className="absolute left-4 top-2 h-[116px] w-[104px] translate-x-[9px] translate-y-[3px] rotate-[9deg] overflow-hidden rounded-[10px] border border-theme-raised bg-theme-surface/50">
             {artwork[1] && (
               <Image source={{ uri: artwork[1] }} contentFit="cover" className="h-full w-full" />
             )}
           </View>
-          <View className="absolute left-4 top-2 h-[116px] w-[104px] overflow-hidden rounded-[10px] border border-zinc-800 bg-zinc-900">
+          <View className="absolute left-4 top-2 h-[116px] w-[104px] overflow-hidden rounded-[10px] border border-theme-raised bg-theme-surface">
             {artwork[0] && (
               <Image source={{ uri: artwork[0] }} contentFit="cover" className="h-full w-full" />
             )}
@@ -89,7 +96,7 @@ export function FolderTile({
         <View className="max-w-full flex-row items-center justify-center gap-1.5 px-2">
           {StatusIcon && <StatusIcon size={15} color={titleColor} weight="bold" />}
           <Text
-            className="flex-shrink text-center font-sans-semibold text-sm text-zinc-50"
+            className="flex-shrink text-center font-sans-semibold text-sm text-theme-foreground"
             style={titleColor ? { color: titleColor } : undefined}
             numberOfLines={2}
           >
@@ -97,7 +104,7 @@ export function FolderTile({
           </Text>
         </View>
 
-        <Text className="mt-[3px] font-sans text-xs text-zinc-400">
+        <Text className="mt-[3px] font-sans text-xs text-theme-secondary">
           {translate('%{count} %{cardLabel}', {
             count: items.length,
             cardLabel: translate(items.length === 1 ? 'card' : 'cards'),
@@ -112,10 +119,10 @@ export function FolderTile({
           accessibilityLabel={
             highlighted ? `Remove ${title} from highlights` : `Highlight ${title}`
           }
-          className={`absolute right-10 top-[104px] h-9 w-9 items-center justify-center rounded-full p-1.5 ${highlighted ? ' bg-white' : ' bg-zinc-800'}`}
+          className={`absolute right-10 top-[104px] h-9 w-9 items-center justify-center rounded-full p-1.5 ${highlighted ? ' bg-theme-foreground' : ' bg-theme-raised'}`}
         >
           <Text
-            className={`text-xl leading-tight ${highlighted ? 'text-zinc-950' : 'text-zinc-400'}`}
+            className={`text-xl leading-tight ${highlighted ? 'text-theme-canvas' : 'text-theme-secondary'}`}
           >
             {highlighted ? '★' : '☆'}
           </Text>

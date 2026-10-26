@@ -1,3 +1,4 @@
+import { useAppTheme, type ThemeColors } from '@/lib/theme';
 import { Image as ExpoImage } from 'expo-image';
 import {
   CheckIcon,
@@ -56,6 +57,8 @@ export function NewTvShowModal({
   onDismiss,
   onSaved,
 }: NewTvShowModalProps) {
+  const { colors: themeColors } = useAppTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
   useLocalization();
   const { addTvShowItem, getTags } = useLibrary();
   const insets = useSafeAreaInsets();
@@ -141,7 +144,11 @@ export function NewTvShowModal({
     try {
       const details = await getTmdbTvShowDetails(result.id);
       setSelectedShow(details);
-      const generated = generateAutoTags({ title: details.name, type: 'tvshow', existingTags });
+      const generated = generateAutoTags({
+        title: details.name,
+        type: 'tvshow',
+        existingTags,
+      });
       const genreTags = (details.genres ?? []).map((genre) =>
         genre.name
           .toLowerCase()
@@ -258,10 +265,10 @@ export function NewTvShowModal({
             showsVerticalScrollIndicator={false}
           >
             <View className="gap-3 p-8 pt-0">
-              <Text className="font-sans-semibold text-2xl text-white">
+              <Text className="font-sans-semibold text-2xl text-theme-foreground">
                 <LocalizedText>Add TV show</LocalizedText>
               </Text>
-              <Text className="font-sans text-base text-zinc-400 leading-relaxed">
+              <Text className="font-sans text-base text-theme-secondary leading-relaxed">
                 <LocalizedText>
                   Search TV shows from The Movie Database (TMDB) to add to your library.
                 </LocalizedText>
@@ -269,23 +276,28 @@ export function NewTvShowModal({
             </View>
 
             {selectedShow ? (
-              <View className="px-8 py-6 border-t border-b border-zinc-800 flex-row items-center gap-6">
-                <View className="w-16 h-24 rounded-lg bg-zinc-800 overflow-hidden items-center justify-center">
+              <View className="px-8 py-6 border-t border-b border-theme-raised flex-row items-center gap-6">
+                <View className="w-16 h-24 rounded-lg bg-theme-raised overflow-hidden items-center justify-center">
                   {selectedShow.poster_path ? (
                     <ExpoImage
-                      source={{ uri: getPosterUrl(selectedShow.poster_path, 'w185') }}
+                      source={{
+                        uri: getPosterUrl(selectedShow.poster_path, 'w185'),
+                      }}
                       className="w-full h-full"
                       contentFit="cover"
                     />
                   ) : (
-                    <TelevisionIcon size={24} color="#71717A" />
+                    <TelevisionIcon size={24} color={themeColors.muted} />
                   )}
                 </View>
                 <View className="flex-1 gap-2">
-                  <Text className="font-sans-semibold text-lg text-white" numberOfLines={1}>
+                  <Text
+                    className="font-sans-semibold text-lg text-theme-foreground"
+                    numberOfLines={1}
+                  >
                     {selectedShow.name}
                   </Text>
-                  <Text className="font-sans text-base text-zinc-400" numberOfLines={1}>
+                  <Text className="font-sans text-base text-theme-secondary" numberOfLines={1}>
                     {getReleaseYear(selectedShow.first_air_date) || '—'}
                     {` • ${translate('%{count} seasons', {
                       count: selectedShow.seasons?.length ?? 0,
@@ -295,42 +307,42 @@ export function NewTvShowModal({
                 <Pressable
                   onPress={() => setSelectedShow(null)}
                   hitSlop={10}
-                  className="p-2 rounded-full bg-zinc-800 active:opacity-70"
+                  className="p-2 rounded-full bg-theme-raised active:opacity-70"
                   accessibilityRole="button"
                   accessibilityLabel={translate('Change TV show')}
                 >
-                  <XIcon size={16} color="#E4E4E7" weight="bold" />
+                  <XIcon size={16} color={themeColors.heading} weight="bold" />
                 </Pressable>
               </View>
             ) : (
-              <View className="flex-row items-center gap-4 py-5 px-8 border-t border-b border-zinc-800">
-                <MagnifyingGlassIcon size={20} color="#D4D4D8" />
+              <View className="flex-row items-center gap-4 py-5 px-8 border-t border-b border-theme-raised">
+                <MagnifyingGlassIcon size={20} color={themeColors.body} />
                 <TextInput
                   ref={searchInputRef}
                   value={query}
                   onChangeText={handleQueryChange}
                   placeholder={translate('Search TV show title...')}
-                  placeholderTextColor="#71717A"
+                  placeholderTextColor={themeColors.muted}
                   autoCapitalize="none"
                   autoCorrect={false}
                   returnKeyType="search"
-                  className="flex-1 font-sans text-xl text-white leading-tight"
+                  className="flex-1 font-sans text-xl text-theme-foreground leading-tight"
                   style={styles.borderlessInput}
                   underlineColorAndroid="transparent"
                   clearButtonMode="never"
                   accessibilityLabel={translate('Search TV shows')}
                 />
                 {isSearching ? (
-                  <ActivityIndicator size={16} color="#A1A1AA" />
+                  <ActivityIndicator size={16} color={themeColors.secondary} />
                 ) : query.length > 0 ? (
                   <Pressable
                     onPress={handleClearSearch}
                     hitSlop={10}
-                    className="p-1.5 rounded-full bg-zinc-800 items-center justify-center active:opacity-70"
+                    className="p-1.5 rounded-full bg-theme-raised items-center justify-center active:opacity-70"
                     accessibilityRole="button"
                     accessibilityLabel={translate('Clear search')}
                   >
-                    <XIcon size={12} color="#E4E4E7" weight="bold" />
+                    <XIcon size={12} color={themeColors.heading} weight="bold" />
                   </Pressable>
                 ) : null}
               </View>
@@ -340,8 +352,8 @@ export function NewTvShowModal({
               <View className="w-full">
                 {isLoadingDetails && (
                   <View className="py-8 items-center justify-center">
-                    <ActivityIndicator size={24} color="#60A5FA" />
-                    <Text className="font-sans text-sm text-zinc-400 mt-2">
+                    <ActivityIndicator size={24} color={themeColors.blue} />
+                    <Text className="font-sans text-sm text-theme-secondary mt-2">
                       <LocalizedText>Loading TV show details...</LocalizedText>
                     </Text>
                   </View>
@@ -351,28 +363,30 @@ export function NewTvShowModal({
                     <Pressable
                       key={result.id}
                       onPress={() => handleSelectShow(result)}
-                      className="flex-row items-center gap-5 px-8 py-5 border-b border-zinc-900 active:bg-zinc-900"
+                      className="flex-row items-center gap-5 px-8 py-5 border-b border-theme-surface active:bg-theme-surface"
                       accessibilityRole="button"
                     >
-                      <View className="w-12 h-16 rounded-md bg-zinc-800 overflow-hidden items-center justify-center">
+                      <View className="w-12 h-16 rounded-md bg-theme-raised overflow-hidden items-center justify-center">
                         {result.poster_path ? (
                           <ExpoImage
-                            source={{ uri: getPosterUrl(result.poster_path, 'w185') }}
+                            source={{
+                              uri: getPosterUrl(result.poster_path, 'w185'),
+                            }}
                             className="w-full h-full"
                             contentFit="cover"
                           />
                         ) : (
-                          <TelevisionIcon size={24} color="#71717A" />
+                          <TelevisionIcon size={24} color={themeColors.muted} />
                         )}
                       </View>
                       <View className="flex-1 gap-1.5">
                         <Text
-                          className="font-sans-medium text-base text-zinc-100"
+                          className="font-sans-medium text-base text-theme-bright"
                           numberOfLines={1}
                         >
                           {result.name}
                         </Text>
-                        <Text className="font-sans text-sm text-zinc-400" numberOfLines={1}>
+                        <Text className="font-sans text-sm text-theme-secondary" numberOfLines={1}>
                           {getReleaseYear(result.first_air_date) || '—'}
                           {result.original_name && result.original_name !== result.name
                             ? ` • ${result.original_name}`
@@ -386,8 +400,8 @@ export function NewTvShowModal({
                   query.trim().length > 1 &&
                   !isSearching && (
                     <View className="py-12 items-center justify-center">
-                      <TelevisionIcon size={32} color="#52525B" weight="duotone" />
-                      <Text className="font-sans text-sm text-zinc-500 mt-3">
+                      <TelevisionIcon size={32} color={themeColors.strongBorder} weight="duotone" />
+                      <Text className="font-sans text-sm text-theme-muted mt-3">
                         <LocalizedText>No TV shows found for "</LocalizedText>
                         {query}
                         <LocalizedText>"</LocalizedText>
@@ -412,10 +426,10 @@ export function NewTvShowModal({
                     autoTagsRef.current = autoTagsRef.current.filter((tag) => tag !== removed);
                   }}
                 />
-                <View className="py-6 px-8 gap-4 border-t border-zinc-800">
+                <View className="py-6 px-8 gap-4 border-t border-theme-raised">
                   <View className="flex-row items-center gap-2">
-                    <NotePencilIcon size={14} color="#E4E4E7" weight="bold" />
-                    <Text className="font-sans-semibold text-sm tracking-wider uppercase text-zinc-200">
+                    <NotePencilIcon size={14} color={themeColors.heading} weight="bold" />
+                    <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
                       <LocalizedText>Note</LocalizedText>
                     </Text>
                   </View>
@@ -427,10 +441,10 @@ export function NewTvShowModal({
                       placeholder={translate(
                         'Add personal thoughts or notes about this TV show...'
                       )}
-                      placeholderTextColor="#71717A"
+                      placeholderTextColor={themeColors.muted}
                       multiline
                       textAlignVertical="top"
-                      className="w-full font-sans text-base text-zinc-100 leading-relaxed min-h-[96px]"
+                      className="w-full font-sans text-base text-theme-bright leading-relaxed min-h-[96px]"
                       style={styles.borderlessInput}
                       underlineColorAndroid="transparent"
                     />
@@ -444,7 +458,7 @@ export function NewTvShowModal({
               accessibilityLabel={translate('Cancel')}
               onPress={handleClose}
               disabled={saving}
-              icon={<XIcon size={20} color="#FFFFFF" weight="bold" />}
+              icon={<XIcon size={20} color={themeColors.foreground} weight="bold" />}
               text={translate('Cancel')}
             />
             <Button
@@ -454,9 +468,13 @@ export function NewTvShowModal({
               disabled={!canSave}
               icon={
                 saving ? (
-                  <ActivityIndicator size={20} color="#000000" />
+                  <ActivityIndicator size={20} color={themeColors.inverse} />
                 ) : (
-                  <CheckIcon size={20} color={canSave ? '#000000' : '#71717A'} weight="bold" />
+                  <CheckIcon
+                    size={20}
+                    color={canSave ? themeColors.inverse : themeColors.muted}
+                    weight="bold"
+                  />
                 )
               }
               text={translate('Save TV show')}
@@ -468,19 +486,20 @@ export function NewTvShowModal({
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    width: '100%',
-    backgroundColor: '#09090B',
-  },
-  scrollContent: {
-    flexGrow: 1,
-    paddingVertical: 20,
-    paddingBottom: 120,
-  },
-  borderlessInput: {
-    borderWidth: 0,
-    backgroundColor: 'transparent',
-  },
-});
+const createStyles = (themeColors: ThemeColors) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      width: '100%',
+      backgroundColor: themeColors.canvas,
+    },
+    scrollContent: {
+      flexGrow: 1,
+      paddingVertical: 20,
+      paddingBottom: 120,
+    },
+    borderlessInput: {
+      borderWidth: 0,
+      backgroundColor: 'transparent',
+    },
+  });

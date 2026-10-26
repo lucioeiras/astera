@@ -1,3 +1,4 @@
+import { useAppTheme } from '@/lib/theme';
 import { decodeHTML } from 'entities';
 import { Image as ExpoImage } from 'expo-image';
 import { cssInterop } from 'nativewind';
@@ -25,6 +26,7 @@ export function TvShowCard({
   hideTitleAndAuthor = false,
   onAspectRatioChange,
 }: TvShowCardProps) {
+  const { colors: themeColors } = useAppTheme();
   const [aspectRatio, setAspectRatio] = useState(2 / 3);
   const cleanTitle = title ? decodeHTML(title) : 'Untitled TV Show';
 
@@ -34,8 +36,12 @@ export function TvShowCard({
         <ExpoImage
           source={{ uri: poster }}
           accessibilityLabel={`${cleanTitle} poster`}
-          className="w-full bg-zinc-900 rounded-md"
-          style={{ width: '100%', aspectRatio, backgroundColor: '#18181b' }}
+          className="w-full bg-theme-surface rounded-md"
+          style={{
+            width: '100%',
+            aspectRatio,
+            backgroundColor: themeColors.surface,
+          }}
           contentFit="cover"
           transition={200}
           onLoad={(event) => {
@@ -51,7 +57,7 @@ export function TvShowCard({
       {!hideTitleAndAuthor && (
         <View className="w-full gap-1.5 my-3 items-center">
           <Text
-            className="flex-1 font-sans-medium text-sm leading-[1.3] text-zinc-50 text-center"
+            className="flex-1 font-sans-medium text-sm leading-[1.3] text-theme-foreground text-center"
             numberOfLines={2}
           >
             {cleanTitle}

@@ -1,3 +1,4 @@
+import { useAppTheme } from '@/lib/theme';
 import {
   ArrowSquareOutIcon,
   BookOpenTextIcon,
@@ -6,6 +7,7 @@ import {
   DownloadSimpleIcon,
   ExportIcon,
   FilePdfIcon,
+  GameControllerIcon,
   FolderPlusIcon,
   ShareNetworkIcon,
   MicrophoneIcon,
@@ -13,6 +15,7 @@ import {
   TrashSimpleIcon,
 } from 'phosphor-react-native';
 
+import { translate, useLocalization } from '@/lib/i18n';
 import { ActionFooter } from '@/components/ActionFooter';
 import { Button } from '@/components/Button';
 
@@ -34,6 +37,8 @@ type CardActionsProps = {
   onTranscribeAudio?: () => void;
   isTranscribingAudio?: boolean;
   showTranscribeAudio?: boolean;
+  showLogPlay?: boolean;
+  onLogPlay?: () => void;
   showLogReading?: boolean;
   onLogReading?: () => void;
 };
@@ -54,9 +59,13 @@ export function CardActions({
   onTranscribeAudio,
   isTranscribingAudio = false,
   showTranscribeAudio,
+  showLogPlay = false,
+  onLogPlay,
   showLogReading = false,
   onLogReading,
 }: CardActionsProps) {
+  const { colors: themeColors } = useAppTheme();
+  useLocalization();
   const isLink = ['link', 'article', 'youtube', 'tiktok', 'tweet', 'reddit'].includes(item.type);
   const isImage = item.type === 'image';
   const isPdf = item.type === 'pdf';
@@ -71,19 +80,19 @@ export function CardActions({
     },
     {
       accessibilityLabel: 'Add to folder',
-      icon: <FolderPlusIcon size={24} color="#FFFFFF" />,
+      icon: <FolderPlusIcon size={24} color={themeColors.foreground} />,
       onPress: onAddToFolder,
     },
     {
       accessibilityLabel: 'Manage related cards',
-      icon: <ShareNetworkIcon size={24} color="#FFFFFF" />,
+      icon: <ShareNetworkIcon size={24} color={themeColors.foreground} />,
       onPress: onManageRelatedCards,
     },
     ...(isNoteOrQuote
       ? [
           {
             accessibilityLabel: 'Add source',
-            icon: <BookmarkSimpleIcon size={24} color="#FFFFFF" />,
+            icon: <BookmarkSimpleIcon size={24} color={themeColors.foreground} />,
             onPress: onAddSource,
           },
         ]
@@ -92,7 +101,7 @@ export function CardActions({
       ? [
           {
             accessibilityLabel: 'Download image',
-            icon: <DownloadSimpleIcon size={24} color="#FFFFFF" />,
+            icon: <DownloadSimpleIcon size={24} color={themeColors.foreground} />,
             onPress: onDownload,
           },
         ]
@@ -104,7 +113,7 @@ export function CardActions({
       ? [
           {
             accessibilityLabel: 'Transcribe audio',
-            icon: <MicrophoneIcon size={24} color="#FFFFFF" />,
+            icon: <MicrophoneIcon size={24} color={themeColors.foreground} />,
             onPress: onTranscribeAudio,
           },
         ]
@@ -113,13 +122,12 @@ export function CardActions({
     isNoteOrQuote ||
     isPdf ||
     isMusic ||
-    isGame ||
     item.type === 'movie' ||
     item.type === 'tvshow'
       ? [
           {
             accessibilityLabel: 'Copy',
-            icon: <CopyIcon size={24} color="#FFFFFF" />,
+            icon: <CopyIcon size={24} color={themeColors.foreground} />,
             onPress: onCopy,
           },
         ]
@@ -128,7 +136,7 @@ export function CardActions({
       ? [
           {
             accessibilityLabel: 'Edit note',
-            icon: <NotePencilIcon size={24} color="#FFFFFF" />,
+            icon: <NotePencilIcon size={24} color={themeColors.foreground} />,
             onPress: onEditNote,
           },
         ]
@@ -144,7 +152,7 @@ export function CardActions({
       ? [
           {
             accessibilityLabel: 'Share',
-            icon: <ExportIcon size={24} color="#FFFFFF" />,
+            icon: <ExportIcon size={24} color={themeColors.foreground} />,
             onPress: onShare,
           },
         ]
@@ -158,7 +166,7 @@ export function CardActions({
       ? [
           {
             accessibilityLabel: 'Open link',
-            icon: <ArrowSquareOutIcon size={24} color="#FFFFFF" />,
+            icon: <ArrowSquareOutIcon size={24} color={themeColors.foreground} />,
             onPress: onOpenLink,
           },
         ]
@@ -167,8 +175,19 @@ export function CardActions({
       ? [
           {
             accessibilityLabel: 'Open PDF',
-            icon: <FilePdfIcon size={24} color="#FFFFFF" weight="duotone" />,
+            icon: <FilePdfIcon size={24} color={themeColors.foreground} weight="duotone" />,
             onPress: onOpenPdf,
+          },
+        ]
+      : []),
+    ...(showLogPlay && onLogPlay
+      ? [
+          {
+            accessibilityLabel: translate('Log play'),
+            icon: <GameControllerIcon size={24} weight="duotone" />,
+            onPress: onLogPlay,
+            variant: 'primary' as const,
+            backgroundColor: themeColors.amber,
           },
         ]
       : []),
@@ -179,7 +198,7 @@ export function CardActions({
             icon: <BookOpenTextIcon size={24} weight="duotone" />,
             onPress: onLogReading,
             variant: 'primary' as const,
-            backgroundColor: '#FBBF24',
+            backgroundColor: themeColors.amber,
           },
         ]
       : []),

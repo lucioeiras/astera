@@ -1,3 +1,4 @@
+import { useAppTheme } from '@/lib/theme';
 import { router } from 'expo-router';
 import {
   ArrowLeftIcon,
@@ -16,6 +17,7 @@ import { useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { AppearanceSettings } from '@/components/AppearanceSettings';
 import { Button } from '@/components/Button';
 import { LocalizedText } from '@/components/LocalizedText';
 import { useLibrary } from '@/hooks/useLibrary';
@@ -25,6 +27,7 @@ import { useLocalization } from '@/lib/i18n';
 import { languageOptions } from '@/lib/i18n/catalog';
 
 export default function SettingsScreen() {
+  const { colors: themeColors } = useAppTheme();
   const { preference, setPreference, t } = useLocalization();
   const { currentFolderName, pickAndOpenFolder } = useLibrary();
   const [openingFolder, setOpeningFolder] = useState(false);
@@ -69,7 +72,11 @@ export default function SettingsScreen() {
       ),
       [
         { text: t('Cancel'), style: 'cancel' },
-        { text: t('Remove'), style: 'destructive', onPress: () => void deleteModel() },
+        {
+          text: t('Remove'),
+          style: 'destructive',
+          onPress: () => void deleteModel(),
+        },
       ]
     );
   };
@@ -77,12 +84,16 @@ export default function SettingsScreen() {
   const handleConfirmDeleteWhisper = () => {
     Alert.alert(t('Remove transcription model'), t('Remove Whisper from this device?'), [
       { text: t('Cancel'), style: 'cancel' },
-      { text: t('Remove'), style: 'destructive', onPress: () => void whisper.deleteModel() },
+      {
+        text: t('Remove'),
+        style: 'destructive',
+        onPress: () => void whisper.deleteModel(),
+      },
     ]);
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-zinc-950" edges={['top', 'left', 'right']}>
+    <SafeAreaView className="flex-1 bg-theme-canvas" edges={['top', 'left', 'right']}>
       <ScrollView
         className="flex-1"
         contentContainerClassName="pt-5 pb-40"
@@ -92,22 +103,24 @@ export default function SettingsScreen() {
           <Button
             accessibilityLabel={t('Back to profile')}
             size="small"
-            icon={<ArrowLeftIcon size={20} color="#FFFFFF" />}
+            icon={<ArrowLeftIcon size={20} color={themeColors.foreground} />}
             onPress={() => (router.canGoBack() ? router.back() : router.replace('/profile'))}
           />
-          <Text className="font-sans-semibold text-2xl text-white">
+          <Text className="font-sans-semibold text-2xl text-theme-foreground">
             <LocalizedText>Settings</LocalizedText>
           </Text>
         </View>
 
-        <View className="gap-4 border-b border-zinc-800 px-8 pb-6">
+        <AppearanceSettings />
+
+        <View className="gap-4 border-b border-theme-raised px-8 pb-6">
           <View className="flex-row items-center gap-2">
-            <TranslateIcon size={16} color="#E4E4E7" />
-            <Text className="font-sans-semibold text-sm uppercase tracking-wider text-zinc-200">
+            <TranslateIcon size={16} color={themeColors.heading} />
+            <Text className="font-sans-semibold text-sm uppercase tracking-wider text-theme-heading">
               <LocalizedText>Language</LocalizedText>
             </Text>
           </View>
-          <Text className="font-sans text-base leading-relaxed text-zinc-400">
+          <Text className="font-sans text-base leading-relaxed text-theme-secondary">
             <LocalizedText>Choose the language used by Anything.</LocalizedText>
           </Text>
           <View
@@ -125,26 +138,26 @@ export default function SettingsScreen() {
                 className="min-h-12 flex-row items-center gap-3 py-2 active:opacity-70"
               >
                 <View
-                  className={`h-5 w-5 items-center justify-center rounded-full border ${preference === option.value ? 'border-blue-400' : 'border-zinc-600'}`}
+                  className={`h-5 w-5 items-center justify-center rounded-full border ${preference === option.value ? 'border-blue-400' : 'border-theme-strongBorder'}`}
                 >
                   {preference === option.value && (
                     <View className="h-2.5 w-2.5 rounded-full bg-blue-400" />
                   )}
                 </View>
-                <Text className="font-sans text-base text-white">{t(option.label)}</Text>
+                <Text className="font-sans text-base text-theme-foreground">{t(option.label)}</Text>
               </Pressable>
             ))}
           </View>
         </View>
 
-        <View className="gap-4 border-t border-b border-zinc-800 px-8 py-6">
+        <View className="gap-4 border-t border-b border-theme-raised px-8 py-6">
           <View className="flex-row items-center gap-2">
-            <CircleIcon size={16} color="#E4E4E7" />
-            <Text className="font-sans-semibold text-sm uppercase tracking-wider text-zinc-200">
+            <CircleIcon size={16} color={themeColors.heading} />
+            <Text className="font-sans-semibold text-sm uppercase tracking-wider text-theme-heading">
               <LocalizedText>Current space</LocalizedText>
             </Text>
           </View>
-          <Text className="font-sans text-base leading-relaxed text-zinc-400">
+          <Text className="font-sans text-base leading-relaxed text-theme-secondary">
             <LocalizedText>
               Cards, tags and local files in this space are kept together in one folder.
             </LocalizedText>
@@ -156,46 +169,55 @@ export default function SettingsScreen() {
             accessibilityLabel={t('Change space folder. Current space: %{name}', {
               name: currentFolderName,
             })}
-            accessibilityState={{ disabled: openingFolder, busy: openingFolder }}
+            accessibilityState={{
+              disabled: openingFolder,
+              busy: openingFolder,
+            }}
             className="min-h-14 flex-row items-center gap-4 py-2 active:opacity-70"
           >
-            <FolderOpenIcon size={20} color="#D4D4D8" />
+            <FolderOpenIcon size={20} color={themeColors.body} />
             <View className="flex-1">
-              <Text className="font-sans text-xs text-zinc-500">
+              <Text className="font-sans text-xs text-theme-muted">
                 <LocalizedText>Folder</LocalizedText>
               </Text>
-              <Text className="font-sans text-xl leading-tight text-white" numberOfLines={2}>
+              <Text
+                className="font-sans text-xl leading-tight text-theme-foreground"
+                numberOfLines={2}
+              >
                 {currentFolderName}
               </Text>
             </View>
             {openingFolder ? (
-              <ActivityIndicator size="small" color="#71717A" />
+              <ActivityIndicator size="small" color={themeColors.muted} />
             ) : (
-              <ArrowsLeftRightIcon size={20} color="#A1A1AA" />
+              <ArrowsLeftRightIcon size={20} color={themeColors.secondary} />
             )}
           </Pressable>
         </View>
 
         <View className="gap-4 px-8 pt-6">
           <View className="flex-row items-center gap-2">
-            <TextTIcon size={16} color="#E4E4E7" />
-            <Text className="font-sans-semibold text-sm uppercase tracking-wider text-zinc-200">
+            <TextTIcon size={16} color={themeColors.heading} />
+            <Text className="font-sans-semibold text-sm uppercase tracking-wider text-theme-heading">
               <LocalizedText>AI Model for Texts</LocalizedText>
             </Text>
           </View>
-          <Text className="font-sans text-base leading-relaxed text-zinc-400">
+          <Text className="font-sans text-base leading-relaxed text-theme-secondary">
             <LocalizedText>
               Generate tags for notes and links with a model that runs on your device. After
               download, it works offline.
             </LocalizedText>
           </Text>
           <View className="flex-row items-center gap-3 py-2">
-            <CpuIcon size={20} color="#D4D4D8" />
+            <CpuIcon size={20} color={themeColors.body} />
             <View className="min-w-0 flex-1">
-              <Text className="font-sans text-lg leading-tight text-white" numberOfLines={2}>
+              <Text
+                className="font-sans text-lg leading-tight text-theme-foreground"
+                numberOfLines={2}
+              >
                 {modelConfig.displayName}
               </Text>
-              <Text className="mt-1 font-sans text-sm text-zinc-500">
+              <Text className="mt-1 font-sans text-sm text-theme-muted">
                 {modelConfig.sizeFormatted} <LocalizedText>download</LocalizedText>
               </Text>
             </View>
@@ -209,11 +231,11 @@ export default function SettingsScreen() {
               }
               icon={
                 isDownloading ? (
-                  <XCircleIcon size={20} color="#E4E4E7" />
+                  <XCircleIcon size={20} color={themeColors.heading} />
                 ) : isDownloaded ? (
-                  <TrashSimpleIcon size={20} color="#F87171" />
+                  <TrashSimpleIcon size={20} color={themeColors.red} />
                 ) : (
-                  <DownloadSimpleIcon size={20} color="#60A5FA" weight="bold" />
+                  <DownloadSimpleIcon size={20} color={themeColors.blue} weight="bold" />
                 )
               }
               onPress={
@@ -221,7 +243,13 @@ export default function SettingsScreen() {
               }
               size="small"
               variant="secondary"
-              contentColor={isDownloaded ? '#F87171' : isDownloading ? '#E4E4E7' : '#60A5FA'}
+              contentColor={
+                isDownloaded
+                  ? themeColors.red
+                  : isDownloading
+                    ? themeColors.heading
+                    : themeColors.blue
+              }
             />
           </View>
         </View>
@@ -232,46 +260,49 @@ export default function SettingsScreen() {
               <View className="flex-row items-center justify-between">
                 <View className="flex-row items-center gap-3">
                   <ActivityIndicator size="small" color="#3B82F6" />
-                  <Text className="font-sans-semibold text-sm text-zinc-200">
+                  <Text className="font-sans-semibold text-sm text-theme-heading">
                     <LocalizedText>Downloading model</LocalizedText>
                   </Text>
                 </View>
-                <Text className="font-sans-semibold text-sm text-blue-500">
+                <Text className="font-sans-semibold text-sm text-theme-blue">
                   {percentage}
                   <LocalizedText>%</LocalizedText>
                 </Text>
               </View>
-              <View className="h-1.5 overflow-hidden rounded-full bg-zinc-800">
+              <View className="h-1.5 overflow-hidden rounded-full bg-theme-raised">
                 <View className="h-full bg-blue-500" style={{ width: `${percentage}%` }} />
               </View>
-              <Text className="font-sans text-xs text-zinc-500">
+              <Text className="font-sans text-xs text-theme-muted">
                 {formattedWrittenMb} <LocalizedText>/ </LocalizedText>
                 {formattedTotalMb} <LocalizedText>MB</LocalizedText>
               </Text>
             </View>
           )}
-          {error && <Text className="mt-4 font-sans text-sm text-red-400">{error}</Text>}
+          {error && <Text className="mt-4 font-sans text-sm text-theme-red">{error}</Text>}
         </View>
 
-        <View className="gap-4 border-t border-zinc-800 px-8 pt-6">
+        <View className="gap-4 border-t border-theme-raised px-8 pt-6">
           <View className="flex-row items-center gap-2">
-            <MicrophoneIcon size={16} color="#E4E4E7" />
-            <Text className="font-sans-semibold text-sm uppercase tracking-wider text-zinc-200">
+            <MicrophoneIcon size={16} color={themeColors.heading} />
+            <Text className="font-sans-semibold text-sm uppercase tracking-wider text-theme-heading">
               <LocalizedText>AI Model for Audio</LocalizedText>
             </Text>
           </View>
-          <Text className="font-sans text-base leading-relaxed text-zinc-400">
+          <Text className="font-sans text-base leading-relaxed text-theme-secondary">
             <LocalizedText>
               Transcribe recorded audios on this device. The model works offline after download.
             </LocalizedText>
           </Text>
           <View className="flex-row items-center gap-3 py-2">
-            <CpuIcon size={20} color="#D4D4D8" />
+            <CpuIcon size={20} color={themeColors.body} />
             <View className="min-w-0 flex-1">
-              <Text className="font-sans text-lg leading-tight text-white" numberOfLines={2}>
+              <Text
+                className="font-sans text-lg leading-tight text-theme-foreground"
+                numberOfLines={2}
+              >
                 {whisper.modelConfig.displayName}
               </Text>
-              <Text className="mt-1 font-sans text-sm text-zinc-500">
+              <Text className="mt-1 font-sans text-sm text-theme-muted">
                 {whisper.modelConfig.sizeFormatted} <LocalizedText>download</LocalizedText>
               </Text>
             </View>
@@ -285,11 +316,11 @@ export default function SettingsScreen() {
               }
               icon={
                 whisper.isDownloading ? (
-                  <XCircleIcon size={20} color="#E4E4E7" />
+                  <XCircleIcon size={20} color={themeColors.heading} />
                 ) : whisper.isDownloaded ? (
-                  <TrashSimpleIcon size={20} color="#F87171" />
+                  <TrashSimpleIcon size={20} color={themeColors.red} />
                 ) : (
-                  <DownloadSimpleIcon size={20} color="#60A5FA" weight="bold" />
+                  <DownloadSimpleIcon size={20} color={themeColors.blue} weight="bold" />
                 )
               }
               onPress={
@@ -302,7 +333,11 @@ export default function SettingsScreen() {
               size="small"
               variant="secondary"
               contentColor={
-                whisper.isDownloaded ? '#F87171' : whisper.isDownloading ? '#E4E4E7' : '#60A5FA'
+                whisper.isDownloaded
+                  ? themeColors.red
+                  : whisper.isDownloading
+                    ? themeColors.heading
+                    : themeColors.blue
               }
             />
           </View>
@@ -313,26 +348,26 @@ export default function SettingsScreen() {
               <View className="flex-row items-center justify-between">
                 <View className="flex-row items-center gap-3">
                   <ActivityIndicator size="small" color="#3B82F6" />
-                  <Text className="font-sans-semibold text-sm text-zinc-200">
+                  <Text className="font-sans-semibold text-sm text-theme-heading">
                     <LocalizedText>Downloading model</LocalizedText>
                   </Text>
                 </View>
-                <Text className="font-sans-semibold text-sm text-blue-500">
+                <Text className="font-sans-semibold text-sm text-theme-blue">
                   {whisperPercentage}
                   <LocalizedText>%</LocalizedText>
                 </Text>
               </View>
-              <View className="h-1.5 overflow-hidden rounded-full bg-zinc-800">
+              <View className="h-1.5 overflow-hidden rounded-full bg-theme-raised">
                 <View className="h-full bg-blue-500" style={{ width: `${whisperPercentage}%` }} />
               </View>
-              <Text className="font-sans text-xs text-zinc-500">
+              <Text className="font-sans text-xs text-theme-muted">
                 {whisperWrittenMb} <LocalizedText>/ </LocalizedText>
                 {whisperTotalMb} <LocalizedText>MB</LocalizedText>
               </Text>
             </View>
           )}
           {whisper.error && (
-            <Text className="mt-4 font-sans text-sm text-red-400">{whisper.error}</Text>
+            <Text className="mt-4 font-sans text-sm text-theme-red">{whisper.error}</Text>
           )}
         </View>
       </ScrollView>

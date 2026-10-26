@@ -1,3 +1,5 @@
+import { ThemedModal as Modal } from '@/components/ThemedModal';
+import { useAppTheme, type ThemeColors } from '@/lib/theme';
 import { Image as ExpoImage } from 'expo-image';
 import { CheckIcon, NotePencilIcon, TextTIcon, XIcon } from 'phosphor-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -5,7 +7,6 @@ import {
   ActivityIndicator,
   Alert,
   KeyboardAvoidingView,
-  Modal,
   Platform,
   Pressable,
   ScrollView,
@@ -49,6 +50,8 @@ export function NewImageModal({
   onDismiss,
   onSaved,
 }: NewImageModalProps) {
+  const { colors: themeColors } = useAppTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
   useLocalization();
   const [title, setTitle] = useState('');
   const [tags, setTags] = useState<string[]>([]);
@@ -220,10 +223,10 @@ export function NewImageModal({
             showsVerticalScrollIndicator={false}
           >
             {/* Header */}
-            <View className="flex-row p-8 pt-0 gap-8 items-center max-h-48 border-b border-zinc-800">
+            <View className="flex-row p-8 pt-0 gap-8 items-center max-h-48 border-b border-theme-raised">
               {imageAsset && (
                 <View
-                  className="h-full overflow-hidden bg-zinc-900 border border-zinc-800"
+                  className="h-full overflow-hidden bg-theme-surface border border-theme-raised"
                   style={{
                     maxHeight: 280,
                     aspectRatio: Math.min(Math.max(aspectRatio, 0.75), 1.9),
@@ -243,10 +246,10 @@ export function NewImageModal({
                 </View>
               )}
               <View className="flex-1 gap-3">
-                <Text className="font-sans-semibold text-2xl text-white">
+                <Text className="font-sans-semibold text-2xl text-theme-foreground">
                   <LocalizedText>Add a new image</LocalizedText>
                 </Text>
-                <Text className="font-sans text-base text-zinc-400 leading-relaxed">
+                <Text className="font-sans text-base text-theme-secondary leading-relaxed">
                   <LocalizedText>
                     Save images from your gallery to your board with tags and notes.
                   </LocalizedText>
@@ -255,20 +258,20 @@ export function NewImageModal({
             </View>
 
             {/* Title Input */}
-            <View className="flex-row items-center gap-4 py-5 px-8 border-b border-zinc-800">
-              <TextTIcon size={20} color="#D4D4D8" />
+            <View className="flex-row items-center gap-4 py-5 px-8 border-b border-theme-raised">
+              <TextTIcon size={20} color={themeColors.body} />
 
               <TextInput
                 ref={titleInputRef}
                 value={title}
                 onChangeText={setTitle}
                 placeholder={translate('Add a title to this image')}
-                placeholderTextColor="#71717A"
+                placeholderTextColor={themeColors.muted}
                 returnKeyType="next"
                 onSubmitEditing={() => {
                   tagsInputRef.current?.focus();
                 }}
-                className="w-full font-sans text-xl text-white leading-tight"
+                className="w-full font-sans text-xl text-theme-foreground leading-tight"
                 style={styles.borderlessInput}
                 underlineColorAndroid="transparent"
               />
@@ -294,8 +297,8 @@ export function NewImageModal({
             {/* Notes section */}
             <View className="flex-1 py-6 px-8 gap-4">
               <View className="flex-row items-center gap-2">
-                <NotePencilIcon size={14} color="#E4E4E7" weight="bold" />
-                <Text className="font-sans-semibold text-sm tracking-wider uppercase text-zinc-200">
+                <NotePencilIcon size={14} color={themeColors.heading} weight="bold" />
+                <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
                   <LocalizedText>Note</LocalizedText>
                 </Text>
               </View>
@@ -306,10 +309,10 @@ export function NewImageModal({
                   value={note}
                   onChangeText={setNote}
                   placeholder={translate('Add a text note to this image...')}
-                  placeholderTextColor="#71717A"
+                  placeholderTextColor={themeColors.muted}
                   multiline
                   textAlignVertical="top"
-                  className="w-full font-sans text-base text-zinc-100 leading-relaxed min-h-[96px]"
+                  className="w-full font-sans text-base text-theme-bright leading-relaxed min-h-[96px]"
                   style={styles.borderlessInput}
                   underlineColorAndroid="transparent"
                 />
@@ -323,7 +326,7 @@ export function NewImageModal({
               accessibilityLabel={translate('Cancel')}
               onPress={handleClose}
               disabled={saving}
-              icon={<XIcon size={20} color="#FFFFFF" weight="bold" />}
+              icon={<XIcon size={20} color={themeColors.foreground} weight="bold" />}
               text={translate('Cancel')}
             />
             <Button
@@ -333,9 +336,13 @@ export function NewImageModal({
               disabled={!canSave}
               icon={
                 saving ? (
-                  <ActivityIndicator size={20} color="#000000" />
+                  <ActivityIndicator size={20} color={themeColors.inverse} />
                 ) : (
-                  <CheckIcon size={20} color={canSave ? '#000000' : '#71717A'} weight="bold" />
+                  <CheckIcon
+                    size={20}
+                    color={canSave ? themeColors.inverse : themeColors.muted}
+                    weight="bold"
+                  />
                 )
               }
               text={translate('Save image')}
@@ -347,19 +354,20 @@ export function NewImageModal({
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    width: '100%',
-    backgroundColor: '#09090B',
-  },
-  scrollContent: {
-    flexGrow: 1,
-    paddingVertical: 20,
-    paddingBottom: 160,
-  },
-  borderlessInput: {
-    borderWidth: 0,
-    backgroundColor: 'transparent',
-  },
-});
+const createStyles = (themeColors: ThemeColors) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      width: '100%',
+      backgroundColor: themeColors.canvas,
+    },
+    scrollContent: {
+      flexGrow: 1,
+      paddingVertical: 20,
+      paddingBottom: 160,
+    },
+    borderlessInput: {
+      borderWidth: 0,
+      backgroundColor: 'transparent',
+    },
+  });

@@ -2,18 +2,18 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import { useAnimatedRef } from 'react-native-reanimated';
 import Sortable, {
-  type DragStartParams,
   type DragMoveParams,
+  type DragStartParams,
   type SortableFlexDragEndParams,
 } from 'react-native-sortables';
 
-import { ItemCard } from '@/components/cards/ItemCard';
-import type { LibraryItem } from '@/lib/library/types';
 import {
   getPinnedDropTarget,
   PINNED_DROP_ANIMATION_DURATION,
   schedulePinnedRemoval,
 } from '@/components/board/pinnedDrop';
+import { ItemCard } from '@/components/cards/ItemCard';
+import type { LibraryItem } from '@/lib/library/types';
 
 function getDefaultAspectRatio(item: LibraryItem): number {
   switch (item.type) {
@@ -185,7 +185,7 @@ export function BoardPinnedItems({ items, isEditing, onPress, onReorder, onRemov
     <View
       ref={containerRef}
       testID="pinned-cards-container"
-      className="mx-3 mb-3 mt-5 rounded-xl bg-zinc-800/80 p-3"
+      className="mx-3 mb-3 mt-5 rounded-xl border border-theme-raised p-3"
       style={{ position: 'relative', overflow: 'hidden' }}
     >
       <ScrollView

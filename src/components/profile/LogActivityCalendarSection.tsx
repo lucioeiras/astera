@@ -1,33 +1,49 @@
+import { ThemedModal as Modal } from '@/components/ThemedModal';
+import { useAppTheme, type ThemeColors } from '@/lib/theme';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
-import { BookOpenIcon, CaretLeftIcon, CaretRightIcon, XIcon } from 'phosphor-react-native';
+import {
+  BookOpenIcon,
+  GameControllerIcon,
+  SquaresFourIcon,
+  CaretLeftIcon,
+  CaretRightIcon,
+  XIcon,
+} from 'phosphor-react-native';
 import { useMemo, useState } from 'react';
-import { Modal, Pressable, ScrollView, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Button } from '@/components/Button';
 import { localDayKey, parseDayKey } from '@/lib/library/activity';
-import { getReadingActivity } from '@/lib/library/readingActivity';
-import type { BookItem, LibraryItem } from '@/lib/library/types';
+import { getLogActivity, type LoggedItem, type LogActivityFilter } from '@/lib/library/logActivity';
+import { TypeFilterButton } from '@/components/menus/TypeFilterButton';
+import type { LibraryItem } from '@/lib/library/types';
 import { LocalizedText } from '@/components/LocalizedText';
 import { translate, useLocalization } from '@/lib/i18n';
 
-const COLORS = { streak: '#60A5FA', reading: '#3F3F46', empty: '#18181B' };
+const COLORS = (themeColors: ThemeColors) => ({
+  streak: themeColors.blue,
+  reading: themeColors.border,
+  empty: themeColors.surface,
+});
 
-export function ReadingCalendarSection({ items }: { items: LibraryItem[] }) {
+export function LogActivityCalendarSection({ items }: { items: LibraryItem[] }) {
+  const { colors: themeColors } = useAppTheme();
   const { language } = useLocalization();
   const locale = language === 'pt' ? 'pt-BR' : 'en-US';
   const [month, setMonth] = useState(
     () => new Date(new Date().getFullYear(), new Date().getMonth(), 1)
   );
+  const [filter, setFilter] = useState<LogActivityFilter>(null);
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
   const year = month.getFullYear();
   const today = localDayKey(new Date());
   const activity = useMemo(
-    () => getReadingActivity(items, year, parseDayKey(today)!),
-    [items, year, today]
+    () => getLogActivity(items, year, parseDayKey(today)!, filter),
+    [items, year, today, filter]
   );
-  const selectedBooks = selectedDay ? (activity.byDay[selectedDay] ?? []) : [];
+  const selectedItems = selectedDay ? (activity.byDay[selectedDay] ?? []) : [];
   const calendarWeekday = new Date(year, month.getMonth(), 1).getDay();
   const firstWeekday = language === 'pt' ? (calendarWeekday + 6) % 7 : calendarWeekday;
   const days = new Date(year, month.getMonth() + 1, 0).getDate();
@@ -35,27 +51,53 @@ export function ReadingCalendarSection({ items }: { items: LibraryItem[] }) {
     { length: Math.ceil((firstWeekday + days) / 7) * 7 },
     (_, index) => index - firstWeekday + 1
   );
-  const openBook = (book: BookItem) => {
+  const openItem = (book: LoggedItem) => {
     setSelectedDay(null);
     router.push({ pathname: '/card/[id]', params: { id: book.id } });
   };
   return (
-    <View className="border-t border-zinc-800 px-8 py-6">
-      <Text className="font-sans-semibold text-sm uppercase tracking-wider text-zinc-200">
-        <LocalizedText>Reading activity</LocalizedText>
+    <View className="border-t border-theme-raised px-8 py-6">
+      <Text className="font-sans-semibold text-sm uppercase tracking-wider text-theme-heading">
+        <LocalizedText>Activity</LocalizedText>
       </Text>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        accessibilityLabel={translate('Filter activity by type')}
+        className="mt-4"
+        contentContainerClassName="items-center gap-2 py-1"
+      >
+        {(
+          [
+            { type: null, label: 'All', icon: SquaresFourIcon },
+            { type: 'book', label: 'Books', icon: BookOpenIcon },
+            { type: 'game', label: 'Games', icon: GameControllerIcon },
+          ] as const
+        ).map(({ type, label, icon }) => (
+          <TypeFilterButton
+            key={label}
+            label={translate(label)}
+            icon={icon}
+            selected={filter === type}
+            onPress={() => {
+              setSelectedDay(null);
+              setFilter(type);
+            }}
+          />
+        ))}
+      </ScrollView>
       <View className="my-4 gap-1">
-        <Text className="font-sans text-sm text-zinc-400">
-          {translate('Best reading streak in %{year}', { year })}
+        <Text className="font-sans text-sm text-theme-secondary">
+          {translate('Best activity streak in %{year}', { year })}
         </Text>
         <Text
           accessibilityLabel={translate(
             activity.bestStreak === 1
-              ? 'Best reading streak in %{year}: 1 day'
-              : 'Best reading streak in %{year}: %{count} days',
+              ? 'Best activity streak in %{year}: 1 day'
+              : 'Best activity streak in %{year}: %{count} days',
             { year, count: activity.bestStreak }
           )}
-          className="font-sans-semibold text-3xl text-blue-400"
+          className="font-sans-semibold text-3xl text-theme-blue"
         >
           {translate(activity.bestStreak === 1 ? '1 day' : '%{count} days', {
             count: activity.bestStreak,
@@ -65,28 +107,28 @@ export function ReadingCalendarSection({ items }: { items: LibraryItem[] }) {
       <View className="mb-4 flex-row items-center justify-between">
         <Pressable
           accessibilityRole="button"
-          accessibilityLabel={translate('Previous reading month')}
+          accessibilityLabel={translate('Previous activity month')}
           className="h-12 w-12 items-start justify-center"
           onPress={() => {
             setSelectedDay(null);
             setMonth(new Date(year, month.getMonth() - 1, 1));
           }}
         >
-          <CaretLeftIcon size={18} color="#D4D4D8" />
+          <CaretLeftIcon size={18} color={themeColors.body} />
         </Pressable>
-        <Text className="font-sans-semibold text-base text-white">
+        <Text className="font-sans-semibold text-base text-theme-foreground">
           {month.toLocaleDateString(locale, { month: 'long', year: 'numeric' })}
         </Text>
         <Pressable
           accessibilityRole="button"
-          accessibilityLabel={translate('Next reading month')}
+          accessibilityLabel={translate('Next activity month')}
           className="h-12 w-12 items-end justify-center"
           onPress={() => {
             setSelectedDay(null);
             setMonth(new Date(year, month.getMonth() + 1, 1));
           }}
         >
-          <CaretRightIcon size={18} color="#D4D4D8" />
+          <CaretRightIcon size={18} color={themeColors.body} />
         </Pressable>
       </View>
       <View className="mb-2 flex-row">
@@ -94,7 +136,10 @@ export function ReadingCalendarSection({ items }: { items: LibraryItem[] }) {
           ? ['S', 'T', 'Q', 'Q', 'S', 'S', 'D']
           : ['S', 'M', 'T', 'W', 'T', 'F', 'S']
         ).map((day, index) => (
-          <Text key={index} className="flex-1 text-center font-sans-medium text-xs text-zinc-500">
+          <Text
+            key={index}
+            className="flex-1 text-center font-sans-medium text-xs text-theme-muted"
+          >
             {day}
           </Text>
         ))}
@@ -108,26 +153,26 @@ export function ReadingCalendarSection({ items }: { items: LibraryItem[] }) {
           const books = activity.byDay[key] ?? [];
           const streak = activity.bestStreakDays.has(key);
           const backgroundColor = streak
-            ? COLORS.streak
+            ? COLORS(themeColors).streak
             : books.length
-              ? COLORS.reading
-              : COLORS.empty;
+              ? COLORS(themeColors).reading
+              : COLORS(themeColors).empty;
           return (
             <Pressable
               key={key}
               disabled={books.length === 0}
               accessibilityRole={books.length ? 'button' : 'text'}
-              accessibilityLabel={`${date.toLocaleDateString(locale, { month: 'long', day: 'numeric', year: 'numeric' })}, ${books.length} ${translate('books logged')}${streak ? `, ${translate('best reading streak')}` : ''}${books.length ? `, ${books.map((book) => book.title).join(', ')}` : ''}`}
-              onPress={() => (books.length === 1 ? openBook(books[0]) : setSelectedDay(key))}
+              accessibilityLabel={`${date.toLocaleDateString(locale, { month: 'long', day: 'numeric', year: 'numeric' })}, ${books.length} ${translate('cards logged')}${streak ? `, ${translate('best activity streak')}` : ''}${books.length ? `, ${books.map((book) => book.title).join(', ')}` : ''}`}
+              onPress={() => (books.length === 1 ? openItem(books[0]) : setSelectedDay(key))}
               style={{ width: '14.2857%', height: 64, padding: 2 }}
             >
               <View
-                testID={`reading-day-${key}`}
+                testID={`activity-day-${key}`}
                 style={{ backgroundColor }}
-                className={`flex-1 overflow-hidden rounded-xl p-1.5 ${key === today ? 'border border-white' : ''}`}
+                className={`flex-1 overflow-hidden rounded-xl p-1.5 ${key === today ? 'border border-theme-foreground' : ''}`}
               >
                 <Text
-                  className={`font-sans-medium text-xs ${streak ? 'text-zinc-950' : books.length ? 'text-white' : 'text-zinc-500'}`}
+                  className={`font-sans-medium text-xs ${streak ? 'text-theme-canvas' : books.length ? 'text-theme-foreground' : 'text-theme-muted'}`}
                 >
                   {day}
                 </Text>
@@ -140,7 +185,7 @@ export function ReadingCalendarSection({ items }: { items: LibraryItem[] }) {
                   {books.slice(0, 3).map((book, coverIndex) => (
                     <View
                       key={book.id}
-                      testID={`reading-stack-${key}-${book.id}`}
+                      testID={`activity-stack-${key}-${book.id}`}
                       style={{
                         position: 'absolute',
                         bottom: 0,
@@ -151,15 +196,15 @@ export function ReadingCalendarSection({ items }: { items: LibraryItem[] }) {
                         zIndex: coverIndex,
                       }}
                     >
-                      <ReadingCover key={book.cover ?? book.id} book={book} />
+                      <ActivityCover key={book.cover ?? book.id} book={book} />
                     </View>
                   ))}
                   {books.length > 3 && (
                     <View
-                      className="absolute bottom-0 right-0 rounded-tl bg-zinc-950/90 px-1"
+                      className="absolute bottom-0 right-0 rounded-tl bg-theme-canvas/90 px-1"
                       style={{ zIndex: 4 }}
                     >
-                      <Text className="font-sans-bold text-[10px] text-white">
+                      <Text className="font-sans-bold text-[10px] text-theme-foreground">
                         <LocalizedText>+</LocalizedText>
                         {books.length - 3}
                       </Text>
@@ -172,56 +217,64 @@ export function ReadingCalendarSection({ items }: { items: LibraryItem[] }) {
         })}
       </View>
       <View className="mt-4 flex-row flex-wrap items-center justify-center gap-x-4 gap-y-2">
-        <Legend color={COLORS.streak} label={translate('Best %{year} streak', { year })} />
-        <Legend color={COLORS.reading} label={translate('Days read')} />
-        <Legend color={COLORS.empty} label={translate('No reading')} />
+        <Legend
+          color={COLORS(themeColors).streak}
+          label={translate('Best %{year} streak', { year })}
+        />
+        <Legend color={COLORS(themeColors).reading} label={translate('Active days')} />
+        <Legend color={COLORS(themeColors).empty} label={translate('No activity')} />
       </View>
-      {activity.readingDays === 0 && (
-        <Text className="mt-4 font-sans text-sm text-zinc-500">
-          <LocalizedText>No reading logs recorded for </LocalizedText>
+      {activity.activeDays === 0 && (
+        <Text className="mt-4 font-sans text-sm text-theme-muted">
+          <LocalizedText>No activity logs recorded for </LocalizedText>
           {year}
           <LocalizedText>.</LocalizedText>
         </Text>
       )}
       <Modal
-        visible={selectedBooks.length > 0}
+        visible={selectedItems.length > 0}
         transparent
         animationType="fade"
         onRequestClose={() => setSelectedDay(null)}
       >
         <View className="flex-1 justify-end bg-black/60">
-          <SafeAreaView edges={['bottom']} className="max-h-[80%] rounded-t-3xl bg-zinc-950">
+          <SafeAreaView edges={['bottom']} className="max-h-[80%] rounded-t-3xl bg-theme-canvas">
             <View className="flex-row items-center justify-between gap-4 px-6 py-4">
-              <Text className="flex-1 font-sans-semibold text-xl text-white">
+              <Text className="flex-1 font-sans-semibold text-xl text-theme-foreground">
                 {selectedDay
                   ? parseDayKey(selectedDay)?.toLocaleDateString(locale)
-                  : translate('Reading logs')}
+                  : translate('Activity logs')}
               </Text>
               <Button
-                accessibilityLabel={translate('Close reading books')}
+                accessibilityLabel={translate('Close activity cards')}
                 size="small"
-                icon={<XIcon size={20} color="#FFFFFF" />}
+                icon={<XIcon size={20} color={themeColors.foreground} />}
                 onPress={() => setSelectedDay(null)}
               />
             </View>
             <ScrollView contentContainerClassName="px-6 pb-6">
-              {selectedBooks.map((book) => (
+              {selectedItems.map((book) => (
                 <Pressable
                   key={book.id}
                   accessibilityRole="button"
-                  accessibilityLabel={translate('Open reading book %{title}', {
+                  accessibilityLabel={translate('Open activity card %{title}', {
                     title: book.title,
                   })}
-                  onPress={() => openBook(book)}
-                  className="min-h-16 flex-row items-center gap-4 border-b border-zinc-800 py-3"
+                  onPress={() => openItem(book)}
+                  className="min-h-16 flex-row items-center gap-4 border-b border-theme-raised py-3"
                 >
                   <View style={{ width: 32, height: 48 }}>
-                    <ReadingCover key={book.cover ?? book.id} book={book} />
+                    <ActivityCover key={book.cover ?? book.id} book={book} />
                   </View>
                   <View className="flex-1 gap-1">
-                    <Text className="font-sans-medium text-base text-zinc-200">{book.title}</Text>
-                    <Text className="font-sans text-xs text-zinc-500">
-                      {book.authors.join(', ')}
+                    <Text className="font-sans-medium text-base text-theme-heading">
+                      {book.title}
+                    </Text>
+                    <Text className="font-sans text-xs text-theme-muted">
+                      {translate(book.type === 'book' ? 'Book' : 'Game')}
+                      {book.type === 'book' && book.authors.length
+                        ? ` · ${book.authors.join(', ')}`
+                        : ''}
                     </Text>
                   </View>
                 </Pressable>
@@ -234,7 +287,8 @@ export function ReadingCalendarSection({ items }: { items: LibraryItem[] }) {
   );
 }
 
-function ReadingCover({ book }: { book: BookItem }) {
+function ActivityCover({ book }: { book: LoggedItem }) {
+  const { colors: themeColors } = useAppTheme();
   const [failed, setFailed] = useState(false);
   return book.cover && !failed ? (
     <Image
@@ -245,16 +299,27 @@ function ReadingCover({ book }: { book: BookItem }) {
       onError={() => setFailed(true)}
     />
   ) : (
-    <View className="flex-1 items-center justify-center rounded-sm bg-zinc-800">
-      <BookOpenIcon size={14} color="#A1A1AA" />
+    <View className="flex-1 items-center justify-center rounded-sm bg-theme-raised">
+      {book.type === 'book' ? (
+        <BookOpenIcon size={14} color={themeColors.secondary} />
+      ) : (
+        <GameControllerIcon size={14} color={themeColors.secondary} />
+      )}
     </View>
   );
 }
 function Legend({ color, label }: { color: string; label: string }) {
   return (
     <View className="flex-row items-center gap-1.5">
-      <View style={{ backgroundColor: color, width: 10, height: 10, borderRadius: 3 }} />
-      <Text className="font-sans text-[10px] text-zinc-400">{label}</Text>
+      <View
+        style={{
+          backgroundColor: color,
+          width: 10,
+          height: 10,
+          borderRadius: 3,
+        }}
+      />
+      <Text className="font-sans text-[10px] text-theme-secondary">{label}</Text>
     </View>
   );
 }

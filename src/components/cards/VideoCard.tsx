@@ -35,7 +35,7 @@ export const VideoCard = memo(function VideoCard({ uri, title }: { uri: string; 
 
   return (
     <View className="w-full">
-      <View className="relative w-full overflow-hidden rounded-xl bg-zinc-900">
+      <View className="relative w-full overflow-hidden rounded-xl bg-theme-surface">
         <VideoView
           player={player}
           nativeControls
@@ -55,7 +55,7 @@ export const VideoCard = memo(function VideoCard({ uri, title }: { uri: string; 
       </View>
       {title ? (
         <Text
-          className="font-sans-medium text-center text-xs text-zinc-400 leading-[1.6] mt-3"
+          className="font-sans-medium text-center text-xs text-theme-secondary leading-[1.6] mt-3"
           numberOfLines={2}
         >
           {title}

@@ -1,3 +1,5 @@
+import { ThemedModal as Modal } from '@/components/ThemedModal';
+import { useAppTheme, type ThemeColors } from '@/lib/theme';
 import {
   BookIcon,
   FilmSlateIcon,
@@ -6,7 +8,7 @@ import {
   TelevisionIcon,
 } from 'phosphor-react-native';
 import { JSX, useState } from 'react';
-import { KeyboardAvoidingView, Modal, Platform, ScrollView, StyleSheet, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Button } from '@/components/Button';
@@ -25,15 +27,33 @@ type Props = {
   onDismiss?: () => void;
 };
 
-const tabs: { id: EntertainmentType; label: string; icon: JSX.Element }[] = [
-  { id: 'book', label: 'Book', icon: <BookIcon size={20} color="#FFFFFF" weight="bold" /> },
-  { id: 'music', label: 'Music', icon: <MusicNoteIcon size={20} color="#FFFFFF" weight="bold" /> },
-  { id: 'movie', label: 'Film', icon: <FilmSlateIcon size={20} color="#FFFFFF" weight="bold" /> },
-  { id: 'tvshow', label: 'TV', icon: <TelevisionIcon size={20} color="#FFFFFF" weight="bold" /> },
+const tabs = (
+  themeColors: ThemeColors
+): { id: EntertainmentType; label: string; icon: JSX.Element }[] => [
+  {
+    id: 'book',
+    label: 'Book',
+    icon: <BookIcon size={20} color={themeColors.foreground} weight="bold" />,
+  },
+  {
+    id: 'music',
+    label: 'Music',
+    icon: <MusicNoteIcon size={20} color={themeColors.foreground} weight="bold" />,
+  },
+  {
+    id: 'movie',
+    label: 'Film',
+    icon: <FilmSlateIcon size={20} color={themeColors.foreground} weight="bold" />,
+  },
+  {
+    id: 'tvshow',
+    label: 'TV',
+    icon: <TelevisionIcon size={20} color={themeColors.foreground} weight="bold" />,
+  },
   {
     id: 'game',
     label: 'Game',
-    icon: <GameControllerIcon size={20} color="#FFFFFF" weight="bold" />,
+    icon: <GameControllerIcon size={20} color={themeColors.foreground} weight="bold" />,
   },
 ];
 
@@ -44,6 +64,7 @@ export function EntertainmentTabs({
   selectedType: EntertainmentType;
   onSelect: (type: EntertainmentType) => void;
 }) {
+  const { colors: themeColors } = useAppTheme();
   useLocalization();
   return (
     <ScrollView
@@ -53,7 +74,7 @@ export function EntertainmentTabs({
       contentContainerStyle={{ paddingHorizontal: 20, gap: 8 }}
       keyboardShouldPersistTaps="handled"
     >
-      {tabs.map((tab) => (
+      {tabs(themeColors).map((tab) => (
         <Button
           key={tab.id}
           accessibilityLabel={translate(tab.label)}
@@ -62,8 +83,8 @@ export function EntertainmentTabs({
           onPress={() => onSelect(tab.id)}
           size="small"
           variant={selectedType === tab.id ? 'primary' : 'secondary'}
-          backgroundColor="#FFFFFF"
-          contentColor={selectedType === tab.id ? '#000000' : '#FFFFFF'}
+          backgroundColor={themeColors.foreground}
+          contentColor={selectedType === tab.id ? themeColors.inverse : themeColors.foreground}
           text={translate(tab.label)}
           icon={tab.icon}
         />
@@ -87,7 +108,7 @@ export function NewEntertainmentModal({ visible, onClose, onDismiss }: Props) {
       presentationStyle="overFullScreen"
     >
       <View className="flex-1">
-        <View pointerEvents="none" className="bg-zinc-950" style={StyleSheet.absoluteFill} />
+        <View pointerEvents="none" className="bg-theme-canvas" style={StyleSheet.absoluteFill} />
         <KeyboardAvoidingView
           className="flex-1"
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}

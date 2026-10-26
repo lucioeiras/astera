@@ -164,18 +164,35 @@ describe('ItemCard', () => {
   });
 
   it.each([
-    ['youtube', 'youtube-card-base', 'youtube-title-container', 'bg-rose-950/30'],
-    ['tweet', 'tweet-card-base', 'tweet-card-tint', 'bg-sky-950/25'],
-    ['reddit', 'reddit-card-base', 'reddit-card-tint', 'bg-orange-950/25'],
+    ['youtube', 'youtube-card-base', 'youtube-title-container', 'bg-theme-pink/10'],
+    ['tweet', 'tweet-card-base', 'tweet-card-tint', 'bg-sky-500/10'],
+    ['reddit', 'reddit-card-base', 'reddit-card-tint', 'bg-theme-amber/10'],
   ] as const)(
-    'places a zinc-950 base beneath the %s card tint',
+    'places a theme canvas base beneath the %s card tint',
     async (type, baseTestId, tintTestId, tintClass) => {
       const item = examples.find(([candidate]) => candidate.type === type)?.[0];
       if (!item) throw new Error(`Missing ${type} test item`);
 
       const { getByTestId } = await render(<ItemCard item={item} />);
-      expect(getByTestId(baseTestId).props.className).toContain('bg-zinc-950');
+      expect(getByTestId(baseTestId).props.className).toContain('bg-theme-canvas');
       expect(getByTestId(tintTestId).props.className).toContain(tintClass);
+    }
+  );
+
+  it.each([
+    ['youtube', 'youtube-thumbnail-container', undefined],
+    ['youtube', 'youtube-thumbnail-container', 100],
+    ['tiktok', 'video-thumbnail-container', undefined],
+    ['tiktok', 'video-thumbnail-container', 100],
+  ] as const)(
+    'clips %s thumbnails and overlays inside %s (fixed height: %s)',
+    async (type, thumbnailTestId, fixedHeight) => {
+      const item = examples.find(([candidate]) => candidate.type === type)?.[0];
+      if (!item) throw new Error(`Missing ${type} test item`);
+      const view = await render(<ItemCard item={item} fixedHeight={fixedHeight} />);
+      const container = view.getByTestId(thumbnailTestId);
+      expect(container.props.className).toContain('rounded-t-xl');
+      expect(container.props.className).toContain('overflow-hidden');
     }
   );
 

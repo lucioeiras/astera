@@ -1,5 +1,5 @@
 import { decodeHTML } from 'entities';
-import { TRACKABLE_TYPES, validDate } from './activity';
+import { TRACKABLE_TYPES, validDate, parseDayKey } from './activity';
 import {
   ITEM_TYPES,
   MEDIA_PROGRESS_STATUSES,
@@ -106,6 +106,20 @@ export function parseItem(raw: unknown): LibraryItem {
             (log.page as number) >= 0 &&
             typeof log.createdAt === 'string' &&
             (log.noteId === undefined || typeof log.noteId === 'string')
+        )
+      : [];
+  }
+  if (item.type === 'game') {
+    item.playLogs = Array.isArray(item.playLogs)
+      ? item.playLogs.filter(
+          (log) =>
+            isObject(log) &&
+            typeof log.id === 'string' &&
+            !!log.id.trim() &&
+            !!parseDayKey(log.date) &&
+            typeof log.createdAt === 'string' &&
+            !!validDate(log.createdAt) &&
+            (log.noteId === undefined || (typeof log.noteId === 'string' && !!log.noteId.trim()))
         )
       : [];
   }

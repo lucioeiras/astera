@@ -1,3 +1,4 @@
+import { useAppTheme } from '@/lib/theme';
 import { BlurView } from 'expo-blur';
 import { ReactElement, ReactNode, cloneElement, isValidElement } from 'react';
 import { Pressable, Text, View } from 'react-native';
@@ -27,14 +28,16 @@ export function Button({
   disabled = false,
   size = 'default',
   variant = 'secondary',
-  backgroundColor = '#FFFFFF',
+  backgroundColor,
   contentColor,
-  shadowColor = '#FFFFFF',
+  shadowColor,
   shadowOpacity = 0,
   accessibilityRole = 'button',
   selected,
 }: ButtonProps) {
-  const foreground = contentColor ?? (variant === 'primary' ? '#09090B' : '#FFFFFF');
+  const { colors: themeColors, isDark } = useAppTheme();
+  const foreground =
+    contentColor ?? (variant === 'primary' ? themeColors.canvas : themeColors.foreground);
   const isSmall = size === 'small';
   const iconElement = isValidElement<{ size?: number; color?: string }>(icon) ? icon : undefined;
   const normalizedIcon =
@@ -52,7 +55,7 @@ export function Button({
         flexGrow: 0,
         flexShrink: 0,
         flexBasis: 'auto',
-        shadowColor,
+        shadowColor: shadowColor ?? themeColors.foreground,
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity,
         shadowRadius: 8,
@@ -62,19 +65,32 @@ export function Button({
       <Pressable
         onPress={onPress}
         disabled={disabled}
-        className={`flex-row items-center justify-center overflow-hidden rounded-full active:opacity-80 disabled:opacity-50 ${isSmall ? 'gap-2' : 'gap-3'} ${text ? (isSmall ? 'px-4 py-2' : 'px-6 py-3') : isSmall ? 'p-3' : 'p-4'} ${variant === 'secondary' && 'border border-white/10'}`}
-        style={variant === 'primary' ? { backgroundColor } : undefined}
+        className={`flex-row items-center justify-center overflow-hidden rounded-full active:opacity-80 disabled:opacity-50 ${isSmall ? 'gap-2' : 'gap-3'} ${text ? (isSmall ? 'px-4 py-2' : 'px-6 py-3') : isSmall ? 'p-3' : 'p-4'} ${variant === 'secondary' && 'border border-theme-raised'}`}
+        style={
+          variant === 'primary'
+            ? { backgroundColor: backgroundColor ?? themeColors.foreground }
+            : undefined
+        }
         accessibilityRole={accessibilityRole}
         accessibilityLabel={accessibilityLabel}
-        accessibilityState={{ disabled, ...(selected === undefined ? {} : { selected }) }}
+        accessibilityState={{
+          disabled,
+          ...(selected === undefined ? {} : { selected }),
+        }}
       >
         {variant === 'secondary' && (
           <>
             <BlurView
               intensity={48}
-              tint="dark"
+              tint={isDark ? 'dark' : 'light'}
               pointerEvents="none"
-              style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 }}
+              style={{
+                position: 'absolute',
+                top: 0,
+                right: 0,
+                bottom: 0,
+                left: 0,
+              }}
             />
             <View
               pointerEvents="none"
@@ -85,7 +101,7 @@ export function Button({
                 bottom: 0,
                 left: 0,
                 borderRadius: 999,
-                backgroundColor: 'rgba(9, 9, 11, 0.1)',
+                backgroundColor: themeColors.canvas + '1a',
               }}
             />
           </>

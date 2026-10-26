@@ -8,9 +8,9 @@ O aplicativo é desenvolvido com Expo, React Native, TypeScript e Expo Router. A
 
 - **Captura de conteúdo:** notas, citações, tarefas, links, artigos, vídeos do YouTube, publicações do X/Twitter e Reddit, imagens, PDFs, livros, músicas, filmes, séries e jogos.
 - **Board e busca:** grade de cartões, pesquisa de texto, filtros por tipo e tag, seleção de vários itens, exclusão com opção de restaurar e visualização dos detalhes.
-- **Perfil e atividade:** estatísticas da biblioteca aberta, calendário de adições com filtro do board por dia e visualização mensal com capas dos cards concluídos, filtrada por ano e tipo. O calendário de leitura reúne livros com logs em cada dia e destaca as maiores sequências de dias consecutivos do ano. Configurações ficam acessíveis pelo perfil. A data de conclusão é registrada ao entrar em Completed; cards antigos sem essa data ficam fora do gráfico, com aviso.
+- **Perfil e atividade:** estatísticas da biblioteca aberta, calendário de adições com filtro do board por dia e visualização mensal com capas dos cards concluídos, filtrada por ano e tipo. O calendário de atividade reúne registros de leitura e sessão de jogo, com filtros para todos, livros ou jogos, e destaca as maiores sequências de dias consecutivos do ano. Configurações ficam acessíveis pelo perfil. A data de conclusão é registrada ao entrar em Completed; cards antigos sem essa data ficam fora do gráfico, com aviso.
 - **Organização:** tags manuais e sugestões automáticas, pastas personalizadas e pastas por andamento — “Want to”, “In progress”, “Completed” e “Abandoned” — para itens compatíveis.
-- **Acompanhamento e avaliações:** progresso de leitura, filmes, temporadas de séries e jogos; avaliações e comentários; registro de páginas lidas em livros.
+- **Acompanhamento e avaliações:** progresso de leitura, filmes, temporadas de séries e jogos; avaliações e comentários; registro de páginas lidas em livros e diário de jogos com data e notas opcionais, permitindo várias entradas por dia.
 - **Metadados:** leitura de metadados de links, consulta de livros por ISBN, busca de música no iTunes, letras via LRCLIB, filmes via TMDB e jogos via RAWG.
 - **Conteúdo relacionado:** vincule itens da biblioteca entre si.
 - **Arquivos:** importe imagens e PDFs, visualize PDFs e compartilhe itens usando as opções do sistema.
@@ -31,7 +31,9 @@ O aplicativo é desenvolvido com Expo, React Native, TypeScript e Expo Router. A
 | Livro | ISBN, autores, capa, dados editoriais, progresso, avaliações e diário de leitura |
 | Música | Faixa ou álbum, artista, capa e prévia quando disponível |
 | Filme | Dados do catálogo TMDB, andamento, avaliação e comentários |
-| Jogo | Dados do catálogo RAWG, plataformas, andamento e avaliação |
+| Jogo | Dados do catálogo RAWG, plataformas, andamento, avaliação e diário de sessão de jogo |
+
+Em jogos com status **Playing**, a ação de registrar sessão de jogo salva uma data e uma nota opcional. É possível registrar várias entradas no mesmo dia e editar ou excluir cada uma pelo calendário do jogo. Após concluir o jogo, o histórico continua disponível para edição e exclusão. Excluir um registro preserva sua nota vinculada na biblioteca. O calendário de atividade do perfil combina leitura e sessão de jogo; os filtros recalculam a sequência de dias conforme o tipo selecionado.
 
 Os metadados externos dependem da disponibilidade dos serviços e, em alguns casos, de chaves de API. Os itens já salvos continuam disponíveis na biblioteca local.
 
@@ -66,6 +68,26 @@ bun run web
 ```
 
 `bun run ios` e `bun run android` usam `expo run:*` e requerem as ferramentas nativas da plataforma. Os diretórios `ios/` e `android/` são gerados pelo Expo e não devem ser editados manualmente.
+
+### Assinatura para iPhone físico
+
+O `app.json` define `ios.appleTeamId` como `J7V84PT2S6`, a equipe usada pelo app e pelas extensões. Para usar outra conta Apple Developer, ajuste esse campo antes de gerar o projeto nativo.
+
+Se `bun run ios --device` falhar com `No profiles ... were found`, sincronize a configuração e abra `ios/anything.xcworkspace` no Xcode:
+
+```bash
+bunx expo prebuild --platform ios
+```
+
+Em **Xcode > Settings > Accounts**, entre na conta Apple Developer com acesso à equipe. No projeto `anything`, confira **Signing & Capabilities** dos três targets: `anything`, `expo-sharing-extension` e `AnythingControls`. Todos devem usar a mesma equipe e **Automatically manage signing**. A equipe precisa ter acesso aos três Bundle IDs e ao App Group `group.com.diegoeiras.anything`.
+
+Selecione o iPhone como destino e execute o scheme `anything` uma vez pelo Xcode para criar ou baixar os perfis de desenvolvimento. Depois, volte a usar:
+
+```bash
+bun run ios --device
+```
+
+Na CLI Expo instalada, quando os targets já têm uma equipe configurada, a chamada a `xcodebuild` pode omitir `-allowProvisioningUpdates`. Por isso, o log pode anunciar assinatura automática e ainda falhar por falta de perfis. Apenas definir o Team ID ou repetir o comando não cria os perfis nesse caso; conclua a assinatura pelo Xcode.
 
 ### Expo Go e development build
 
@@ -156,3 +178,11 @@ Comece por [Issues](https://github.com/lucioeiras/anything/issues) para consulta
 ## Licença
 
 Consulte [LICENSE](LICENSE) para os termos de uso e distribuição.
+
+### Aparência
+
+Em Configurações → Aparência, escolha Sistema, Claro ou Escuro. Sistema é o padrão e acompanha as mudanças do dispositivo. A preferência manual fica salva neste dispositivo e vale para todas as bibliotecas, sem modificar seus arquivos JSON.
+
+As cores compartilhadas ficam em `src/lib/theme/`: use as classes semânticas `*-theme-*` do NativeWind ou `useAppTheme().colors` em estilos JavaScript. Modais devem usar `ThemedModal` para propagar as variáveis também nos portais web. Preserve cores próprias de mídias e controles sobre imagens.
+
+O suporte nativo usa `userInterfaceStyle: automatic` e `expo-system-ui`. Após atualizar dependências ou configuração nativa, regenere os projetos com `bunx expo prebuild` e gere uma nova development build. O fluxo `.maestro/flows/appearance-settings.yaml` verifica a seleção e a persistência da preferência.

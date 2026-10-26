@@ -1,3 +1,4 @@
+import { useAppTheme } from '@/lib/theme';
 import { router } from 'expo-router';
 import {
   CaretRightIcon,
@@ -16,6 +17,7 @@ import { LocalizedText } from '@/components/LocalizedText';
 import { translate, useLocalization } from '@/lib/i18n';
 
 export default function FolderSelectScreen() {
+  const { colors: themeColors } = useAppTheme();
   useLocalization();
   const {
     source,
@@ -39,8 +41,8 @@ export default function FolderSelectScreen() {
 
   if (!isInitialized || shouldAutoOpenBoard) {
     return (
-      <View className="flex-1 bg-zinc-950 items-center justify-center">
-        <ActivityIndicator color="#71717a" />
+      <View className="flex-1 bg-theme-canvas items-center justify-center">
+        <ActivityIndicator color={themeColors.muted} />
       </View>
     );
   }
@@ -96,22 +98,22 @@ export default function FolderSelectScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-zinc-950" edges={['top', 'left', 'right']}>
+    <SafeAreaView className="flex-1 bg-theme-canvas" edges={['top', 'left', 'right']}>
       <ScrollView
         contentContainerClassName="h-full p-8 items-center justify-center"
         showsVerticalScrollIndicator={false}
       >
-        <Text className="font-sans-medium text-4xl text-white text-center">
+        <Text className="font-sans-medium text-4xl text-theme-foreground text-center">
           <LocalizedText>Welcome to</LocalizedText>{' '}
-          <Text className="font-serif-italic text-4xl text-blue-500 text-center">
+          <Text className="font-serif-italic text-4xl text-theme-blue text-center">
             {' '}
             <LocalizedText>anything</LocalizedText>
           </Text>
         </Text>
-        <Text className="font-sans text-lg text-zinc-300 mt-3 text-center">
+        <Text className="font-sans text-lg text-theme-body mt-3 text-center">
           <LocalizedText>Open your space folder or create a new one.</LocalizedText>
         </Text>
-        <Text className="font-sans text-base text-zinc-400 mt-3 text-center max-w-80">
+        <Text className="font-sans text-base text-theme-secondary mt-3 text-center max-w-80">
           <LocalizedText>
             Anything is offline-first and believes files should remain under your control.
           </LocalizedText>
@@ -120,21 +122,21 @@ export default function FolderSelectScreen() {
         <Pressable
           onPress={handlePickFolder}
           disabled={opening}
-          className="w-full max-w-80 py-3 flex-row items-center justify-center gap-2 bg-white rounded-full mt-8"
+          className="w-full max-w-80 py-3 flex-row items-center justify-center gap-2 bg-theme-foreground rounded-full mt-8"
         >
           {opening ? (
-            <ActivityIndicator size={20} color="#000" />
+            <ActivityIndicator size={20} color={themeColors.inverse} />
           ) : (
-            <FolderPlusIcon size={20} color="#000" />
+            <FolderPlusIcon size={20} color={themeColors.inverse} />
           )}
-          <Text className="font-sans-semibold text-lg text-zinc-950">
+          <Text className="font-sans-semibold text-lg text-theme-canvas">
             <LocalizedText>Select a folder</LocalizedText>
           </Text>
         </Pressable>
 
         {/* Section: Saved / Recent Folders */}
         <View className="mt-12 w-full">
-          <Text className="font-sans-semibold text-xs uppercase tracking-wider text-zinc-500 mb-3 px-1">
+          <Text className="font-sans-semibold text-xs uppercase tracking-wider text-theme-muted mb-3 px-1">
             <LocalizedText>Libraries & Recents</LocalizedText>
           </Text>
 
@@ -148,34 +150,38 @@ export default function FolderSelectScreen() {
                   key={item.id}
                   onPress={() => handleSelectFolder(item.source)}
                   disabled={opening}
-                  className="flex-row items-center justify-between rounded-2xl border border-zinc-800/80 bg-zinc-900/90 p-4 active:bg-zinc-850"
+                  className="flex-row items-center justify-between rounded-2xl border border-theme-raised/80 bg-theme-surface/90 p-4 active:bg-zinc-850"
                 >
                   <View className="flex-1 flex-row items-center gap-3.5 mr-2">
-                    <View className="h-11 w-11 items-center justify-center rounded-xl bg-zinc-800/70">
+                    <View className="h-11 w-11 items-center justify-center rounded-xl bg-theme-raised/70">
                       {isLocal ? (
-                        <DeviceMobileIcon size={22} color="#a1a1aa" weight="duotone" />
+                        <DeviceMobileIcon
+                          size={22}
+                          color={themeColors.secondary}
+                          weight="duotone"
+                        />
                       ) : (
-                        <CloudIcon size={22} color="#a1a1aa" weight="duotone" />
+                        <CloudIcon size={22} color={themeColors.secondary} weight="duotone" />
                       )}
                     </View>
 
                     <View className="flex-1">
                       <View className="flex-row items-center gap-2">
                         <Text
-                          className="font-sans-semibold text-base text-zinc-100"
+                          className="font-sans-semibold text-base text-theme-bright"
                           numberOfLines={1}
                         >
                           {item.name}
                         </Text>
                         {isActive && (
-                          <View className="rounded-full bg-zinc-800 px-2 py-0.5">
-                            <Text className="font-sans-medium text-[10px] text-zinc-300">
+                          <View className="rounded-full bg-theme-raised px-2 py-0.5">
+                            <Text className="font-sans-medium text-[10px] text-theme-body">
                               <LocalizedText>Last opened</LocalizedText>
                             </Text>
                           </View>
                         )}
                       </View>
-                      <Text className="mt-0.5 font-sans text-xs text-zinc-400">
+                      <Text className="mt-0.5 font-sans text-xs text-theme-secondary">
                         {isLocal ? 'This Device • Library' : 'iCloud Drive / Files'}
                       </Text>
                     </View>
@@ -192,10 +198,10 @@ export default function FolderSelectScreen() {
                         className="p-2 rounded-lg active:opacity-60"
                         accessibilityLabel={translate('Remove from recent folders')}
                       >
-                        <TrashSimpleIcon size={18} color="#71717a" />
+                        <TrashSimpleIcon size={18} color={themeColors.muted} />
                       </Pressable>
                     )}
-                    <CaretRightIcon size={18} color="#71717a" />
+                    <CaretRightIcon size={18} color={themeColors.muted} />
                   </View>
                 </Pressable>
               );

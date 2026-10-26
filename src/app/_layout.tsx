@@ -9,7 +9,7 @@ import { InstrumentSerif_400Regular_Italic } from '@expo-google-fonts/instrument
 import { useFonts } from 'expo-font';
 import { ExtensionStorage } from '@bacons/apple-targets';
 import * as Linking from 'expo-linking';
-import { DarkTheme, router, Stack, ThemeProvider } from 'expo-router';
+import { DarkTheme, DefaultTheme, router, Stack, ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { AppState } from 'react-native';
@@ -17,17 +17,10 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import '@/global.css';
 import { LibraryProvider, useLibrary } from '@/hooks/useLibrary';
+import { AppThemeProvider, useAppTheme } from '@/lib/theme';
 import { LocalizationProvider } from '@/lib/i18n';
 
 SplashScreen.preventAutoHideAsync();
-
-const CustomDarkTheme = {
-  ...DarkTheme,
-  colors: {
-    ...DarkTheme.colors,
-    background: '#09090b', // tailwind zinc-950
-  },
-};
 
 const controlStorage = new ExtensionStorage('group.com.diegoeiras.anything');
 
@@ -45,7 +38,10 @@ function openControlDestination(item: string, token: string) {
   ]);
   router.replace({
     pathname: '/board',
-    params: { controlAddItem: supportedItems.has(item) ? item : 'all', controlToken: token },
+    params: {
+      controlAddItem: supportedItems.has(item) ? item : 'all',
+      controlToken: token,
+    },
   });
 }
 
@@ -67,6 +63,19 @@ function consumePendingControlAdd() {
 }
 
 function RootNavigator() {
+  const { colors, isDark } = useAppTheme();
+  const baseTheme = isDark ? DarkTheme : DefaultTheme;
+  const navigationTheme = {
+    ...baseTheme,
+    colors: {
+      ...baseTheme.colors,
+      background: colors.canvas,
+      card: colors.surface,
+      text: colors.foreground,
+      border: colors.border,
+      primary: colors.blue,
+    },
+  };
   const { isInitialized } = useLibrary();
   const linkingURL = Linking.useLinkingURL();
 
@@ -117,27 +126,29 @@ function RootNavigator() {
   }, [isInitialized]);
 
   return (
-    <Stack
-      screenOptions={{
-        headerShown: false,
-        contentStyle: { backgroundColor: '#09090b' },
-        animation: 'slide_from_right',
-      }}
-    >
-      <Stack.Screen name="index" options={{ animation: 'none' }} />
-      <Stack.Screen name="(tabs)" options={{ animation: 'none' }} />
-      <Stack.Screen name="handle-share" />
-      <Stack.Screen name="settings" />
-      <Stack.Screen
-        name="card/[id]"
-        options={{
-          presentation: 'transparentModal',
-          animation: 'fade',
+    <ThemeProvider value={navigationTheme}>
+      <Stack
+        screenOptions={{
           headerShown: false,
-          contentStyle: { backgroundColor: 'transparent' },
+          contentStyle: { backgroundColor: colors.canvas },
+          animation: 'slide_from_right',
         }}
-      />
-    </Stack>
+      >
+        <Stack.Screen name="index" options={{ animation: 'none' }} />
+        <Stack.Screen name="(tabs)" options={{ animation: 'none' }} />
+        <Stack.Screen name="handle-share" />
+        <Stack.Screen name="settings" />
+        <Stack.Screen
+          name="card/[id]"
+          options={{
+            presentation: 'transparentModal',
+            animation: 'fade',
+            headerShown: false,
+            contentStyle: { backgroundColor: 'transparent' },
+          }}
+        />
+      </Stack>
+    </ThemeProvider>
   );
 }
 
@@ -158,11 +169,11 @@ export default function RootLayout() {
   return (
     <LocalizationProvider>
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <ThemeProvider value={CustomDarkTheme}>
+        <AppThemeProvider>
           <LibraryProvider>
             <RootNavigator />
           </LibraryProvider>
-        </ThemeProvider>
+        </AppThemeProvider>
       </GestureHandlerRootView>
     </LocalizationProvider>
   );

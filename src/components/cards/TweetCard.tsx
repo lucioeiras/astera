@@ -5,8 +5,9 @@ import { TwitterLogoIcon } from 'phosphor-react-native';
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { decodeHTML } from 'entities';
 import { LocalizedText } from '@/components/LocalizedText';
+import { useAppTheme } from '@/lib/theme';
+import { decodeHTML } from 'entities';
 
 cssInterop(ExpoImage, { className: 'style' });
 
@@ -30,7 +31,7 @@ function TweetVideoPlayer({
 
   return (
     <View
-      className="w-full rounded-xl overflow-hidden bg-blue-950 items-center justify-center"
+      className="w-full rounded-xl overflow-hidden bg-sky-950 items-center justify-center"
       style={{
         width: '100%',
         aspectRatio: safeAspectRatio,
@@ -78,13 +79,14 @@ export const TweetCard = ({
   onPress,
   onLongPress,
 }: TweetProps) => {
+  const { isDark } = useAppTheme();
   const [aspectRatio, setAspectRatio] = useState(1);
   const cleanText = text ? decodeHTML(text) : '';
   const hasMultipleImages = images.length > 1;
 
   return (
-    <View testID="tweet-card-base" className="w-full rounded-xl bg-zinc-950">
-      <View testID="tweet-card-tint" className="w-full p-5 gap-4 relative bg-sky-950/25 rounded-xl">
+    <View testID="tweet-card-base" className="w-full rounded-xl bg-theme-canvas">
+      <View testID="tweet-card-tint" className="w-full p-5 gap-4 relative bg-sky-500/10 rounded-xl">
         {onPress && (
           <Pressable
             onPress={onPress}
@@ -104,12 +106,15 @@ export const TweetCard = ({
             pressed && onPress ? { opacity: 0.85, transform: [{ scale: 0.98 }] } : undefined
           }
         >
-          <View className="flex-row items-center gap-3">
+          <View className="flex-row items-center gap-2">
             <ExpoImage source={{ uri: avatar }} className="w-6 h-6 rounded-full" />
-            <Text className="font-sans-medium text-sm text-zinc-300">{author}</Text>
+            <Text className="font-sans-semibold text-sm text-theme-bright">{author}</Text>
           </View>
 
-          <Text className="font-sans text-base leading-[1.8] text-zinc-50 mt-4" numberOfLines={8}>
+          <Text
+            className="font-sans text-base leading-[1.8] text-theme-foreground mt-4"
+            numberOfLines={8}
+          >
             {cleanText}
           </Text>
         </Pressable>
@@ -175,7 +180,7 @@ export const TweetCard = ({
               const imageElement = (
                 <ExpoImage
                   source={{ uri: img }}
-                  className="w-36 h-32 rounded-lg bg-zinc-800"
+                  className="w-36 h-32 rounded-lg bg-theme-raised"
                   contentFit="cover"
                 />
               );
@@ -212,8 +217,11 @@ export const TweetCard = ({
           }
           className="flex-row items-center gap-1.5 mt-2"
         >
-          <TwitterLogoIcon size={14} color="#0CA5E9" weight="fill" />
-          <Text className="font-sans-semibold text-sm text-sky-500">
+          <TwitterLogoIcon size={14} color="#0EA5E9" weight="fill" />
+          <Text
+            testID="tweet-brand-label"
+            className={`font-sans-semibold text-sm ${isDark ? 'text-sky-400' : 'text-sky-700'}`}
+          >
             <LocalizedText>Twitter</LocalizedText>
           </Text>
         </Pressable>

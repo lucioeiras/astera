@@ -37,14 +37,14 @@ export const ArticleCard = ({
 
       <View
         testID={compact ? 'pinned-title-container' : undefined}
-        className={`w-full bg-zinc-900/80 rounded-b-xl ${compact ? 'justify-center px-3' : 'p-5 gap-3'}`}
+        className={`w-full bg-theme-surface/80 rounded-b-xl ${compact ? 'justify-center px-3' : 'p-5 gap-3'}`}
         style={compact ? { height: compactHeight / 2 } : undefined}
       >
         <Text
           className={
             compact
-              ? 'font-sans-medium text-lg leading-6 text-zinc-50'
-              : 'font-sans-medium text-lg leading-[1.6] text-zinc-50'
+              ? 'font-sans-medium text-lg leading-6 text-theme-foreground'
+              : 'font-sans-medium text-lg leading-[1.6] text-theme-foreground'
           }
           numberOfLines={compact ? 2 : 3}
         >
@@ -54,7 +54,7 @@ export const ArticleCard = ({
         {!compact && (
           <>
             <View className="flex-row items-center gap-2 mt-1 mb-2">
-              <Text className="font-sans-semibold text-sm text-zinc-400" numberOfLines={1}>
+              <Text className="font-sans-semibold text-sm text-theme-secondary" numberOfLines={1}>
                 {decodeHTML(origin)}
               </Text>
             </View>

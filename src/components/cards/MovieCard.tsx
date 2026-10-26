@@ -1,3 +1,5 @@
+import { useMemo } from 'react';
+import { useAppTheme, type ThemeColors } from '@/lib/theme';
 import { decodeHTML } from 'entities';
 import { Image as ExpoImage } from 'expo-image';
 import { cssInterop } from 'nativewind';
@@ -27,6 +29,8 @@ type FilmPerforationsProps = {
 };
 
 const FilmPerforations = memo(function FilmPerforations({ height }: FilmPerforationsProps) {
+  const { colors: themeColors } = useAppTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
   const effectiveHeight = height > 0 ? height : 240;
   const paddingY = 8;
   const usableHeight = Math.max(0, effectiveHeight - paddingY * 2);
@@ -84,7 +88,7 @@ export const MovieCard = ({
       >
         <ExpoImage
           source={{ uri: poster }}
-          className="w-full bg-zinc-900 rounded-md"
+          className="w-full bg-theme-surface rounded-md"
           style={{ aspectRatio }}
           contentFit="cover"
           transition={200}
@@ -103,7 +107,7 @@ export const MovieCard = ({
       {!hideTitleAndAuthor && (
         <View className="w-full gap-1.5 my-3 items-center">
           <Text
-            className="flex-1 font-sans-medium text-sm leading-[1.3] text-zinc-50 text-center"
+            className="flex-1 font-sans-medium text-sm leading-[1.3] text-theme-foreground text-center"
             numberOfLines={2}
           >
             {cleanTitle}
@@ -116,25 +120,26 @@ export const MovieCard = ({
   );
 };
 
-const styles = StyleSheet.create({
-  perforationsOverlay: {
-    paddingVertical: 8,
-    paddingHorizontal: 8,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    zIndex: 10,
-  },
-  sprocketHole: {
-    width: 6,
-    height: 8.5,
-    borderRadius: 2,
-    backgroundColor: '#09090B',
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: 'rgba(255, 255, 255, 0.12)',
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.35,
-    shadowRadius: 1,
-    elevation: 2,
-  },
-});
+const createStyles = (themeColors: ThemeColors) =>
+  StyleSheet.create({
+    perforationsOverlay: {
+      paddingVertical: 8,
+      paddingHorizontal: 8,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      zIndex: 10,
+    },
+    sprocketHole: {
+      width: 6,
+      height: 8.5,
+      borderRadius: 2,
+      backgroundColor: themeColors.canvas,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: 'rgba(255, 255, 255, 0.12)',
+      shadowColor: '#000000',
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.35,
+      shadowRadius: 1,
+      elevation: 2,
+    },
+  });

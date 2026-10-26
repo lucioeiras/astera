@@ -1,3 +1,4 @@
+import { useAppTheme } from '@/lib/theme';
 import { useVideoPlayer } from 'expo-video';
 import { PauseIcon, PlayIcon } from 'phosphor-react-native';
 import { useEffect, useState } from 'react';
@@ -17,6 +18,7 @@ export function MusicPreviewPlayer({
     playing: boolean;
   } | null>;
 }) {
+  const { colors: themeColors } = useAppTheme();
   useLocalization();
   const [isPlaying, setIsPlaying] = useState(false);
   const player = useVideoPlayer(previewUrl, (p) => {
@@ -59,11 +61,11 @@ export function MusicPreviewPlayer({
       className="flex-row items-center gap-2.5 px-5 py-2.5 rounded-full bg-rose-600/20 border border-rose-500/40 active:opacity-80 mt-3"
     >
       {isPlaying ? (
-        <PauseIcon size={16} color="#FB7185" weight="fill" />
+        <PauseIcon size={16} color={themeColors.pink} weight="fill" />
       ) : (
-        <PlayIcon size={16} color="#FB7185" weight="fill" />
+        <PlayIcon size={16} color={themeColors.pink} weight="fill" />
       )}
-      <Text className="font-sans-medium text-sm text-rose-200">
+      <Text className="font-sans-medium text-sm text-theme-pink">
         {translate(isPlaying ? 'Pause preview' : 'Play 30s preview')}
       </Text>
     </Pressable>

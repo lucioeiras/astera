@@ -1,3 +1,4 @@
+import { useAppTheme } from '@/lib/theme';
 import { Image as ExpoImage } from 'expo-image';
 import { BookmarkSimpleIcon, MusicNotesIcon, XIcon } from 'phosphor-react-native';
 import { useState } from 'react';
@@ -92,6 +93,7 @@ export function SourcePreview({
   compact = false,
   containerClassName = '',
 }: Props) {
+  const { colors: themeColors } = useAppTheme();
   useLocalization();
   const title = item ? getLinkableTitle(item) : pendingMusic.title;
   const typeLabel = translate(item ? getLinkableTypeLabel(item) : 'Song');
@@ -100,7 +102,10 @@ export function SourcePreview({
     ? getPreviewSubtitle(item)
     : [pendingMusic.artist, pendingMusic.album].filter(Boolean).join(' • ');
   const initialRatio = item ? getInitialAspectRatio(item) : 1;
-  const [loadedRatio, setLoadedRatio] = useState<{ image?: string; ratio: number }>({
+  const [loadedRatio, setLoadedRatio] = useState<{
+    image?: string;
+    ratio: number;
+  }>({
     image,
     ratio: initialRatio,
   });
@@ -120,7 +125,7 @@ export function SourcePreview({
   const content = (
     <>
       <View
-        className="rounded-lg bg-zinc-800 overflow-hidden items-center justify-center"
+        className="rounded-lg bg-theme-raised overflow-hidden items-center justify-center"
         style={imageSize}
       >
         {image ? (
@@ -139,26 +144,26 @@ export function SourcePreview({
             }}
           />
         ) : pendingMusic ? (
-          <MusicNotesIcon size={compact ? 16 : 24} color="#71717A" />
+          <MusicNotesIcon size={compact ? 16 : 24} color={themeColors.muted} />
         ) : (
-          <BookmarkSimpleIcon size={compact ? 16 : 24} color="#71717A" />
+          <BookmarkSimpleIcon size={compact ? 16 : 24} color={themeColors.muted} />
         )}
       </View>
       <View className={`flex-1 ${compact ? 'gap-1.5' : 'gap-2'}`}>
         <Text
-          className={`font-sans-medium text-zinc-400 ${compact ? 'text-[10px]' : 'text-xs'}`}
+          className={`font-sans-medium text-theme-secondary ${compact ? 'text-[10px]' : 'text-xs'}`}
           numberOfLines={1}
         >
           {typeLabel}
         </Text>
         <Text
-          className={`font-sans-semibold text-white ${compact ? 'text-xs' : 'text-lg'}`}
+          className={`font-sans-semibold text-theme-foreground ${compact ? 'text-xs' : 'text-lg'}`}
           numberOfLines={2}
         >
           {title}
         </Text>
         {subtitle && !compact ? (
-          <Text className="font-sans text-sm text-zinc-400" numberOfLines={2}>
+          <Text className="font-sans text-sm text-theme-secondary" numberOfLines={2}>
             {subtitle}
           </Text>
         ) : null}
@@ -185,11 +190,11 @@ export function SourcePreview({
         <Pressable
           onPress={onRemove}
           hitSlop={10}
-          className="p-2 rounded-full bg-zinc-800 active:opacity-70"
+          className="p-2 rounded-full bg-theme-raised active:opacity-70"
           accessibilityRole="button"
           accessibilityLabel={translate('Remove source')}
         >
-          <XIcon size={16} color="#E4E4E7" weight="bold" />
+          <XIcon size={16} color={themeColors.heading} weight="bold" />
         </Pressable>
       )}
     </View>

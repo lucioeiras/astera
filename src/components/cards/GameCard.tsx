@@ -1,3 +1,4 @@
+import { useAppTheme } from '@/lib/theme';
 import { decodeHTML } from 'entities';
 import { Image as ExpoImage } from 'expo-image';
 import { cssInterop } from 'nativewind';
@@ -23,18 +24,19 @@ export const GameCard = ({
   hideTitleAndAuthor = false,
   progressStatus,
 }: GameCardProps) => {
+  const { colors: themeColors } = useAppTheme();
   return (
     <View className="w-full">
       <View
         testID="game-cover-container"
-        className="w-full overflow-hidden rounded-xl bg-zinc-900"
+        className="w-full overflow-hidden rounded-xl bg-theme-surface"
         style={{ aspectRatio: 1 }}
       >
         {cover ? (
           <ExpoImage source={{ uri: cover }} className="w-full h-full" contentFit="cover" />
         ) : (
           <View className="flex-1 items-center justify-center">
-            <GameControllerIcon size={44} color="#71717A" weight="duotone" />
+            <GameControllerIcon size={44} color={themeColors.muted} weight="duotone" />
           </View>
         )}
       </View>
@@ -42,7 +44,7 @@ export const GameCard = ({
       {!hideTitleAndAuthor && (
         <View className="w-full my-3 gap-2">
           <Text
-            className="font-sans-semibold text-sm leading-snug text-zinc-50 text-center"
+            className="font-sans-semibold text-sm leading-snug text-theme-foreground text-center"
             numberOfLines={2}
           >
             {decodeHTML(title)}

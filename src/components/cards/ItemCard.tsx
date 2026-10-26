@@ -1,3 +1,4 @@
+import { useAppTheme } from '@/lib/theme';
 import { CheckIcon } from 'phosphor-react-native';
 import { memo } from 'react';
 import { Pressable, View } from 'react-native';
@@ -61,6 +62,7 @@ export const ItemCard = memo(function ItemCard({
   onNoteTextChange,
   onPinnedAspectRatioChange,
 }: ItemCardProps) {
+  const { colors: themeColors } = useAppTheme();
   const isInteractiveTweet =
     item.type === 'tweet' &&
     ((item.images?.length ?? 0) > 1 || Boolean(item.video?.url)) &&
@@ -259,7 +261,10 @@ export const ItemCard = memo(function ItemCard({
         className={item.type === 'music' && !fixedHeight ? 'w-full' : 'w-full overflow-hidden'}
         style={{
           ...(fixedHeight
-            ? { height: '100%', backgroundColor: fixedHeightBackgroundColor ?? '#18181b' }
+            ? {
+                height: '100%',
+                backgroundColor: fixedHeightBackgroundColor ?? themeColors.surface,
+              }
             : {}),
           overflow: item.type === 'music' ? 'visible' : 'hidden',
         }}
@@ -281,10 +286,10 @@ export const ItemCard = memo(function ItemCard({
             className={`w-6 h-6 rounded-full items-center justify-center ${
               isSelected
                 ? 'bg-blue-500 border-2 border-blue-500'
-                : 'bg-zinc-900 border-2 border-white'
+                : 'bg-theme-surface border-2 border-theme-foreground'
             }`}
           >
-            {isSelected && <CheckIcon size={12} color="#ffffff" weight="bold" />}
+            {isSelected && <CheckIcon size={12} color="#FFFFFF" weight="bold" />}
           </View>
         </View>
       )}

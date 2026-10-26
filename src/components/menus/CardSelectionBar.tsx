@@ -1,3 +1,4 @@
+import { useAppTheme } from '@/lib/theme';
 import { FolderPlusIcon, PushPinSimpleIcon, TrashSimpleIcon, XIcon } from 'phosphor-react-native';
 import { Text, View } from 'react-native';
 
@@ -26,6 +27,7 @@ export function CardSelectionBar({
   onTogglePin,
   onCancel,
 }: CardSelectionBarProps) {
+  const { colors: themeColors } = useAppTheme();
   useLocalization();
   if (!visible) return null;
 
@@ -47,14 +49,14 @@ export function CardSelectionBar({
           <Button
             accessibilityLabel={translate('Cancel selection')}
             variant="secondary"
-            icon={<XIcon size={24} color="#FFFFFF" weight="bold" />}
+            icon={<XIcon size={24} color={themeColors.foreground} weight="bold" />}
             onPress={onCancel}
           />
           <Button
             accessibilityLabel={translate('Add selected cards to folder')}
             variant="secondary"
-            contentColor="#FFFFFF"
-            icon={<FolderPlusIcon size={24} color="#FFFFFF" weight="bold" />}
+            contentColor={themeColors.foreground}
+            icon={<FolderPlusIcon size={24} color={themeColors.foreground} weight="bold" />}
             disabled={!hasSelection}
             onPress={onAddToFolder}
           />
@@ -62,8 +64,8 @@ export function CardSelectionBar({
             <Button
               accessibilityLabel={pinActionLabel}
               variant="secondary"
-              contentColor="#FFFFFF"
-              icon={<PushPinSimpleIcon size={24} color="#FFFFFF" weight="bold" />}
+              contentColor={themeColors.foreground}
+              icon={<PushPinSimpleIcon size={24} color={themeColors.foreground} weight="bold" />}
               disabled={!hasSelection}
               onPress={onTogglePin}
             />
@@ -76,7 +78,7 @@ export function CardSelectionBar({
             icon={
               <TrashSimpleIcon
                 size={24}
-                color={hasSelection ? '#EF4444' : '#A1A1AA'}
+                color={hasSelection ? '#EF4444' : themeColors.secondary}
                 weight="bold"
               />
             }
@@ -85,20 +87,20 @@ export function CardSelectionBar({
           />
         </View>
 
-        <Text className="font-sans-medium text-base text-white">
+        <Text className="font-sans-medium text-base text-theme-foreground">
           {hasSelection ? (
             <>
-              <Text className="text-white font-sans-bold">
+              <Text className="text-theme-foreground font-sans-bold">
                 {selectedCount}
                 {'  '}
               </Text>
-              <Text className="text-zinc-400 font-sans-semibold">
+              <Text className="text-theme-secondary font-sans-semibold">
                 {' '}
                 <LocalizedText>selected</LocalizedText>
               </Text>
             </>
           ) : (
-            <Text className="text-zinc-400">
+            <Text className="text-theme-secondary">
               <LocalizedText>Select cards</LocalizedText>
             </Text>
           )}

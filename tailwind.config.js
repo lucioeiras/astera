@@ -4,6 +4,32 @@ module.exports = {
   presets: [require('nativewind/preset')],
   theme: {
     extend: {
+      colors: {
+        theme: Object.fromEntries(
+          [
+            'canvas',
+            'surface',
+            'raised',
+            'border',
+            'strongBorder',
+            'muted',
+            'secondary',
+            'body',
+            'heading',
+            'bright',
+            'foreground',
+            'inverse',
+            'blue',
+            'blueSoft',
+            'green',
+            'yellow',
+            'red',
+            'purple',
+            'pink',
+            'amber',
+          ].map((name) => [name, `rgb(var(--color-${name}) / <alpha-value>)`])
+        ),
+      },
       fontFamily: {
         sans: ['InstrumentSans_400Regular', 'sans-serif'],
         'sans-medium': ['InstrumentSans_500Medium', 'sans-serif'],

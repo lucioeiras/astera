@@ -1,3 +1,4 @@
+import { useAppTheme, type ThemeColors } from '@/lib/theme';
 import {
   BookmarkSimpleIcon,
   CheckCircleIcon,
@@ -57,12 +58,13 @@ const icons = {
   abandoned: ProhibitIcon,
 } as const;
 
-const colors = {
-  want: '#93C5FD',
-  'in-progress': '#FCD34D',
-  completed: '#6EE7B7',
-  abandoned: '#A1A1AA',
-} as const;
+const colors = (themeColors: ThemeColors) =>
+  ({
+    want: themeColors.blueSoft,
+    'in-progress': themeColors.yellow,
+    completed: themeColors.green,
+    abandoned: themeColors.secondary,
+  }) as const;
 
 export function getProgressLabel(type: TrackableItemType, status: MediaProgressStatus): string {
   return translate(labels[type][status]);
@@ -77,11 +79,12 @@ export function ProgressStatus({
   status?: MediaProgressStatus;
   align?: 'center' | 'start';
 }) {
+  const { colors: themeColors } = useAppTheme();
   useLocalization();
   const currentStatus =
     (type === 'article' || type === 'youtube') && status === 'abandoned' ? 'want' : status;
   const Icon = icons[currentStatus];
-  const color = colors[currentStatus];
+  const color = colors(themeColors)[currentStatus];
 
   return (
     <View className={`flex-row items-center gap-1.5 ${align === 'center' ? 'justify-center' : ''}`}>

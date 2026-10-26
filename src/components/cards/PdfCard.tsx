@@ -1,3 +1,4 @@
+import { useAppTheme } from '@/lib/theme';
 import { decodeHTML } from 'entities';
 import { FilePdfIcon } from 'phosphor-react-native';
 import { memo, useState } from 'react';
@@ -16,6 +17,7 @@ export const PdfCard = memo(function PdfCard({
   title,
   hideTitleAndAuthor = false,
 }: PdfCardProps) {
+  const { colors: themeColors } = useAppTheme();
   // Extract a fallback title from the filename if not provided
   const displayTitle = title
     ? decodeHTML(title)
@@ -34,7 +36,7 @@ export const PdfCard = memo(function PdfCard({
   return (
     <View className="w-full items-center">
       <View
-        className="w-full aspect-[0.72] items-center justify-center overflow-hidden rounded-xl bg-zinc-900"
+        className="w-full aspect-[0.72] items-center justify-center overflow-hidden rounded-xl bg-theme-surface"
         onLayout={(event) => {
           const { width, height } = event.nativeEvent.layout;
           if (width > 0 && height > 0) {
@@ -52,9 +54,9 @@ export const PdfCard = memo(function PdfCard({
       {!hideTitleAndAuthor && (
         <View className="w-full items-center my-3 px-5">
           <View className="flex-row items-center justify-center gap-2">
-            <FilePdfIcon size={14} color="#f87171" weight="duotone" />
+            <FilePdfIcon size={14} color={themeColors.red} weight="duotone" />
             <Text
-              className="font-sans-medium text-sm leading-[1.4] text-zinc-50 text-center"
+              className="font-sans-medium text-sm leading-[1.4] text-theme-foreground text-center"
               numberOfLines={1}
             >
               {displayTitle}

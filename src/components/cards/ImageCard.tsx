@@ -33,7 +33,7 @@ export const ImageCard = ({ url, title, onAspectRatioChange }: NoteProps) => {
 
       {title && (
         <Text
-          className="font-sans-medium text-center text-xs text-zinc-400 leading-[1.6] mt-3"
+          className="font-sans-medium text-center text-xs text-theme-secondary leading-[1.6] mt-3"
           numberOfLines={2}
         >
           {title}

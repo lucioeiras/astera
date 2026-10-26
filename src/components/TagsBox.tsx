@@ -1,3 +1,4 @@
+import { useAppTheme } from '@/lib/theme';
 import {
   ArticleIcon,
   ArrowsClockwiseIcon,
@@ -147,6 +148,7 @@ export function TagsBox({
   cardType,
   onCardTypePress,
 }: TagsBoxProps) {
+  const { colors: themeColors } = useAppTheme();
   useLocalization();
   const fallbackInputRef = useRef<TextInput>(null);
   const effectiveInputRef = inputRef ?? fallbackInputRef;
@@ -237,12 +239,28 @@ export function TagsBox({
   };
 
   const baseContainerClass =
-    containerClassName ?? className ?? 'py-6 px-8 border-b border-zinc-800 gap-4';
+    containerClassName ?? className ?? 'py-6 px-8 border-b border-theme-raised gap-4';
   const priorityTagStyles = {
-    blue: { container: 'bg-blue-500/15', text: 'text-blue-300', icon: '#93C5FD' },
-    amber: { container: 'bg-amber-400/15', text: 'text-amber-200', icon: '#FCD34D' },
-    emerald: { container: 'bg-emerald-400/15', text: 'text-emerald-200', icon: '#6EE7B7' },
-    zinc: { container: 'bg-zinc-700/60', text: 'text-zinc-300', icon: '#A1A1AA' },
+    blue: {
+      container: 'bg-blue-500/15',
+      text: 'text-theme-blue',
+      icon: themeColors.blueSoft,
+    },
+    amber: {
+      container: 'bg-amber-400/15',
+      text: 'text-theme-amber',
+      icon: themeColors.yellow,
+    },
+    emerald: {
+      container: 'bg-emerald-400/15',
+      text: 'text-theme-green',
+      icon: themeColors.green,
+    },
+    zinc: {
+      container: 'bg-theme-border/60',
+      text: 'text-theme-body',
+      icon: themeColors.secondary,
+    },
   } as const;
   const priorityTagIcons = {
     want: BookmarkSimpleIcon,
@@ -258,8 +276,8 @@ export function TagsBox({
     <View onLayout={onLayout} className={baseContainerClass}>
       {/* Header */}
       <View className="flex-row items-center gap-2">
-        <TagIcon size={14} color="#E4E4E7" weight="bold" />
-        <Text className="font-sans-semibold text-sm tracking-wider uppercase text-zinc-200">
+        <TagIcon size={14} color={themeColors.heading} weight="bold" />
+        <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
           {title ?? `Tags${tags.length > 0 ? ` (${tags.length})` : ''}`}
         </Text>
       </View>
@@ -303,17 +321,21 @@ export function TagsBox({
             accessibilityLabel={translate('Search %{type} cards', {
               type: translate(cardTypeTag.label),
             })}
-            className="flex-row items-center gap-2 rounded-full bg-zinc-500/15 px-3 py-1 active:opacity-70"
+            className="flex-row items-center gap-2 rounded-full bg-theme-muted/15 px-3 py-1 active:opacity-70"
           >
-            <CardTypeIcon size={12} color="#A1A1AA" weight="bold" />
-            <Text className="font-sans-medium text-base text-zinc-300">{cardTypeTag.label}</Text>
+            <CardTypeIcon size={12} color={themeColors.secondary} weight="bold" />
+            <Text className="font-sans-medium text-base text-theme-body">{cardTypeTag.label}</Text>
           </Pressable>
         ) : null}
 
         {tags.map((tag, idx) => {
           const isFolder = folderTags?.includes(tag.trim()) ?? false;
           const isAuto = autoTags?.includes(tag);
-          const tagColor = isFolder ? '#C4B5FD' : isAuto ? '#A1A1AA' : '#60A5FA';
+          const tagColor = isFolder
+            ? themeColors.purple
+            : isAuto
+              ? themeColors.secondary
+              : themeColors.blue;
           const TagPillIcon = isFolder ? FolderIcon : HashIcon;
 
           const pill = (
@@ -331,12 +353,12 @@ export function TagsBox({
               accessibilityRole="button"
               accessibilityLabel={isFolder ? `Folder ${tag}` : `Tag ${tag}`}
               className={`flex-row items-center gap-2 rounded-full px-3 py-1 active:opacity-70 ${
-                isFolder ? 'bg-violet-500/15' : isAuto ? 'bg-zinc-500/15' : 'bg-blue-500/15'
+                isFolder ? 'bg-violet-500/15' : isAuto ? 'bg-theme-muted/15' : 'bg-blue-500/15'
               }`}
             >
               <TagPillIcon size={12} color={tagColor} weight="bold" />
               <Text
-                className={`font-sans-medium text-base ${isFolder ? 'text-violet-300' : isAuto ? 'text-zinc-300' : 'text-blue-400'}`}
+                className={`font-sans-medium text-base ${isFolder ? 'text-theme-purple' : isAuto ? 'text-theme-body' : 'text-theme-blue'}`}
               >
                 {tag}
               </Text>
@@ -357,10 +379,10 @@ export function TagsBox({
             placeholder={translate(
               tags.length === 0 ? (placeholder ?? 'Add tags here...') : '+ Add more'
             )}
-            placeholderTextColor="#71717A"
+            placeholderTextColor={themeColors.muted}
             returnKeyType="done"
             onSubmitEditing={handleTagInputSubmit}
-            className={`font-sans text-lg leading-tight text-zinc-200 flex-grow min-w-[120px] ${tags.length === 0 ? '' : 'ml-2'}`}
+            className={`font-sans text-lg leading-tight text-theme-heading flex-grow min-w-[120px] ${tags.length === 0 ? '' : 'ml-2'}`}
             style={styles.borderlessInput}
             underlineColorAndroid="transparent"
             autoCapitalize="none"

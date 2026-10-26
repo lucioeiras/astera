@@ -1,3 +1,4 @@
+import { useAppTheme, type ThemeColors } from '@/lib/theme';
 import { Image as ExpoImage } from 'expo-image';
 import {
   ArrowsClockwiseIcon,
@@ -24,32 +25,33 @@ const LABELS: Record<MediaProgressStatus, string> = {
   abandoned: 'Abandoned',
 };
 
-const STATUS_TAGS = {
-  want: {
-    Icon: BookmarkSimpleIcon,
-    container: 'bg-blue-500/15',
-    text: 'text-blue-300',
-    color: '#93C5FD',
-  },
-  'in-progress': {
-    Icon: ClockIcon,
-    container: 'bg-amber-400/15',
-    text: 'text-amber-200',
-    color: '#FCD34D',
-  },
-  completed: {
-    Icon: CheckCircleIcon,
-    container: 'bg-emerald-400/15',
-    text: 'text-emerald-200',
-    color: '#6EE7B7',
-  },
-  abandoned: {
-    Icon: ProhibitIcon,
-    container: 'bg-zinc-700/60',
-    text: 'text-zinc-300',
-    color: '#A1A1AA',
-  },
-} as const;
+const STATUS_TAGS = (themeColors: ThemeColors) =>
+  ({
+    want: {
+      Icon: BookmarkSimpleIcon,
+      container: 'bg-blue-500/15',
+      text: 'text-theme-blue',
+      color: themeColors.blueSoft,
+    },
+    'in-progress': {
+      Icon: ClockIcon,
+      container: 'bg-amber-400/15',
+      text: 'text-theme-amber',
+      color: themeColors.yellow,
+    },
+    completed: {
+      Icon: CheckCircleIcon,
+      container: 'bg-emerald-400/15',
+      text: 'text-theme-green',
+      color: themeColors.green,
+    },
+    abandoned: {
+      Icon: ProhibitIcon,
+      container: 'bg-theme-border/60',
+      text: 'text-theme-body',
+      color: themeColors.secondary,
+    },
+  }) as const;
 
 export function TvShowSeasons({
   seasons,
@@ -58,6 +60,7 @@ export function TvShowSeasons({
   seasons: TvShowSeason[];
   onChange: (seasons: TvShowSeason[]) => void;
 }) {
+  const { colors: themeColors } = useAppTheme();
   useLocalization();
   const [draft, setDraft] = useState(seasons);
 
@@ -75,10 +78,10 @@ export function TvShowSeasons({
   };
 
   return (
-    <View className="gap-6 border-b border-zinc-800 px-6 py-6">
+    <View className="gap-6 border-b border-theme-raised px-6 py-6">
       <View className="flex-row items-center gap-2">
-        <TelevisionIcon size={15} color="#E4E4E7" weight="bold" />
-        <Text className="font-sans-semibold text-sm uppercase tracking-wider text-zinc-200">
+        <TelevisionIcon size={15} color={themeColors.heading} weight="bold" />
+        <Text className="font-sans-semibold text-sm uppercase tracking-wider text-theme-heading">
           <LocalizedText>Seasons</LocalizedText>
         </Text>
       </View>
@@ -87,7 +90,7 @@ export function TvShowSeasons({
         draft.map((season, index) => {
           const status = season.progressStatus ?? 'want';
           const nextStatus = STATUSES[(STATUSES.indexOf(status) + 1) % STATUSES.length];
-          const statusTag = STATUS_TAGS[status];
+          const statusTag = STATUS_TAGS(themeColors)[status];
           const StatusIcon = statusTag.Icon;
           const metadata = [
             season.episodeCount ? `${season.episodeCount} ${translate('episodes')}` : null,
@@ -97,7 +100,7 @@ export function TvShowSeasons({
           return (
             <View
               key={`${season.seasonNumber}-${season.tmdbId ?? ''}`}
-              className={`gap-3 ${index > 0 ? 'border-t border-zinc-800 pt-4' : ''}`}
+              className={`gap-3 ${index > 0 ? 'border-t border-theme-raised pt-4' : ''}`}
             >
               <View className="flex-row gap-3">
                 {season.poster ? (
@@ -105,19 +108,24 @@ export function TvShowSeasons({
                     source={{ uri: season.poster }}
                     accessibilityLabel={`${season.name} poster`}
                     contentFit="cover"
-                    style={{ width: 42, height: 63, borderRadius: 6, backgroundColor: '#18181b' }}
+                    style={{
+                      width: 42,
+                      height: 63,
+                      borderRadius: 6,
+                      backgroundColor: themeColors.surface,
+                    }}
                   />
                 ) : (
-                  <View className="h-[63px] w-[42px] rounded-md bg-zinc-900" />
+                  <View className="h-[63px] w-[42px] rounded-md bg-theme-surface" />
                 )}
                 <View className="flex-1 justify-center gap-3">
                   <View className="flex-row items-center justify-between gap-3">
                     <View className="flex-1 gap-1">
-                      <Text className="font-sans-medium text-base text-zinc-100">
+                      <Text className="font-sans-medium text-base text-theme-bright">
                         {season.name}
                       </Text>
                       {metadata.length > 0 && (
-                        <Text className="font-sans text-xs text-zinc-500">
+                        <Text className="font-sans text-xs text-theme-muted">
                           {metadata.join(' · ')}
                         </Text>
                       )}
@@ -129,7 +137,9 @@ export function TvShowSeasons({
                         title: season.name,
                       })}
                       onPress={() =>
-                        updateSeason(season.seasonNumber, { progressStatus: nextStatus })
+                        updateSeason(season.seasonNumber, {
+                          progressStatus: nextStatus,
+                        })
                       }
                       className={`flex-row items-center gap-1 rounded-full px-2.5 py-1 active:opacity-70 ${statusTag.container}`}
                       hitSlop={4}
@@ -152,7 +162,9 @@ export function TvShowSeasons({
                   rating={season.review?.rating ?? null}
                   comments={season.review?.comments ?? ''}
                   onRatingChange={(rating) =>
-                    updateSeason(season.seasonNumber, { review: { ...season.review, rating } })
+                    updateSeason(season.seasonNumber, {
+                      review: { ...season.review, rating },
+                    })
                   }
                   onCommentsChange={(comments) =>
                     updateSeason(season.seasonNumber, {
@@ -165,7 +177,7 @@ export function TvShowSeasons({
           );
         })
       ) : (
-        <Text className="font-sans text-sm text-zinc-500">
+        <Text className="font-sans text-sm text-theme-muted">
           <LocalizedText>No seasons listed by TMDB.</LocalizedText>
         </Text>
       )}

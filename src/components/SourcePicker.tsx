@@ -1,7 +1,9 @@
+import { ThemedModal as Modal } from '@/components/ThemedModal';
+import { useAppTheme } from '@/lib/theme';
 import { FlashList, type ListRenderItemInfo } from '@shopify/flash-list';
 import { MagnifyingGlassIcon, XIcon } from 'phosphor-react-native';
 import { useCallback, useMemo, useRef, useState } from 'react';
-import { Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Button } from '@/components/Button';
@@ -27,6 +29,7 @@ type Props = {
 };
 
 export function SourcePicker({ visible, items, selectedId, onSelect, onClose }: Props) {
+  const { colors: themeColors } = useAppTheme();
   useLocalization();
   const [query, setQuery] = useState('');
   const inputRef = useRef<TextInput>(null);
@@ -67,24 +70,24 @@ export function SourcePicker({ visible, items, selectedId, onSelect, onClose }: 
 
   return (
     <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
-      <View className="flex-1 bg-zinc-950" style={{ paddingTop: insets.top + 16 }}>
+      <View className="flex-1 bg-theme-canvas" style={{ paddingTop: insets.top + 16 }}>
         {/* Header */}
         <View className="flex-row items-center justify-between px-6 mb-5">
-          <Text className="font-sans-semibold text-2xl text-white">
+          <Text className="font-sans-semibold text-2xl text-theme-foreground">
             <LocalizedText>Select source</LocalizedText>
           </Text>
         </View>
 
         {/* Search Bar */}
-        <View className="flex-row items-center gap-4 border-t border-b border-zinc-800 px-6 mb-4 py-5">
-          <MagnifyingGlassIcon size={20} color="#E4E4E7" />
+        <View className="flex-row items-center gap-4 border-t border-b border-theme-raised px-6 mb-4 py-5">
+          <MagnifyingGlassIcon size={20} color={themeColors.heading} />
           <TextInput
             ref={inputRef}
             value={query}
             onChangeText={setQuery}
             placeholder={translate('Search your library')}
-            placeholderTextColor="#71717A"
-            className="flex-1 font-sans text-xl text-white leading-tight"
+            placeholderTextColor={themeColors.muted}
+            className="flex-1 font-sans text-xl text-theme-foreground leading-tight"
             autoCorrect={false}
             autoCapitalize="none"
             clearButtonMode="never"
@@ -93,10 +96,10 @@ export function SourcePicker({ visible, items, selectedId, onSelect, onClose }: 
             <Pressable
               onPress={handleClear}
               hitSlop={10}
-              className="p-1.5 rounded-full bg-zinc-800 items-center justify-center active:opacity-70"
+              className="p-1.5 rounded-full bg-theme-raised items-center justify-center active:opacity-70"
               accessibilityLabel={translate('Clear search')}
             >
-              <XIcon size={12} color="#E4E4E7" weight="bold" />
+              <XIcon size={12} color={themeColors.heading} weight="bold" />
             </Pressable>
           )}
         </View>
@@ -115,7 +118,7 @@ export function SourcePicker({ visible, items, selectedId, onSelect, onClose }: 
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.contentContainer}
           ListEmptyComponent={
-            <Text className="font-sans text-sm text-zinc-500 text-center">
+            <Text className="font-sans text-sm text-theme-muted text-center">
               {translate(query.trim() ? 'No matching content' : 'No content available to link')}
             </Text>
           }
@@ -133,7 +136,7 @@ export function SourcePicker({ visible, items, selectedId, onSelect, onClose }: 
             <View className="flex-row items-center gap-2">
               <Button
                 accessibilityLabel={translate('Cancel related cards')}
-                icon={<XIcon size={24} color="#FFFFFF" weight="bold" />}
+                icon={<XIcon size={24} color={themeColors.foreground} weight="bold" />}
                 onPress={onClose}
                 text={translate('Cancel')}
               />

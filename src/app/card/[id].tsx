@@ -1,3 +1,4 @@
+import { useAppTheme } from '@/lib/theme';
 import { BlurView } from 'expo-blur';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
@@ -20,6 +21,7 @@ import type { LibraryItemType } from '@/lib/library/types';
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 export default function CardDetailScreen() {
+  const { colors: themeColors, isDark } = useAppTheme();
   const { id } = useLocalSearchParams<{ id: string }>();
   const insets = useSafeAreaInsets();
   const { state, selectTag, selectCardType, setSearchQuery, clearSearchTag } = useLibrary();
@@ -141,7 +143,10 @@ export default function CardDetailScreen() {
           setIsDismissing(false);
           return;
         }
-        router.replace({ pathname: '/board', params: { folderKind: 'tag', folderKey: name } });
+        router.replace({
+          pathname: '/board',
+          params: { folderKind: 'tag', folderKey: name },
+        });
       });
     },
     [isDismissing, translateY, setSearchQuery, clearSearchTag]
@@ -150,7 +155,7 @@ export default function CardDetailScreen() {
   if (!item) {
     return (
       <View className="flex-1 bg-black/70 items-center justify-center">
-        <ActivityIndicator size="large" color="#ffffff" />
+        <ActivityIndicator size="large" color="#FFFFFF" />
       </View>
     );
   }
@@ -158,8 +163,8 @@ export default function CardDetailScreen() {
   return (
     <View style={StyleSheet.absoluteFill} className="flex-1">
       {/* Background Blur + Dark Layer */}
-      <BlurView intensity={64} tint="dark" style={StyleSheet.absoluteFill} />
-      <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0, 0, 0, 0.5)' }]} />
+      <BlurView intensity={64} tint={isDark ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />
+      <View style={[StyleSheet.absoluteFill, { backgroundColor: themeColors.canvas + '80' }]} />
 
       <Animated.View
         style={[
@@ -176,7 +181,7 @@ export default function CardDetailScreen() {
           {...panResponder.panHandlers}
           className="w-full items-center py-2"
         >
-          <View className="w-12 h-1.5 rounded-full bg-zinc-500/70 active:bg-zinc-300" />
+          <View className="w-12 h-1.5 rounded-full bg-theme-muted/70 active:bg-theme-body" />
         </Pressable>
 
         <CardDetailContent

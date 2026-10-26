@@ -1,3 +1,4 @@
+import { useAppTheme } from '@/lib/theme';
 import { Image as ExpoImage } from 'expo-image';
 import { DiscIcon } from 'phosphor-react-native';
 import { useCallback, useRef, useState } from 'react';
@@ -31,15 +32,18 @@ export function CardPreview({
   onTextFocus,
   onDismissEditingTags,
 }: CardPreviewProps) {
+  const { colors: themeColors } = useAppTheme();
   useLocalization();
   const isMusic = item.type === 'music';
   const isNoteOrQuote = item.type === 'note' || item.type === 'quote';
   const displayItem: LibraryItem =
     title && 'title' in item ? ({ ...item, title } as LibraryItem) : item;
   const [isPlayingMusic, setIsPlayingMusic] = useState(false);
-  const musicPlayerRef = useRef<{ play: () => void; pause: () => void; playing: boolean } | null>(
-    null
-  );
+  const musicPlayerRef = useRef<{
+    play: () => void;
+    pause: () => void;
+    playing: boolean;
+  } | null>(null);
   const handleToggleMusic = useCallback(() => {
     if (!musicPlayerRef.current) return;
     if (musicPlayerRef.current.playing) musicPlayerRef.current.pause();
@@ -86,7 +90,7 @@ export function CardPreview({
                 zIndex: 2,
                 borderRadius: 10,
                 overflow: 'hidden',
-                backgroundColor: '#18181b',
+                backgroundColor: themeColors.surface,
                 borderWidth: 1,
                 borderColor: 'rgba(255, 255, 255, 0.12)',
                 shadowColor: '#000000',
@@ -103,8 +107,8 @@ export function CardPreview({
                   contentFit="cover"
                 />
               ) : (
-                <View className="w-full h-full items-center justify-center bg-zinc-800">
-                  <DiscIcon size={64} color="#71717A" weight="duotone" />
+                <View className="w-full h-full items-center justify-center bg-theme-raised">
+                  <DiscIcon size={64} color={themeColors.muted} weight="duotone" />
                 </View>
               )}
 
@@ -150,8 +154,8 @@ export function CardPreview({
                 onFocus={onTextFocus}
                 multiline
                 placeholder={translate('Type quote here...')}
-                placeholderTextColor="#71717A"
-                className="w-full font-sans-medium text-2xl text-white leading-10 text-center mt-6 mb-11"
+                placeholderTextColor={themeColors.muted}
+                className="w-full font-sans-medium text-2xl text-theme-foreground leading-10 text-center mt-6 mb-11"
                 style={{ backgroundColor: 'transparent' }}
                 underlineColorAndroid="transparent"
               />

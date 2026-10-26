@@ -1,3 +1,4 @@
+import { useAppTheme } from '@/lib/theme';
 import { Tabs } from 'expo-router';
 import {
   ArrowCounterClockwiseIcon,
@@ -13,6 +14,7 @@ import { translate, useLocalization } from '@/lib/i18n';
 const iconSize = 28;
 
 export default function TabLayout() {
+  const { colors: themeColors } = useAppTheme();
   useLocalization();
   return (
     <FloatingTabOverlayProvider>
@@ -20,8 +22,8 @@ export default function TabLayout() {
         initialRouteName="board"
         screenOptions={{
           headerShown: false,
-          tabBarActiveTintColor: '#FFFFFF', // tailwind blue-500
-          tabBarInactiveTintColor: '#9F9FA9', // tailwind zinc-500
+          tabBarActiveTintColor: themeColors.foreground, // tailwind blue-500
+          tabBarInactiveTintColor: themeColors.secondary, // tailwind zinc-500
           tabBarBackground: () => <ProgressiveBlur height={160} darkLayerOpacity={0.9} />,
           tabBarStyle: {
             position: 'absolute',

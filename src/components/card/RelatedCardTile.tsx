@@ -19,7 +19,10 @@ export function RelatedCardTile({ item, selected, disabled = false, onPress }: P
       disabled={disabled}
       accessibilityRole={selected === undefined ? 'button' : 'checkbox'}
       accessibilityLabel={getRelatedCardTitle(item)}
-      accessibilityState={{ disabled, ...(selected === undefined ? {} : { checked: selected }) }}
+      accessibilityState={{
+        disabled,
+        ...(selected === undefined ? {} : { checked: selected }),
+      }}
       style={{ paddingHorizontal: 8, paddingBottom: 16, width: '100%' }}
     >
       <View

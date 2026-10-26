@@ -1,3 +1,5 @@
+import { ThemedModal as Modal } from '@/components/ThemedModal';
+import { useAppTheme } from '@/lib/theme';
 import { Image as ExpoImage } from 'expo-image';
 import {
   ArrowLeftIcon,
@@ -11,7 +13,6 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
-  Modal,
   Platform,
   Pressable,
   ScrollView,
@@ -35,6 +36,7 @@ type Props = {
 };
 
 export function MusicLyricsPicker({ visible, onClose, onSelect }: Props) {
+  const { colors: themeColors } = useAppTheme();
   useLocalization();
   const insets = useSafeAreaInsets();
   const searchInputRef = useRef<TextInput>(null);
@@ -48,7 +50,10 @@ export function MusicLyricsPicker({ visible, onClose, onSelect }: Props) {
   const [song, setSong] = useState<MusicMetadata | null>(null);
   const [lyrics, setLyrics] = useState('');
   const [notice, setNotice] = useState('');
-  const [selection, setSelection] = useState<{ anchor: number; end: number } | null>(null);
+  const [selection, setSelection] = useState<{
+    anchor: number;
+    end: number;
+  } | null>(null);
 
   useEffect(() => {
     if (!visible) return;
@@ -169,10 +174,10 @@ export function MusicLyricsPicker({ visible, onClose, onSelect }: Props) {
     <Modal visible={visible} animationType="slide" onRequestClose={handleClose}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        className="flex-1 bg-zinc-950"
+        className="flex-1 bg-theme-canvas"
         style={{ paddingTop: Math.max(insets.top, 16) }}
       >
-        <View className="flex-row items-center px-6 py-5 border-b border-zinc-800">
+        <View className="flex-row items-center px-6 py-5 border-b border-theme-raised">
           <Pressable
             onPress={
               song
@@ -188,17 +193,17 @@ export function MusicLyricsPicker({ visible, onClose, onSelect }: Props) {
             accessibilityLabel={translate(song ? 'Back to song search' : 'Close lyrics picker')}
           >
             {song ? (
-              <ArrowLeftIcon size={24} color="#FFFFFF" />
+              <ArrowLeftIcon size={24} color={themeColors.foreground} />
             ) : (
-              <XIcon size={24} color="#FFFFFF" />
+              <XIcon size={24} color={themeColors.foreground} />
             )}
           </Pressable>
           <View className="flex-1 items-center px-2 gap-0.5">
-            <Text className="font-sans-semibold text-lg text-white">
+            <Text className="font-sans-semibold text-lg text-theme-foreground">
               {translate(song ? 'Select lyrics' : 'Find a song')}
             </Text>
             {song && (
-              <Text className="font-sans text-xs text-zinc-400">
+              <Text className="font-sans text-xs text-theme-secondary">
                 {selectedCount
                   ? translate(selectedCount === 1 ? '1 line selected' : '%{count} lines selected', {
                       count: selectedCount,
@@ -212,30 +217,37 @@ export function MusicLyricsPicker({ visible, onClose, onSelect }: Props) {
 
         {song ? (
           <>
-            <View className="flex-row items-center gap-4 px-8 py-5 border-b border-zinc-800">
+            <View className="flex-row items-center gap-4 px-8 py-5 border-b border-theme-raised">
               {song.cover ? (
                 <ExpoImage
                   source={{ uri: song.cover }}
                   contentFit="cover"
-                  className="w-14 h-14 rounded-lg bg-zinc-800"
+                  className="w-14 h-14 rounded-lg bg-theme-raised"
                 />
               ) : (
-                <View className="w-14 h-14 rounded-lg bg-zinc-800 items-center justify-center">
-                  <MusicNotesIcon size={25} color="#A1A1AA" />
+                <View className="w-14 h-14 rounded-lg bg-theme-raised items-center justify-center">
+                  <MusicNotesIcon size={25} color={themeColors.secondary} />
                 </View>
               )}
               <View className="flex-1 gap-1">
-                <Text className="font-sans-semibold text-base text-white" numberOfLines={1}>
+                <Text
+                  className="font-sans-semibold text-base text-theme-foreground"
+                  numberOfLines={1}
+                >
                   {song.title}
                 </Text>
-                <Text className="font-sans text-sm text-zinc-400" numberOfLines={1}>
+                <Text className="font-sans text-sm text-theme-secondary" numberOfLines={1}>
                   {song.artist}
                 </Text>
               </View>
             </View>
             <ScrollView
               className="flex-1"
-              contentContainerStyle={{ paddingHorizontal: 10, paddingTop: 22, paddingBottom: 32 }}
+              contentContainerStyle={{
+                paddingHorizontal: 10,
+                paddingTop: 22,
+                paddingBottom: 32,
+              }}
               showsVerticalScrollIndicator={false}
             >
               {lines.map((line, index) =>
@@ -244,15 +256,17 @@ export function MusicLyricsPicker({ visible, onClose, onSelect }: Props) {
                     key={index}
                     onPress={() => handleLinePress(index)}
                     accessibilityRole="button"
-                    accessibilityState={{ selected: index >= start && index <= end }}
+                    accessibilityState={{
+                      selected: index >= start && index <= end,
+                    }}
                     accessibilityLabel={translate('Lyric line %{number}: %{line}', {
                       number: index + 1,
                       line,
                     })}
-                    className={`rounded-2xl px-5 py-3 mb-2 ${index >= start && index <= end ? 'bg-zinc-600' : 'active:bg-zinc-900'}`}
+                    className={`rounded-2xl px-5 py-3 mb-2 ${index >= start && index <= end ? 'bg-theme-strongBorder' : 'active:bg-theme-surface'}`}
                   >
                     <Text
-                      className={`font-sans-bold text-2xl leading-9 ${index >= start && index <= end ? 'text-white' : 'text-zinc-500'}`}
+                      className={`font-sans-bold text-2xl leading-9 ${index >= start && index <= end ? 'text-theme-foreground' : 'text-theme-muted'}`}
                     >
                       {line.trim()}
                     </Text>
@@ -271,7 +285,7 @@ export function MusicLyricsPicker({ visible, onClose, onSelect }: Props) {
                 icon={
                   <MusicNotesPlusIcon
                     size={20}
-                    color={selectedCount ? '#FFFFFF' : '#71717A'}
+                    color={selectedCount ? themeColors.foreground : themeColors.muted}
                     weight="bold"
                   />
                 }
@@ -282,35 +296,35 @@ export function MusicLyricsPicker({ visible, onClose, onSelect }: Props) {
         ) : (
           <>
             <View className="px-8 py-6 gap-2">
-              <Text className="font-sans-semibold text-2xl text-white">
+              <Text className="font-sans-semibold text-2xl text-theme-foreground">
                 <LocalizedText>Song lyrics</LocalizedText>
               </Text>
-              <Text className="font-sans text-base text-zinc-400">
+              <Text className="font-sans text-base text-theme-secondary">
                 <LocalizedText>
                   Search the iTunes catalog, then choose a passage for your note.
                 </LocalizedText>
               </Text>
             </View>
-            <View className="flex-row items-center gap-4 px-8 py-5 border-t border-b border-zinc-800">
-              <MagnifyingGlassIcon size={20} color="#D4D4D8" />
+            <View className="flex-row items-center gap-4 px-8 py-5 border-t border-b border-theme-raised">
+              <MagnifyingGlassIcon size={20} color={themeColors.body} />
               <TextInput
                 ref={searchInputRef}
                 value={query}
                 onChangeText={handleQueryChange}
                 placeholder={translate('Search song or artist...')}
-                placeholderTextColor="#71717A"
+                placeholderTextColor={themeColors.muted}
                 autoCapitalize="none"
                 autoCorrect={false}
                 returnKeyType="search"
-                className="flex-1 font-sans text-xl text-white leading-tight"
+                className="flex-1 font-sans text-xl text-theme-foreground leading-tight"
               />
-              {searching ? <ActivityIndicator size="small" color="#A1A1AA" /> : null}
+              {searching ? <ActivityIndicator size="small" color={themeColors.secondary} /> : null}
             </View>
 
             {notice ? (
-              <View className="py-5 px-8 border-b border-zinc-800 flex-row items-center gap-3">
-                <WarningIcon size={14} color="#E4E4E7" />
-                <Text className="font-sans text-sm text-zinc-200">{notice}</Text>
+              <View className="py-5 px-8 border-b border-theme-raised flex-row items-center gap-3">
+                <WarningIcon size={14} color={themeColors.heading} />
+                <Text className="font-sans text-sm text-theme-heading">{notice}</Text>
               </View>
             ) : null}
 
@@ -324,7 +338,7 @@ export function MusicLyricsPicker({ visible, onClose, onSelect }: Props) {
                   key={result.id}
                   onPress={() => handleChooseSong(result)}
                   disabled={loadingLyrics}
-                  className="flex-row items-center gap-4 px-8 py-4 border-b border-zinc-900 active:bg-zinc-900"
+                  className="flex-row items-center gap-4 px-8 py-4 border-b border-theme-surface active:bg-theme-surface"
                   accessibilityRole="button"
                   accessibilityLabel={`${result.title}, ${result.artist}`}
                 >
@@ -332,31 +346,34 @@ export function MusicLyricsPicker({ visible, onClose, onSelect }: Props) {
                     <ExpoImage
                       source={{ uri: result.cover }}
                       contentFit="cover"
-                      className="w-12 h-12 rounded-md bg-zinc-800"
+                      className="w-12 h-12 rounded-md bg-theme-raised"
                     />
                   ) : (
-                    <View className="w-12 h-12 rounded-md bg-zinc-800 items-center justify-center">
-                      <MusicNotesIcon size={22} color="#A1A1AA" />
+                    <View className="w-12 h-12 rounded-md bg-theme-raised items-center justify-center">
+                      <MusicNotesIcon size={22} color={themeColors.secondary} />
                     </View>
                   )}
                   <View className="flex-1 gap-1">
-                    <Text className="font-sans-medium text-base text-zinc-100" numberOfLines={1}>
+                    <Text
+                      className="font-sans-medium text-base text-theme-bright"
+                      numberOfLines={1}
+                    >
                       {result.title}
                     </Text>
-                    <Text className="font-sans text-sm text-zinc-400" numberOfLines={1}>
+                    <Text className="font-sans text-sm text-theme-secondary" numberOfLines={1}>
                       {result.artist}
                       {result.album ? ` • ${result.album}` : ''}
                     </Text>
                   </View>
                   {result.durationMs ? (
-                    <Text className="font-sans text-xs text-zinc-500">
+                    <Text className="font-sans text-xs text-theme-muted">
                       {formatDuration(result.durationMs)}
                     </Text>
                   ) : null}
                 </Pressable>
               ))}
               {!searching && query.trim().length > 1 && results.length === 0 && (
-                <Text className="font-sans text-sm text-zinc-500 text-center py-12">
+                <Text className="font-sans text-sm text-theme-muted text-center py-12">
                   <LocalizedText>No songs found for "</LocalizedText>
                   {query}
                   <LocalizedText>"</LocalizedText>
@@ -365,9 +382,9 @@ export function MusicLyricsPicker({ visible, onClose, onSelect }: Props) {
             </ScrollView>
 
             {loadingLyrics && (
-              <View className="absolute inset-0 bg-zinc-950/80 items-center justify-center gap-4 px-8">
+              <View className="absolute inset-0 bg-theme-canvas/80 items-center justify-center gap-4 px-8">
                 <ActivityIndicator size="large" color="#3B82F6" />
-                <Text className="font-sans-medium text-zinc-200">
+                <Text className="font-sans-medium text-theme-heading">
                   <LocalizedText>Loading lyrics...</LocalizedText>
                 </Text>
 
@@ -375,10 +392,10 @@ export function MusicLyricsPicker({ visible, onClose, onSelect }: Props) {
                   onPress={handleCancelLyrics}
                   accessibilityRole="button"
                   accessibilityLabel={translate('Cancel loading lyrics')}
-                  className="mt-4 flex-row items-center justify-center gap-2 rounded-xl border border-zinc-700 px-8 py-3 active:bg-zinc-900"
+                  className="mt-4 flex-row items-center justify-center gap-2 rounded-xl border border-theme-border px-8 py-3 active:bg-theme-surface"
                 >
-                  <XIcon size={18} color="#FFFFFF" weight="bold" />
-                  <Text className="font-sans-semibold text-base text-white">
+                  <XIcon size={18} color={themeColors.foreground} weight="bold" />
+                  <Text className="font-sans-semibold text-base text-theme-foreground">
                     <LocalizedText>Cancel</LocalizedText>
                   </Text>
                 </Pressable>

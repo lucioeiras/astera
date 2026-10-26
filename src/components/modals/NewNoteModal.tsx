@@ -1,3 +1,5 @@
+import { ThemedModal as Modal } from '@/components/ThemedModal';
+import { useAppTheme, type ThemeColors } from '@/lib/theme';
 import {
   ArrowLeftIcon,
   BookmarkSimpleIcon,
@@ -26,7 +28,6 @@ import {
   Alert,
   Keyboard,
   KeyboardAvoidingView,
-  Modal,
   Platform,
   Pressable,
   ScrollView,
@@ -77,6 +78,8 @@ export function NewNoteModal({
   onDismiss,
   onSaved,
 }: NewNoteModalProps) {
+  const { colors: themeColors } = useAppTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
   useLocalization();
   const { addMusicItem, addTextItem, updateItem, getTags, state } = useLibrary();
   const insets = useSafeAreaInsets();
@@ -90,7 +93,10 @@ export function NewNoteModal({
   const [isFormattingOpen, setIsFormattingOpen] = useState(false);
   const [isPreviewingMarkdown, setIsPreviewingMarkdown] = useState(false);
   const [text, setText] = useState(editingItem?.text ?? initialText ?? '');
-  const [selection, setSelection] = useState<TextSelection>({ start: 0, end: 0 });
+  const [selection, setSelection] = useState<TextSelection>({
+    start: 0,
+    end: 0,
+  });
   const [title, setTitle] = useState(editingItem?.title ?? '');
   const [author, setAuthor] = useState('');
   const [tags, setTags] = useState<string[]>(editingItem?.tags ?? []);
@@ -320,46 +326,50 @@ export function NewNoteModal({
     });
   };
 
-  const formattingControls: { label: string; type: NoteLineType; icon: React.ReactNode }[] = [
+  const formattingControls: {
+    label: string;
+    type: NoteLineType;
+    icon: React.ReactNode;
+  }[] = [
     {
       label: 'H1',
       type: 'heading-1',
-      icon: <TextHOneIcon size={20} color="#FFFFFF" weight="bold" />,
+      icon: <TextHOneIcon size={20} color={themeColors.foreground} weight="bold" />,
     },
     {
       label: 'H2',
       type: 'heading-2',
-      icon: <TextHTwoIcon size={20} color="#FFFFFF" weight="bold" />,
+      icon: <TextHTwoIcon size={20} color={themeColors.foreground} weight="bold" />,
     },
     {
       label: 'H3',
       type: 'heading-3',
-      icon: <TextHThreeIcon size={20} color="#FFFFFF" weight="bold" />,
+      icon: <TextHThreeIcon size={20} color={themeColors.foreground} weight="bold" />,
     },
     {
       label: 'Text',
       type: 'paragraph',
-      icon: <ParagraphIcon size={20} color="#FFFFFF" weight="bold" />,
+      icon: <ParagraphIcon size={20} color={themeColors.foreground} weight="bold" />,
     },
     {
       label: 'Bullet list',
       type: 'bullet',
-      icon: <ListBulletsIcon size={20} color="#FFFFFF" weight="bold" />,
+      icon: <ListBulletsIcon size={20} color={themeColors.foreground} weight="bold" />,
     },
     {
       label: 'Numbered list',
       type: 'numbered',
-      icon: <ListNumbersIcon size={20} color="#FFFFFF" weight="bold" />,
+      icon: <ListNumbersIcon size={20} color={themeColors.foreground} weight="bold" />,
     },
     {
       label: 'To-do list',
       type: 'todo',
-      icon: <ListChecksIcon size={20} color="#FFFFFF" weight="bold" />,
+      icon: <ListChecksIcon size={20} color={themeColors.foreground} weight="bold" />,
     },
     {
       label: 'Quote',
       type: 'quote',
-      icon: <QuotesIcon size={20} color="#FFFFFF" weight="bold" />,
+      icon: <QuotesIcon size={20} color={themeColors.foreground} weight="bold" />,
     },
   ];
 
@@ -404,7 +414,7 @@ export function NewNoteModal({
                     }}
                   />
                 ) : (
-                  <Text className="font-sans text-lg text-zinc-500">
+                  <Text className="font-sans text-lg text-theme-muted">
                     <LocalizedText>Your Markdown preview will appear here.</LocalizedText>
                   </Text>
                 )}
@@ -417,7 +427,7 @@ export function NewNoteModal({
                   onChangeMarkdown={setText}
                   onSelectionChange={setSelection}
                   placeholder={translate('Type here...')}
-                  placeholderTextColor="#71717A"
+                  placeholderTextColor={themeColors.muted}
                 />
               </View>
             )
@@ -431,10 +441,10 @@ export function NewNoteModal({
             >
               {/* Header */}
               <View className="gap-3 p-8">
-                <Text className="font-sans-semibold text-2xl text-white">
+                <Text className="font-sans-semibold text-2xl text-theme-foreground">
                   {isQuote ? 'Quote info' : 'Note info'}
                 </Text>
-                <Text className="font-sans text-base text-zinc-400 leading-relaxed">
+                <Text className="font-sans text-base text-theme-secondary leading-relaxed">
                   {isQuote
                     ? 'Add an author, title and tags to organize this quote on your board.'
                     : 'Add a title and tags to organize this note on your board.'}
@@ -442,37 +452,37 @@ export function NewNoteModal({
               </View>
 
               {/* Title Section */}
-              <View className="flex-row items-center gap-4 py-5 px-8 border-t border-b border-zinc-800">
-                <TextTIcon size={20} color="#D4D4D8" />
+              <View className="flex-row items-center gap-4 py-5 px-8 border-t border-b border-theme-raised">
+                <TextTIcon size={20} color={themeColors.body} />
 
                 <TextInput
                   ref={titleInputRef}
                   value={title}
                   onChangeText={setTitle}
                   placeholder={translate('Add a title to this note')}
-                  placeholderTextColor="#71717A"
+                  placeholderTextColor={themeColors.muted}
                   returnKeyType="next"
                   onSubmitEditing={() => {
                     (isQuote ? authorInputRef : tagsInputRef).current?.focus();
                   }}
-                  className="w-full font-sans text-xl text-white leading-tight"
+                  className="w-full font-sans text-xl text-theme-foreground leading-tight"
                   style={styles.borderlessInput}
                   underlineColorAndroid="transparent"
                 />
               </View>
 
               {isQuote && (
-                <View className="flex-row items-center gap-4 py-5 px-8 border-b border-zinc-800">
-                  <UserIcon size={20} color="#D4D4D8" />
+                <View className="flex-row items-center gap-4 py-5 px-8 border-b border-theme-raised">
+                  <UserIcon size={20} color={themeColors.body} />
                   <TextInput
                     ref={authorInputRef}
                     value={author}
                     onChangeText={setAuthor}
                     placeholder={translate('Add an author to this quote')}
-                    placeholderTextColor="#71717A"
+                    placeholderTextColor={themeColors.muted}
                     returnKeyType="next"
                     onSubmitEditing={() => tagsInputRef.current?.focus()}
-                    className="flex-1 font-sans text-xl text-white leading-tight"
+                    className="flex-1 font-sans text-xl text-theme-foreground leading-tight"
                     style={styles.borderlessInput}
                     underlineColorAndroid="transparent"
                   />
@@ -499,24 +509,24 @@ export function NewNoteModal({
                   pendingMusic={lyricsSong}
                   onChange={() => setIsLyricsPickerOpen(true)}
                   onRemove={() => setLyricsSong(null)}
-                  containerClassName="px-8 py-6 border-b border-zinc-800"
+                  containerClassName="px-8 py-6 border-b border-theme-raised"
                 />
               ) : linkedItem && isLinkableItem(linkedItem) ? (
                 <SourcePreview
                   item={linkedItem}
                   onChange={() => setIsLinkPickerOpen(true)}
                   onRemove={() => setLinkedItemId(undefined)}
-                  containerClassName="px-8 py-6 border-b border-zinc-800"
+                  containerClassName="px-8 py-6 border-b border-theme-raised"
                 />
               ) : (
                 <Pressable
                   onPress={() => setIsLinkPickerOpen(true)}
                   accessibilityRole="button"
                   accessibilityLabel={translate('Add source')}
-                  className="flex-row items-center gap-4 py-5 px-8 border-b border-zinc-800"
+                  className="flex-row items-center gap-4 py-5 px-8 border-b border-theme-raised"
                 >
-                  <BookmarkSimpleIcon size={20} color="#FFFFFF" />
-                  <Text className="font-sans-semibold text-lg text-white">
+                  <BookmarkSimpleIcon size={20} color={themeColors.foreground} />
+                  <Text className="font-sans-semibold text-lg text-theme-foreground">
                     <LocalizedText>Add source</LocalizedText>
                   </Text>
                 </Pressable>
@@ -536,19 +546,19 @@ export function NewNoteModal({
                   accessibilityLabel={translate('Cancel formatting')}
                   onPress={() => setIsFormattingOpen(false)}
                   disabled={saving}
-                  icon={<ArrowLeftIcon size={20} color="#FFFFFF" weight="bold" />}
+                  icon={<ArrowLeftIcon size={20} color={themeColors.foreground} weight="bold" />}
                 />
                 <Button
                   accessibilityLabel={translate('Bold')}
                   onPress={() => applyFormatting('bold')}
                   disabled={saving}
-                  icon={<TextBIcon size={20} color="#FFFFFF" weight="bold" />}
+                  icon={<TextBIcon size={20} color={themeColors.foreground} weight="bold" />}
                 />
                 <Button
                   accessibilityLabel={translate('Italic')}
                   onPress={() => applyFormatting('italic')}
                   disabled={saving}
-                  icon={<TextItalicIcon size={20} color="#FFFFFF" weight="bold" />}
+                  icon={<TextItalicIcon size={20} color={themeColors.foreground} weight="bold" />}
                 />
                 {formattingControls.map(({ label, type, icon }) => (
                   <Button
@@ -566,14 +576,14 @@ export function NewNoteModal({
                   accessibilityLabel={translate('Cancel')}
                   onPress={handleClose}
                   disabled={saving}
-                  icon={<XIcon size={20} color="#FFFFFF" weight="bold" />}
+                  icon={<XIcon size={20} color={themeColors.foreground} weight="bold" />}
                 />
                 {view === 'editor' && !isPreviewingMarkdown && (
                   <Button
                     accessibilityLabel={translate('Open text formatting')}
                     onPress={() => setIsFormattingOpen(true)}
                     disabled={saving}
-                    icon={<TextTIcon size={20} color="#FFFFFF" weight="bold" />}
+                    icon={<TextTIcon size={20} color={themeColors.foreground} weight="bold" />}
                   />
                 )}
                 {view === 'editor' && (
@@ -584,7 +594,7 @@ export function NewNoteModal({
                     icon={
                       <MusicNotesIcon
                         size={20}
-                        color={lyricsSong ? '#3B82F6' : '#FFFFFF'}
+                        color={lyricsSong ? '#3B82F6' : themeColors.foreground}
                         weight="bold"
                       />
                     }
@@ -600,9 +610,9 @@ export function NewNoteModal({
                     disabled={saving}
                     icon={
                       isPreviewingMarkdown ? (
-                        <NotePencilIcon size={20} color="#FFFFFF" weight="bold" />
+                        <NotePencilIcon size={20} color={themeColors.foreground} weight="bold" />
                       ) : (
-                        <EyeIcon size={20} color="#FFFFFF" weight="bold" />
+                        <EyeIcon size={20} color={themeColors.foreground} weight="bold" />
                       )
                     }
                   />
@@ -612,14 +622,18 @@ export function NewNoteModal({
                     accessibilityLabel={translate('Note info')}
                     onPress={handleSwitchToInfo}
                     icon={
-                      <InfoIcon size={20} color={hasInfo ? '#3B82F6' : '#FFFFFF'} weight="bold" />
+                      <InfoIcon
+                        size={20}
+                        color={hasInfo ? '#3B82F6' : themeColors.foreground}
+                        weight="bold"
+                      />
                     }
                   />
                 ) : (
                   <Button
                     accessibilityLabel={translate('Back to note editor')}
                     onPress={handleSwitchToEditor}
-                    icon={<NotePencilIcon size={20} color="#FFFFFF" weight="bold" />}
+                    icon={<NotePencilIcon size={20} color={themeColors.foreground} weight="bold" />}
                     text={translate('Note')}
                   />
                 )}
@@ -631,9 +645,13 @@ export function NewNoteModal({
                   disabled={!canSave}
                   icon={
                     saving ? (
-                      <ActivityIndicator size={20} color="#000000" />
+                      <ActivityIndicator size={20} color={themeColors.inverse} />
                     ) : (
-                      <CheckIcon size={20} color={canSave ? '#000000' : '#71717A'} weight="bold" />
+                      <CheckIcon
+                        size={20}
+                        color={canSave ? themeColors.inverse : themeColors.muted}
+                        weight="bold"
+                      />
                     )
                   }
                 />
@@ -658,19 +676,20 @@ export function NewNoteModal({
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    width: '100%',
-    backgroundColor: '#09090B',
-  },
-  scrollContent: {
-    flexGrow: 1,
-    paddingVertical: 20,
-    paddingBottom: 128,
-  },
-  borderlessInput: {
-    borderWidth: 0,
-    backgroundColor: 'transparent',
-  },
-});
+const createStyles = (themeColors: ThemeColors) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      width: '100%',
+      backgroundColor: themeColors.canvas,
+    },
+    scrollContent: {
+      flexGrow: 1,
+      paddingVertical: 20,
+      paddingBottom: 128,
+    },
+    borderlessInput: {
+      borderWidth: 0,
+      backgroundColor: 'transparent',
+    },
+  });

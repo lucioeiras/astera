@@ -1,3 +1,4 @@
+import { useAppTheme } from '@/lib/theme';
 import { AddActionIconSlot } from '@/components/AddActionIconSlot';
 import { buildAudioWaveform, normalizeAudioMetering } from '@/lib/library/audioWaveform';
 import {
@@ -25,6 +26,7 @@ import { LocalizedText } from '@/components/LocalizedText';
 import { translate, useLocalization } from '@/lib/i18n';
 
 export default function AddElementScreen() {
+  const { colors: themeColors } = useAppTheme();
   useLocalization();
   const { controlItem, controlToken } = useLocalSearchParams<{
     controlItem?: string;
@@ -60,7 +62,10 @@ export default function AddElementScreen() {
           );
           return;
         }
-        await setAudioModeAsync({ playsInSilentMode: true, allowsRecording: true });
+        await setAudioModeAsync({
+          playsInSilentMode: true,
+          allowsRecording: true,
+        });
         await recorder.prepareToRecordAsync();
         waveformSamplesRef.current = [];
         recorder.record();
@@ -70,7 +75,10 @@ export default function AddElementScreen() {
           waveformSamplesRef.current.push(normalizeAudioMetering(finalMetering));
         }
         await recorder.stop();
-        await setAudioModeAsync({ playsInSilentMode: true, allowsRecording: false });
+        await setAudioModeAsync({
+          playsInSilentMode: true,
+          allowsRecording: false,
+        });
         if (recorder.uri)
           router.replace({
             pathname: '/board',
@@ -218,7 +226,10 @@ export default function AddElementScreen() {
   };
 
   const handleOpenTvShow = () => {
-    router.replace({ pathname: '/board', params: { newTvShow: Date.now().toString() } });
+    router.replace({
+      pathname: '/board',
+      params: { newTvShow: Date.now().toString() },
+    });
   };
 
   const handleOpenMusic = () => {
@@ -280,7 +291,7 @@ export default function AddElementScreen() {
   }, [controlItem, controlToken]);
 
   return (
-    <SafeAreaView className="flex-1 bg-zinc-950 items-center justify-center" edges={['top']}>
+    <SafeAreaView className="flex-1 bg-theme-canvas items-center justify-center" edges={['top']}>
       <ScrollView
         contentContainerStyle={{
           alignItems: 'center',
@@ -292,10 +303,10 @@ export default function AddElementScreen() {
         showsVerticalScrollIndicator={false}
         className="w-full"
       >
-        <Text className="font-sans-medium text-2xl text-white text-center w-full">
+        <Text className="font-sans-medium text-2xl text-theme-foreground text-center w-full">
           {translate('Save anything you want')}
         </Text>
-        <Text className="font-sans text-base text-zinc-400 mt-3 text-center max-w-96">
+        <Text className="font-sans text-base text-theme-secondary mt-3 text-center max-w-96">
           <LocalizedText>
             You can record audio, add notes, to-do's, quotes, links, movies, TV shows, games, PDFs,
             songs, X posts and Reddit posts, articles, books or YouTube videos
@@ -306,20 +317,20 @@ export default function AddElementScreen() {
           <View className="flex-row flex-wrap justify-center gap-4">
             <Pressable
               onPress={handleOpenNote}
-              className="p-6 max-w-80 justify-between h-40 w-40 bg-white active:opacity-80 rounded-xl"
+              className="p-6 max-w-80 justify-between h-40 w-40 bg-theme-foreground active:opacity-80 rounded-xl"
             >
-              <NotePencilIcon size={24} color="#000" weight="duotone" />
-              <Text className="font-sans-semibold text-lg text-zinc-950">
+              <NotePencilIcon size={24} color={themeColors.inverse} weight="duotone" />
+              <Text className="font-sans-semibold text-lg text-theme-canvas">
                 <LocalizedText>A thought to remember</LocalizedText>
               </Text>
             </Pressable>
 
             <Pressable
               onPress={handleOpenLink}
-              className="p-6 max-w-80 justify-between h-40 w-40 bg-zinc-900 active:opacity-80 rounded-xl"
+              className="p-6 max-w-80 justify-between h-40 w-40 bg-theme-surface active:opacity-80 rounded-xl"
             >
-              <LinkIcon size={24} color="#fff" weight="duotone" />
-              <Text className="font-sans-semibold text-lg text-white">
+              <LinkIcon size={24} color={themeColors.foreground} weight="duotone" />
+              <Text className="font-sans-semibold text-lg text-theme-foreground">
                 <LocalizedText>Found on the web</LocalizedText>
               </Text>
             </Pressable>
@@ -329,16 +340,16 @@ export default function AddElementScreen() {
             <Pressable
               onPress={handlePickPdf}
               disabled={isPickingPdf}
-              className="p-6 max-w-80 justify-between h-40 w-40 bg-zinc-900 active:opacity-70 rounded-xl"
+              className="p-6 max-w-80 justify-between h-40 w-40 bg-theme-surface active:opacity-70 rounded-xl"
             >
               <AddActionIconSlot>
                 {isPickingPdf ? (
-                  <ActivityIndicator size={24} color="#fff" />
+                  <ActivityIndicator size={24} color={themeColors.foreground} />
                 ) : (
-                  <FilePdfIcon size={24} color="#fff" weight="duotone" />
+                  <FilePdfIcon size={24} color={themeColors.foreground} weight="duotone" />
                 )}
               </AddActionIconSlot>
-              <Text className="font-sans-semibold text-lg text-white">
+              <Text className="font-sans-semibold text-lg text-theme-foreground">
                 <LocalizedText>Important document</LocalizedText>
               </Text>
             </Pressable>
@@ -346,16 +357,16 @@ export default function AddElementScreen() {
             <Pressable
               onPress={handlePickMedia}
               disabled={isPickingMedia}
-              className="p-6 max-w-80 justify-between h-40 w-40 bg-zinc-900 active:opacity-70 rounded-xl"
+              className="p-6 max-w-80 justify-between h-40 w-40 bg-theme-surface active:opacity-70 rounded-xl"
             >
               <AddActionIconSlot>
                 {isPickingMedia ? (
-                  <ActivityIndicator size={24} color="#fff" />
+                  <ActivityIndicator size={24} color={themeColors.foreground} />
                 ) : (
-                  <ImagesSquareIcon size={24} color="#fff" weight="duotone" />
+                  <ImagesSquareIcon size={24} color={themeColors.foreground} weight="duotone" />
                 )}
               </AddActionIconSlot>
-              <Text className="font-sans-semibold text-lg text-white">
+              <Text className="font-sans-semibold text-lg text-theme-foreground">
                 <LocalizedText>A photo or video</LocalizedText>
               </Text>
             </Pressable>
@@ -367,20 +378,20 @@ export default function AddElementScreen() {
               accessibilityLabel={translate(
                 recorderState.isRecording ? 'Stop audio recording' : 'Record audio'
               )}
-              className="p-6 max-w-80 justify-between h-40 w-40 bg-zinc-900 active:opacity-70 rounded-xl"
+              className="p-6 max-w-80 justify-between h-40 w-40 bg-theme-surface active:opacity-70 rounded-xl"
             >
               <AddActionIconSlot>
                 {isRecordingAction ? (
-                  <ActivityIndicator size={24} color="#fff" />
+                  <ActivityIndicator size={24} color={themeColors.foreground} />
                 ) : (
                   <MicrophoneIcon
                     size={24}
-                    color={recorderState.isRecording ? '#F87171' : '#fff'}
+                    color={recorderState.isRecording ? themeColors.red : themeColors.foreground}
                     weight="duotone"
                   />
                 )}
               </AddActionIconSlot>
-              <Text className="font-sans-semibold text-lg text-white">
+              <Text className="font-sans-semibold text-lg text-theme-foreground">
                 {recorderState.isRecording
                   ? translate('Recording · %{seconds}s', {
                       seconds: Math.floor((recorderState.durationMillis ?? 0) / 1000),
@@ -397,10 +408,10 @@ export default function AddElementScreen() {
                 })
               }
               accessibilityRole="button"
-              className="p-6 max-w-80 justify-between h-40 w-40 bg-zinc-900 active:opacity-80 rounded-xl"
+              className="p-6 max-w-80 justify-between h-40 w-40 bg-theme-surface active:opacity-80 rounded-xl"
             >
-              <FilmSlateIcon size={24} color="#fff" weight="duotone" />
-              <Text className="font-sans-semibold text-lg text-white">
+              <FilmSlateIcon size={24} color={themeColors.foreground} weight="duotone" />
+              <Text className="font-sans-semibold text-lg text-theme-foreground">
                 <LocalizedText>To watch, read, or play</LocalizedText>
               </Text>
             </Pressable>

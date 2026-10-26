@@ -153,3 +153,34 @@ describe('CardActions', () => {
     expect(queryByLabelText('Transcribe audio')).toBeTruthy();
   });
 });
+
+it('shows the primary play log action only when enabled', async () => {
+  const item: LibraryItem = { ...base, id: 'game', type: 'game', title: 'Game', cover: '' };
+  const onLogPlay = jest.fn();
+  const view = await render(
+    <CardActions item={item} {...makeActions()} showLogPlay onLogPlay={onLogPlay} />
+  );
+  await fireEvent.press(view.getByLabelText('Log play'));
+  expect(onLogPlay).toHaveBeenCalledTimes(1);
+  await view.rerender(<CardActions item={item} {...makeActions()} onLogPlay={onLogPlay} />);
+  expect(view.queryByLabelText('Log play')).toBeNull();
+});
+
+it.each([undefined, 'want', 'in-progress', 'completed', 'abandoned'] as const)(
+  'hides Copy for games with status %s while preserving Share',
+  async (progressStatus) => {
+    const actions = makeActions();
+    const item: LibraryItem = {
+      ...base,
+      id: 'game',
+      type: 'game',
+      title: 'Game',
+      cover: '',
+      progressStatus,
+    };
+    const view = await render(<CardActions item={item} {...actions} />);
+    expect(view.queryByLabelText('Copy')).toBeNull();
+    await fireEvent.press(view.getByLabelText('Share'));
+    expect(actions.onShare).toHaveBeenCalledTimes(1);
+  }
+);

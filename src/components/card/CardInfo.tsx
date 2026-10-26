@@ -1,3 +1,4 @@
+import { useAppTheme } from '@/lib/theme';
 import { formatDuration } from '@/lib/music/itunes';
 import { decodeHTML } from 'entities';
 import {
@@ -52,6 +53,7 @@ function formatFileSize(bytes: number): string {
 }
 
 export function CardInfo({ item }: { item: LibraryItem }) {
+  const { colors: themeColors } = useAppTheme();
   const { language } = useLocalization();
   const locale = language === 'pt' ? 'pt-BR' : 'en-US';
   const gameInfo =
@@ -71,31 +73,35 @@ export function CardInfo({ item }: { item: LibraryItem }) {
   return (
     <View className="py-6 px-6 gap-4">
       <View className="flex-row items-center gap-2">
-        <InfoIcon size={14} color="#E4E4E7" weight="bold" />
-        <Text className="font-sans-semibold text-sm tracking-wider uppercase text-zinc-200">
+        <InfoIcon size={14} color={themeColors.heading} weight="bold" />
+        <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
           <LocalizedText>Info</LocalizedText>
         </Text>
       </View>
 
       <View className="flex-row items-center gap-2.5">
-        <CalendarBlankIcon size={16} color="#A1A1AA" />
-        <Text className="font-sans text-base text-zinc-400">
-          {translate('Added %{date}', { date: formatDateAdded(item.createdAt, locale) })}
+        <CalendarBlankIcon size={16} color={themeColors.secondary} />
+        <Text className="font-sans text-base text-theme-secondary">
+          {translate('Added %{date}', {
+            date: formatDateAdded(item.createdAt, locale),
+          })}
         </Text>
       </View>
 
       {item.type === 'pdf' && item.originalFileName && (
         <View className="flex-row items-center gap-2.5">
-          <FilePdfIcon size={16} color="#A1A1AA" />
-          <Text className="flex-1 font-sans text-base text-zinc-400" numberOfLines={2}>
+          <FilePdfIcon size={16} color={themeColors.secondary} />
+          <Text className="flex-1 font-sans text-base text-theme-secondary" numberOfLines={2}>
             {item.originalFileName}
           </Text>
         </View>
       )}
       {item.type === 'pdf' && typeof item.fileSize === 'number' && item.fileSize > 0 && (
         <View className="flex-row items-center gap-2.5">
-          <InfoIcon size={16} color="#A1A1AA" />
-          <Text className="font-sans text-base text-zinc-400">{formatFileSize(item.fileSize)}</Text>
+          <InfoIcon size={16} color={themeColors.secondary} />
+          <Text className="font-sans text-base text-theme-secondary">
+            {formatFileSize(item.fileSize)}
+          </Text>
         </View>
       )}
 
@@ -103,8 +109,8 @@ export function CardInfo({ item }: { item: LibraryItem }) {
         <>
           {Boolean(item.releaseDate) && (
             <View className="flex-row items-center gap-2.5">
-              <CalendarCheckIcon size={16} color="#A1A1AA" />
-              <Text className="font-sans text-base text-zinc-400">
+              <CalendarCheckIcon size={16} color={themeColors.secondary} />
+              <Text className="font-sans text-base text-theme-secondary">
                 <LocalizedText>Released </LocalizedText>
                 {item.releaseDate}
               </Text>
@@ -112,32 +118,32 @@ export function CardInfo({ item }: { item: LibraryItem }) {
           )}
           {Boolean(item.director) && (
             <View className="flex-row items-center gap-2.5">
-              <UserIcon size={16} color="#A1A1AA" />
-              <Text className="font-sans text-base text-zinc-400">
+              <UserIcon size={16} color={themeColors.secondary} />
+              <Text className="font-sans text-base text-theme-secondary">
                 {decodeHTML(item.director || '')}
               </Text>
             </View>
           )}
           {Boolean(item.runtime) && (
             <View className="flex-row items-center gap-2.5">
-              <ClockIcon size={16} color="#A1A1AA" />
-              <Text className="font-sans text-base text-zinc-400">
+              <ClockIcon size={16} color={themeColors.secondary} />
+              <Text className="font-sans text-base text-theme-secondary">
                 {item.runtime} <LocalizedText>min</LocalizedText>
               </Text>
             </View>
           )}
           {typeof item.voteAverage === 'number' && item.voteAverage > 0 && (
             <View className="flex-row items-center gap-2.5">
-              <StarIcon size={16} color="#A1A1AA" />
-              <Text className="font-sans text-base text-zinc-400">
+              <StarIcon size={16} color={themeColors.secondary} />
+              <Text className="font-sans text-base text-theme-secondary">
                 {item.voteAverage.toFixed(1)} <LocalizedText>/ 10</LocalizedText>
               </Text>
             </View>
           )}
           {Boolean(item.genres && item.genres.length > 0) && (
             <View className="flex-row items-center gap-2.5">
-              <FilmSlateIcon size={16} color="#A1A1AA" />
-              <Text className="font-sans text-base text-zinc-400">
+              <FilmSlateIcon size={16} color={themeColors.secondary} />
+              <Text className="font-sans text-base text-theme-secondary">
                 {item.genres?.map(decodeHTML).join(', ')}
               </Text>
             </View>
@@ -149,8 +155,8 @@ export function CardInfo({ item }: { item: LibraryItem }) {
         <>
           {Boolean(item.firstAirDate) && (
             <View className="flex-row items-center gap-2.5">
-              <CalendarCheckIcon size={16} color="#A1A1AA" />
-              <Text className="font-sans text-base text-zinc-400">
+              <CalendarCheckIcon size={16} color={themeColors.secondary} />
+              <Text className="font-sans text-base text-theme-secondary">
                 <LocalizedText>First aired </LocalizedText>
                 {item.firstAirDate}
               </Text>
@@ -158,16 +164,18 @@ export function CardInfo({ item }: { item: LibraryItem }) {
           )}
           {typeof item.voteAverage === 'number' && item.voteAverage > 0 && (
             <View className="flex-row items-center gap-2.5">
-              <StarIcon size={16} color="#A1A1AA" />
-              <Text className="font-sans text-base text-zinc-400">
+              <StarIcon size={16} color={themeColors.secondary} />
+              <Text className="font-sans text-base text-theme-secondary">
                 {item.voteAverage.toFixed(1)} <LocalizedText>/ 10</LocalizedText>
               </Text>
             </View>
           )}
           {!!item.genres?.length && (
             <View className="flex-row items-center gap-2.5">
-              <FilmSlateIcon size={16} color="#A1A1AA" />
-              <Text className="font-sans text-base text-zinc-400">{item.genres.join(', ')}</Text>
+              <FilmSlateIcon size={16} color={themeColors.secondary} />
+              <Text className="font-sans text-base text-theme-secondary">
+                {item.genres.join(', ')}
+              </Text>
             </View>
           )}
         </>
@@ -177,28 +185,32 @@ export function CardInfo({ item }: { item: LibraryItem }) {
         <>
           {item.musicKind === 'album' && (
             <View className="flex-row items-center gap-2.5">
-              <DiscIcon size={16} color="#A1A1AA" />
-              <Text className="font-sans text-base text-zinc-400">
+              <DiscIcon size={16} color={themeColors.secondary} />
+              <Text className="font-sans text-base text-theme-secondary">
                 <LocalizedText>Album</LocalizedText>
               </Text>
             </View>
           )}
           {item.album && (
             <View className="flex-row items-center gap-2.5">
-              <DiscIcon size={16} color="#A1A1AA" />
-              <Text className="font-sans text-base text-zinc-400">{decodeHTML(item.album)}</Text>
+              <DiscIcon size={16} color={themeColors.secondary} />
+              <Text className="font-sans text-base text-theme-secondary">
+                {decodeHTML(item.album)}
+              </Text>
             </View>
           )}
           {item.genre && (
             <View className="flex-row items-center gap-2.5">
-              <MusicNotesIcon size={16} color="#A1A1AA" />
-              <Text className="font-sans text-base text-zinc-400">{decodeHTML(item.genre)}</Text>
+              <MusicNotesIcon size={16} color={themeColors.secondary} />
+              <Text className="font-sans text-base text-theme-secondary">
+                {decodeHTML(item.genre)}
+              </Text>
             </View>
           )}
           {Boolean(item.durationMs) && (
             <View className="flex-row items-center gap-2.5">
-              <ClockIcon size={16} color="#A1A1AA" />
-              <Text className="font-sans text-base text-zinc-400">
+              <ClockIcon size={16} color={themeColors.secondary} />
+              <Text className="font-sans text-base text-theme-secondary">
                 {formatDuration(item.durationMs)}
               </Text>
             </View>
@@ -210,8 +222,8 @@ export function CardInfo({ item }: { item: LibraryItem }) {
         <>
           {gameInfo?.released && (
             <View className="flex-row items-center gap-2.5">
-              <CalendarCheckIcon size={16} color="#A1A1AA" />
-              <Text className="font-sans text-base text-zinc-400">
+              <CalendarCheckIcon size={16} color={themeColors.secondary} />
+              <Text className="font-sans text-base text-theme-secondary">
                 <LocalizedText>Released </LocalizedText>
                 {formatDateAdded(gameInfo.released, locale)}
               </Text>
@@ -219,48 +231,48 @@ export function CardInfo({ item }: { item: LibraryItem }) {
           )}
           {!!gameInfo?.rating && gameInfo.rating > 0 && (
             <View className="flex-row items-center gap-2.5">
-              <StarIcon size={16} color="#A1A1AA" />
-              <Text className="font-sans text-base text-zinc-400">
+              <StarIcon size={16} color={themeColors.secondary} />
+              <Text className="font-sans text-base text-theme-secondary">
                 {gameInfo.rating.toFixed(1)} <LocalizedText>/ 5</LocalizedText>
               </Text>
             </View>
           )}
           {!!gameInfo?.metacritic && gameInfo.metacritic > 0 && (
             <View className="flex-row items-center gap-2.5">
-              <StarIcon size={16} color="#A1A1AA" />
-              <Text className="font-sans text-base text-zinc-400">
+              <StarIcon size={16} color={themeColors.secondary} />
+              <Text className="font-sans text-base text-theme-secondary">
                 {gameInfo.metacritic} <LocalizedText>/ 100</LocalizedText>
               </Text>
             </View>
           )}
           {!!gameInfo?.platforms?.length && (
             <View className="flex-row items-center gap-2.5">
-              <GameControllerIcon size={16} color="#A1A1AA" />
-              <Text className="flex-1 font-sans text-base text-zinc-400">
+              <GameControllerIcon size={16} color={themeColors.secondary} />
+              <Text className="flex-1 font-sans text-base text-theme-secondary">
                 {gameInfo.platforms.join(', ')}
               </Text>
             </View>
           )}
           {!!gameInfo?.genres?.length && (
             <View className="flex-row items-center gap-2.5">
-              <JoystickIcon size={16} color="#A1A1AA" />
-              <Text className="flex-1 font-sans text-base text-zinc-400">
+              <JoystickIcon size={16} color={themeColors.secondary} />
+              <Text className="flex-1 font-sans text-base text-theme-secondary">
                 {gameInfo.genres.map(decodeHTML).join(', ')}
               </Text>
             </View>
           )}
           {!!gameInfo?.developers?.length && (
             <View className="flex-row items-center gap-2.5">
-              <UsersThreeIcon size={16} color="#A1A1AA" />
-              <Text className="flex-1 font-sans text-base text-zinc-400">
+              <UsersThreeIcon size={16} color={themeColors.secondary} />
+              <Text className="flex-1 font-sans text-base text-theme-secondary">
                 {gameInfo.developers.map(decodeHTML).join(', ')}
               </Text>
             </View>
           )}
           {!!gameInfo?.publishers?.length && (
             <View className="flex-row items-center gap-2.5">
-              <CheckSquareIcon size={16} color="#A1A1AA" />
-              <Text className="flex-1 font-sans text-base text-zinc-400">
+              <CheckSquareIcon size={16} color={themeColors.secondary} />
+              <Text className="flex-1 font-sans text-base text-theme-secondary">
                 {gameInfo.publishers.map(decodeHTML).join(', ')}
               </Text>
             </View>
@@ -271,28 +283,30 @@ export function CardInfo({ item }: { item: LibraryItem }) {
       {item.type === 'book' && (
         <>
           <View className="flex-row items-center gap-2.5">
-            <BarcodeIcon size={16} color="#A1A1AA" />
-            <Text className="font-sans text-base text-zinc-400">
+            <BarcodeIcon size={16} color={themeColors.secondary} />
+            <Text className="font-sans text-base text-theme-secondary">
               <LocalizedText>ISBN </LocalizedText>
               {item.isbn}
             </Text>
           </View>
           {item.authors && item.authors.length > 0 && (
             <View className="flex-row items-center gap-2.5">
-              <UserIcon size={16} color="#A1A1AA" />
-              <Text className="font-sans text-base text-zinc-400">{item.authors.join(', ')}</Text>
+              <UserIcon size={16} color={themeColors.secondary} />
+              <Text className="font-sans text-base text-theme-secondary">
+                {item.authors.join(', ')}
+              </Text>
             </View>
           )}
           {item.publisher && (
             <View className="flex-row items-center gap-2.5">
-              <CheckSquareIcon size={16} color="#A1A1AA" />
-              <Text className="font-sans text-base text-zinc-400">{item.publisher}</Text>
+              <CheckSquareIcon size={16} color={themeColors.secondary} />
+              <Text className="font-sans text-base text-theme-secondary">{item.publisher}</Text>
             </View>
           )}
           {item.pageCount && (
             <View className="flex-row items-center gap-2.5">
-              <BookOpenIcon size={16} color="#A1A1AA" />
-              <Text className="font-sans text-base text-zinc-400">
+              <BookOpenIcon size={16} color={themeColors.secondary} />
+              <Text className="font-sans text-base text-theme-secondary">
                 {item.pageCount} <LocalizedText>pages</LocalizedText>
               </Text>
             </View>

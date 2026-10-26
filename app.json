@@ -6,7 +6,7 @@
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "anything",
-    "userInterfaceStyle": "dark",
+    "userInterfaceStyle": "automatic",
     "locales": {
       "en": {
         "ios": {
@@ -26,6 +26,7 @@
       }
     },
     "ios": {
+      "appleTeamId": "J7V84PT2S6",
       "icon": "./assets/expo.icon",
       "bundleIdentifier": "com.diegoeiras.anything",
       "requireFullScreen": true,

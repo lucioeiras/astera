@@ -201,3 +201,23 @@ describe('related card parsing', () => {
     ).toEqual(['other', 'missing']);
   });
 });
+
+it('accepts legacy games and filters malformed play logs without dropping valid same-day entries', () => {
+  const game = { ...base, type: 'game', title: 'Game', cover: 'cover.jpg' };
+  expect(parseItem(game)).toMatchObject({ playLogs: [] });
+  const log = { id: 'a', date: '2024-02-29', createdAt: '2024-03-01T12:00:00Z' };
+  expect(
+    parseItem({
+      ...game,
+      playLogs: [
+        log,
+        { ...log, id: 'b', noteId: 'note' },
+        null,
+        { ...log, date: '2026-02-29' },
+        { ...log, createdAt: 'invalid' },
+        { ...log, noteId: 4 },
+        { ...log, id: '' },
+      ],
+    })
+  ).toMatchObject({ playLogs: [log, { ...log, id: 'b', noteId: 'note' }] });
+});

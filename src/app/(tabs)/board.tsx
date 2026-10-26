@@ -1,3 +1,4 @@
+import { useAppTheme } from '@/lib/theme';
 import { FlashList, type FlashListRef, type ListRenderItemInfo } from '@shopify/flash-list';
 import { BlurTargetView } from 'expo-blur';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
@@ -88,6 +89,7 @@ const BoardGridContext = createContext<BoardGridContextType>({
 });
 
 export default function BoardScreen() {
+  const { colors: themeColors } = useAppTheme();
   const { language } = useLocalization();
   const locale = language === 'pt' ? 'pt-BR' : 'en-US';
   const boardListRef = useRef<FlashListRef<LibraryItem>>(null);
@@ -214,7 +216,10 @@ export default function BoardScreen() {
   }, []);
   const handleSearchChange = useCallback((text: string) => setSearchQuery(text), [setSearchQuery]);
   const itemColsRef = useRef<Map<number, number>>(new Map());
-  const [lastIndices, setLastIndices] = useState<{ col0: number; col1: number }>({
+  const [lastIndices, setLastIndices] = useState<{
+    col0: number;
+    col1: number;
+  }>({
     col0: -1,
     col1: -1,
   });
@@ -270,7 +275,10 @@ export default function BoardScreen() {
           activeAddModalRef.current = null;
           router.replace({
             pathname: '/add',
-            params: { controlItem: 'image', controlToken: action.token ?? Date.now().toString() },
+            params: {
+              controlItem: 'image',
+              controlToken: action.token ?? Date.now().toString(),
+            },
           });
           break;
         }
@@ -282,7 +290,10 @@ export default function BoardScreen() {
           activeAddModalRef.current = null;
           router.replace({
             pathname: '/add',
-            params: { controlItem: 'pdf', controlToken: action.token ?? Date.now().toString() },
+            params: {
+              controlItem: 'pdf',
+              controlToken: action.token ?? Date.now().toString(),
+            },
           });
           break;
         }
@@ -293,14 +304,20 @@ export default function BoardScreen() {
         activeAddModalRef.current = null;
         router.replace({
           pathname: '/add',
-          params: { controlItem: 'video', controlToken: action.token ?? Date.now().toString() },
+          params: {
+            controlItem: 'video',
+            controlToken: action.token ?? Date.now().toString(),
+          },
         });
         break;
       case 'audio':
         activeAddModalRef.current = null;
         router.replace({
           pathname: '/add',
-          params: { controlItem: 'audio', controlToken: action.token ?? Date.now().toString() },
+          params: {
+            controlItem: 'audio',
+            controlToken: action.token ?? Date.now().toString(),
+          },
         });
         break;
     }
@@ -714,7 +731,9 @@ export default function BoardScreen() {
         await updateItems(
           reordered.map((item, index) => ({
             itemId: item.id,
-            updates: { pinnedAt: new Date(firstPinnedAt + index).toISOString() },
+            updates: {
+              pinnedAt: new Date(firstPinnedAt + index).toISOString(),
+            },
           }))
         );
       } catch (error) {
@@ -849,9 +868,9 @@ export default function BoardScreen() {
         )}
 
         {hasIssues && (
-          <View className="mb-4 flex-row gap-2 rounded-xl bg-amber-950/60 p-3">
-            <WarningIcon size={16} color="#fbbf24" weight="fill" />
-            <Text className="flex-1 font-sans text-xs text-amber-200">
+          <View className="mb-4 flex-row gap-2 rounded-xl bg-theme-amber/10 p-3">
+            <WarningIcon size={16} color={themeColors.amber} weight="fill" />
+            <Text className="flex-1 font-sans text-xs text-theme-amber">
               {state.result.issues.length} <LocalizedText>file(s) skipped:</LocalizedText>{' '}
               {state.result.issues.map((i) => `${i.file} (${i.reason})`).join(', ')}
             </Text>
@@ -859,7 +878,7 @@ export default function BoardScreen() {
         )}
 
         {hasDownloads && (
-          <Text className="mb-4 font-sans text-xs text-zinc-500">
+          <Text className="mb-4 font-sans text-xs text-theme-muted">
             {state.result.pendingDownloads}{' '}
             <LocalizedText>item(s) still downloading from iCloud…</LocalizedText>
           </Text>
@@ -876,6 +895,7 @@ export default function BoardScreen() {
     handleCardPress,
     handleReorderPinnedItem,
     handleRemovePinnedItem,
+    themeColors.amber,
   ]);
 
   const renderEmpty = useCallback(() => {
@@ -917,7 +937,9 @@ export default function BoardScreen() {
                           : 'No cards with tag #%{tag}',
                         { tag: searchTag, query: queryLabel ?? '' }
                       )
-                    : translate('No cards matching "%{query}"', { query: queryLabel ?? '' })
+                    : translate('No cards matching "%{query}"', {
+                        query: queryLabel ?? '',
+                      })
           }
         >
           <Pressable
@@ -928,9 +950,9 @@ export default function BoardScreen() {
               clearFolderFilter();
               clearDateFilter();
             }}
-            className="mt-6 rounded-full bg-zinc-800 px-5 py-2.5 active:opacity-80"
+            className="mt-6 rounded-full bg-theme-raised px-5 py-2.5 active:opacity-80"
           >
-            <Text className="font-sans-medium text-sm text-zinc-200">
+            <Text className="font-sans-medium text-sm text-theme-heading">
               <LocalizedText>Clear filters</LocalizedText>
             </Text>
           </Pressable>
@@ -945,10 +967,10 @@ export default function BoardScreen() {
       >
         <Pressable
           onPress={() => router.push('/add')}
-          className="mt-8 flex-row items-center justify-center gap-2 rounded-full bg-white px-5 py-3"
+          className="mt-8 flex-row items-center justify-center gap-2 rounded-full bg-theme-foreground px-5 py-3"
         >
-          <PlusIcon size={18} color="#000000" />
-          <Text className="font-sans-semibold text-base text-black">
+          <PlusIcon size={18} color={themeColors.inverse} />
+          <Text className="font-sans-semibold text-base text-theme-inverse">
             <LocalizedText>Add new item</LocalizedText>
           </Text>
         </Pressable>
@@ -969,6 +991,7 @@ export default function BoardScreen() {
     clearFolderFilter,
     clearDateFilter,
     locale,
+    themeColors.inverse,
   ]);
 
   useFocusEffect(
@@ -984,9 +1007,9 @@ export default function BoardScreen() {
               <Button
                 accessibilityLabel={translate('Add new item')}
                 variant="primary"
-                shadowColor="#FFFFFF"
+                shadowColor={themeColors.foreground}
                 shadowOpacity={0.24}
-                icon={<PlusIcon size={24} color="#09090B" weight="bold" />}
+                icon={<PlusIcon size={24} color={themeColors.canvas} weight="bold" />}
                 onPress={() => router.push('/add')}
               />
             }
@@ -1017,7 +1040,13 @@ export default function BoardScreen() {
                   ]
                 : []),
               ...(searchTag
-                ? [{ kind: 'tag' as const, label: searchTag, onRemove: clearSearchTag }]
+                ? [
+                    {
+                      kind: 'tag' as const,
+                      label: searchTag,
+                      onRemove: clearSearchTag,
+                    },
+                  ]
                 : []),
             ]}
             visible={state.status === 'ready' && !isEditing}
@@ -1069,16 +1098,18 @@ export default function BoardScreen() {
       handleDismissToast,
       isToastVisible,
       restoreBackup?.length,
+      themeColors.foreground,
+      themeColors.canvas,
     ])
   );
 
   return (
     <View style={{ flex: 1 }} collapsable={false}>
       <Sortable.PortalProvider>
-        <View className="flex-1 bg-zinc-950">
+        <View className="flex-1 bg-theme-canvas">
           {state.status === 'loading' && (
             <View className="flex-1 items-center justify-center">
-              <ActivityIndicator color="#a1a1aa" />
+              <ActivityIndicator color={themeColors.secondary} />
             </View>
           )}
 
@@ -1086,9 +1117,9 @@ export default function BoardScreen() {
             <Centered title={translate("Couldn't open the library")} message={state.error}>
               <Pressable
                 onPress={goBack}
-                className="mt-6 rounded-full bg-zinc-800 px-5 py-2.5 active:opacity-80"
+                className="mt-6 rounded-full bg-theme-raised px-5 py-2.5 active:opacity-80"
               >
-                <Text className="font-sans-medium text-sm text-zinc-200">
+                <Text className="font-sans-medium text-sm text-theme-heading">
                   <LocalizedText>Choose another folder</LocalizedText>
                 </Text>
               </Pressable>
@@ -1119,7 +1150,7 @@ export default function BoardScreen() {
                         <RefreshControl
                           refreshing={refreshing}
                           onRefresh={refresh}
-                          tintColor="#a1a1aa"
+                          tintColor={themeColors.secondary}
                         />
                       }
                       ListHeaderComponent={renderHeader}
@@ -1206,8 +1237,8 @@ function Centered({
 }) {
   return (
     <View className="flex-1 items-center justify-center px-8">
-      <Text className="font-sans-medium text-lg text-zinc-100">{title}</Text>
-      <Text className="mt-2 text-center font-sans text-base text-zinc-500">{message}</Text>
+      <Text className="font-sans-medium text-lg text-theme-bright">{title}</Text>
+      <Text className="mt-2 text-center font-sans text-base text-theme-muted">{message}</Text>
       {children}
     </View>
   );

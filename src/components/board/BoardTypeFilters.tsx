@@ -18,7 +18,7 @@ import {
 } from 'phosphor-react-native';
 import { ScrollView } from 'react-native';
 
-import { TypeFilterButton } from '@/components/menus/TypeFilterButton';
+import { Button } from '@/components/Button';
 import { CARD_TYPE_LABELS } from '@/lib/library/activity';
 import { ITEM_TYPES, type LibraryItemType } from '@/lib/library/types';
 import { translate, useLocalization } from '@/lib/i18n';
@@ -62,10 +62,13 @@ export function BoardTypeFilters({
       {ITEM_TYPES.map((type) => {
         const Icon = CARD_TYPE_ICONS[type];
         return (
-          <TypeFilterButton
+          <Button
             key={type}
-            label={translate(CARD_TYPE_LABELS[type])}
-            icon={Icon}
+            accessibilityLabel={translate(CARD_TYPE_LABELS[type])}
+            text={translate(CARD_TYPE_LABELS[type])}
+            icon={<Icon size={20} weight="bold" />}
+            size="small"
+            variant={selectedType === type ? 'primary' : 'secondary'}
             selected={selectedType === type}
             onPress={() => onSelect(type)}
           />

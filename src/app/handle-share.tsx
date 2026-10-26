@@ -36,7 +36,11 @@ function cardFromPayload(payload: SharePayload): IncomingCard | null {
   ) {
     return {
       kind: 'image',
-      asset: { uri: value, fileName: fileNameFromUri(value), mimeType: payload.mimeType },
+      asset: {
+        uri: value,
+        fileName: fileNameFromUri(value),
+        mimeType: payload.mimeType,
+      },
     };
   }
 
@@ -46,7 +50,11 @@ function cardFromPayload(payload: SharePayload): IncomingCard | null {
   ) {
     return {
       kind: 'pdf',
-      asset: { uri: value, fileName: fileNameFromUri(value), mimeType: 'application/pdf' },
+      asset: {
+        uri: value,
+        fileName: fileNameFromUri(value),
+        mimeType: 'application/pdf',
+      },
     };
   }
 
@@ -76,13 +84,13 @@ export default function HandleShareScreen() {
   };
 
   return (
-    <View className="flex-1 bg-zinc-950 items-center justify-center px-8">
+    <View className="flex-1 bg-theme-canvas items-center justify-center px-8">
       {!card && (
         <>
-          <Text className="font-sans-semibold text-xl text-white text-center">
+          <Text className="font-sans-semibold text-xl text-theme-foreground text-center">
             <LocalizedText>Nothing to add from this share</LocalizedText>
           </Text>
-          <Text className="font-sans text-base text-zinc-400 text-center mt-3">
+          <Text className="font-sans text-base text-theme-secondary text-center mt-3">
             <LocalizedText>Share a link, text, image, or PDF to create a card.</LocalizedText>
           </Text>
           <Pressable onPress={finish} className="bg-blue-500 rounded-xl px-6 py-3 mt-6">

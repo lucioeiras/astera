@@ -1,3 +1,4 @@
+import { useAppTheme } from '@/lib/theme';
 import { decodeHTML } from 'entities';
 import { Image as ExpoImage } from 'expo-image';
 import { FilmSlateIcon, GameControllerIcon, UsersThreeIcon } from 'phosphor-react-native';
@@ -9,33 +10,34 @@ import { getProfileUrl } from '@/lib/movies/tmdb';
 import { LocalizedText } from '@/components/LocalizedText';
 
 export function CardMediaDetails({ item }: { item: LibraryItem }) {
+  const { colors: themeColors } = useAppTheme();
   const gameDescription = item.type === 'game' ? cleanRawgDescription(item.description || '') : '';
   return (
     <>
       {/* Movie Overview Section */}
       {item.type === 'movie' && Boolean(item.overview) && (
-        <View className="py-6 px-6 border-b border-zinc-800 gap-3">
+        <View className="py-6 px-6 border-b border-theme-raised gap-3">
           <View className="flex-row items-center gap-2">
-            <FilmSlateIcon size={14} color="#E4E4E7" weight="bold" />
-            <Text className="font-sans-semibold text-sm tracking-wider uppercase text-zinc-200">
+            <FilmSlateIcon size={14} color={themeColors.heading} weight="bold" />
+            <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
               <LocalizedText>Overview</LocalizedText>
             </Text>
           </View>
-          <Text className="font-sans text-base text-zinc-300 leading-relaxed">
+          <Text className="font-sans text-base text-theme-body leading-relaxed">
             {decodeHTML(item.overview || '')}
           </Text>
         </View>
       )}
 
       {item.type === 'tvshow' && Boolean(item.overview) && (
-        <View className="py-6 px-6 border-b border-zinc-800 gap-3">
+        <View className="py-6 px-6 border-b border-theme-raised gap-3">
           <View className="flex-row items-center gap-2">
-            <FilmSlateIcon size={14} color="#E4E4E7" weight="bold" />
-            <Text className="font-sans-semibold text-sm tracking-wider uppercase text-zinc-200">
+            <FilmSlateIcon size={14} color={themeColors.heading} weight="bold" />
+            <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
               <LocalizedText>Overview</LocalizedText>
             </Text>
           </View>
-          <Text className="font-sans text-base text-zinc-300 leading-relaxed">
+          <Text className="font-sans text-base text-theme-body leading-relaxed">
             {decodeHTML(item.overview || '')}
           </Text>
         </View>
@@ -43,15 +45,15 @@ export function CardMediaDetails({ item }: { item: LibraryItem }) {
 
       {/* Movie Cast Section */}
       {item.type === 'movie' && (item.cast?.length ?? 0) > 0 && (
-        <View className="py-6 px-6 border-b border-zinc-800 gap-3">
+        <View className="py-6 px-6 border-b border-theme-raised gap-3">
           <View className="flex-row items-center justify-between">
             <View className="flex-row items-center gap-2">
-              <UsersThreeIcon size={14} color="#E4E4E7" weight="bold" />
-              <Text className="font-sans-semibold text-sm tracking-wider uppercase text-zinc-200">
+              <UsersThreeIcon size={14} color={themeColors.heading} weight="bold" />
+              <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
                 <LocalizedText>Cast</LocalizedText>
               </Text>
             </View>
-            <Text className="font-sans text-xs text-zinc-500">
+            <Text className="font-sans text-xs text-theme-muted">
               <LocalizedText>Top </LocalizedText>
               {Math.min(item.cast?.length ?? 0, 20)} <LocalizedText>of </LocalizedText>
               {item.cast?.length ?? 0}
@@ -63,11 +65,15 @@ export function CardMediaDetails({ item }: { item: LibraryItem }) {
             nestedScrollEnabled
             showsHorizontalScrollIndicator={false}
             style={{ marginHorizontal: -24 }}
-            contentContainerStyle={{ gap: 12, paddingLeft: 24, paddingRight: 24 }}
+            contentContainerStyle={{
+              gap: 12,
+              paddingLeft: 24,
+              paddingRight: 24,
+            }}
           >
             {(item.cast ?? []).slice(0, 20).map((person, index) => (
               <View key={`${person.id}-${index}`} className="w-28 gap-3">
-                <View className="w-28 h-36 rounded-lg overflow-hidden bg-zinc-900 items-center justify-center">
+                <View className="w-28 h-36 rounded-lg overflow-hidden bg-theme-surface items-center justify-center">
                   {person.profilePath ? (
                     <ExpoImage
                       source={{ uri: getProfileUrl(person.profilePath) }}
@@ -75,7 +81,7 @@ export function CardMediaDetails({ item }: { item: LibraryItem }) {
                       contentFit="cover"
                     />
                   ) : (
-                    <Text className="font-sans-semibold text-2xl text-zinc-500">
+                    <Text className="font-sans-semibold text-2xl text-theme-muted">
                       {person.name
                         .split(/\s+/)
                         .filter(Boolean)
@@ -85,11 +91,14 @@ export function CardMediaDetails({ item }: { item: LibraryItem }) {
                     </Text>
                   )}
                 </View>
-                <Text className="font-sans-medium text-sm text-zinc-100" numberOfLines={2}>
+                <Text className="font-sans-medium text-sm text-theme-bright" numberOfLines={2}>
                   {decodeHTML(person.name)}
                 </Text>
                 {person.character ? (
-                  <Text className="font-sans text-xs text-zinc-400 -mt-1.5" numberOfLines={2}>
+                  <Text
+                    className="font-sans text-xs text-theme-secondary -mt-1.5"
+                    numberOfLines={2}
+                  >
                     {decodeHTML(person.character)}
                   </Text>
                 ) : null}
@@ -101,15 +110,15 @@ export function CardMediaDetails({ item }: { item: LibraryItem }) {
 
       {/* Game Overview Section */}
       {item.type === 'game' && (
-        <View className="py-6 px-6 border-b border-zinc-800 gap-3">
+        <View className="py-6 px-6 border-b border-theme-raised gap-3">
           <View className="flex-row items-center gap-2">
-            <GameControllerIcon size={14} color="#E4E4E7" weight="bold" />
-            <Text className="font-sans-semibold text-sm tracking-wider uppercase text-zinc-200">
+            <GameControllerIcon size={14} color={themeColors.heading} weight="bold" />
+            <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
               <LocalizedText>About</LocalizedText>
             </Text>
           </View>
           {gameDescription ? (
-            <Text className="font-sans text-base text-zinc-300 leading-relaxed">
+            <Text className="font-sans text-base text-theme-body leading-relaxed">
               {gameDescription}
             </Text>
           ) : null}

@@ -1,3 +1,5 @@
+import { useAppTheme, type ThemeColors } from '@/lib/theme';
+import { useMemo } from 'react';
 import { CheckIcon } from 'phosphor-react-native';
 import { Pressable, Text, View } from 'react-native';
 
@@ -8,16 +10,46 @@ type MarkdownNoteProps = {
   compact?: boolean;
 };
 
-const HEADING_STYLES = [
-  { fontSize: 34, lineHeight: 64, fontFamily: 'InstrumentSans_700Bold', color: '#FFFFFF' },
-  { fontSize: 29, lineHeight: 48, fontFamily: 'InstrumentSans_700Bold', color: '#FFFFFF' },
-  { fontSize: 25, lineHeight: 40, fontFamily: 'InstrumentSans_600SemiBold', color: '#F4F4F5' },
-  { fontSize: 22, lineHeight: 36, fontFamily: 'InstrumentSans_600SemiBold', color: '#F4F4F5' },
-  { fontSize: 20, lineHeight: 30, fontFamily: 'InstrumentSans_500Medium', color: '#E4E4E7' },
-  { fontSize: 18, lineHeight: 28, fontFamily: 'InstrumentSans_500Medium', color: '#D4D4D8' },
+const HEADING_STYLES = (themeColors: ThemeColors) => [
+  {
+    fontSize: 34,
+    lineHeight: 64,
+    fontFamily: 'InstrumentSans_700Bold',
+    color: themeColors.foreground,
+  },
+  {
+    fontSize: 29,
+    lineHeight: 48,
+    fontFamily: 'InstrumentSans_700Bold',
+    color: themeColors.foreground,
+  },
+  {
+    fontSize: 25,
+    lineHeight: 40,
+    fontFamily: 'InstrumentSans_600SemiBold',
+    color: themeColors.bright,
+  },
+  {
+    fontSize: 22,
+    lineHeight: 36,
+    fontFamily: 'InstrumentSans_600SemiBold',
+    color: themeColors.bright,
+  },
+  {
+    fontSize: 20,
+    lineHeight: 30,
+    fontFamily: 'InstrumentSans_500Medium',
+    color: themeColors.heading,
+  },
+  {
+    fontSize: 18,
+    lineHeight: 28,
+    fontFamily: 'InstrumentSans_500Medium',
+    color: themeColors.body,
+  },
 ];
 
-function renderInline(value: string) {
+function renderInline(value: string, themeColors: ThemeColors) {
   const parts = value.split(/(\*\*[^*]+\*\*|`[^`]+`|\*[^*]+\*)/g);
   return parts.map((part, index) => {
     const bold = part.startsWith('**') && part.endsWith('**');
@@ -29,7 +61,7 @@ function renderInline(value: string) {
         style={[
           bold ? { fontWeight: '700' } : null,
           italic ? { fontStyle: 'italic' } : null,
-          code ? { fontFamily: 'monospace', color: '#93C5FD' } : null,
+          code ? { fontFamily: 'monospace', color: themeColors.blueSoft } : null,
         ]}
       >
         {bold || italic || code ? part.slice(bold ? 2 : 1, bold ? -2 : -1) : part}
@@ -44,6 +76,8 @@ export function MarkdownNote({
   onMarkdownChange,
   compact = false,
 }: MarkdownNoteProps) {
+  const { colors: themeColors } = useAppTheme();
+  const headingStyles = useMemo(() => HEADING_STYLES(themeColors), [themeColors]);
   const blocks = markdown.split(/\n\s*\n/);
   const blockOffsets = blocks.map((_, blockIndex) =>
     blocks.slice(0, blockIndex).reduce((offset, previousBlock) => {
@@ -85,7 +119,7 @@ export function MarkdownNote({
                 unorderedList?.[1] ??
                 quote?.[1] ??
                 line;
-              const headingStyle = heading ? HEADING_STYLES[heading[1].length - 1] : undefined;
+              const headingStyle = heading ? headingStyles[heading[1].length - 1] : undefined;
               const isTaskChecked = Boolean(
                 legacyTaskList ? legacyTaskList[1].trim() : symbolTaskList?.[1] === '☑'
               );
@@ -101,16 +135,20 @@ export function MarkdownNote({
                     : 26
                   : (headingStyle?.lineHeight ?? 32),
                 fontFamily: headingStyle?.fontFamily ?? 'InstrumentSans_400Regular',
-                color: quote ? '#A1A1AA' : (headingStyle?.color ?? '#D4D4D8'),
+                color: quote ? themeColors.secondary : (headingStyle?.color ?? themeColors.body),
               };
               if (taskList) {
                 const checkbox = (
                   <View
                     className={`h-6 w-6 items-center justify-center rounded-md border-2 ${
-                      isTaskChecked ? 'border-white bg-white' : 'border-zinc-500 bg-transparent'
+                      isTaskChecked
+                        ? 'border-theme-foreground bg-theme-foreground'
+                        : 'border-theme-muted bg-transparent'
                     }`}
                   >
-                    {isTaskChecked && <CheckIcon size={16} color="#000000" weight="bold" />}
+                    {isTaskChecked && (
+                      <CheckIcon size={16} color={themeColors.inverse} weight="bold" />
+                    )}
                   </View>
                 );
                 return (
@@ -150,14 +188,14 @@ export function MarkdownNote({
                     )}
                     <Text
                       testID={`markdown-task-text-${lineIndex}`}
-                      className="flex-1 font-sans text-white"
+                      className="flex-1 font-sans text-theme-foreground"
                       style={{
                         ...textStyle,
-                        color: isTaskChecked ? '#A1A1AA' : '#FFFFFF',
+                        color: isTaskChecked ? themeColors.secondary : themeColors.foreground,
                         textDecorationLine: isTaskChecked ? 'line-through' : 'none',
                       }}
                     >
-                      {renderInline(value)}
+                      {renderInline(value, themeColors)}
                     </Text>
                   </View>
                 );
@@ -166,16 +204,16 @@ export function MarkdownNote({
                 <Text
                   key={lineIndex}
                   testID={heading ? `markdown-heading-${heading[1].length}` : 'markdown-body-text'}
-                  className="font-sans text-white"
+                  className="font-sans text-theme-foreground"
                   style={{
                     ...textStyle,
                     borderLeftWidth: quote ? 2 : 0,
-                    borderLeftColor: '#52525B',
+                    borderLeftColor: themeColors.strongBorder,
                     paddingLeft: quote ? 12 : list ? 20 : 0,
                   }}
                 >
                   {orderedList ? `${orderedList[1]}. ` : unorderedList ? '• ' : null}
-                  {renderInline(value)}
+                  {renderInline(value, themeColors)}
                 </Text>
               );
             })}
