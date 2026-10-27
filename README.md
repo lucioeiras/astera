@@ -69,6 +69,8 @@ bun run web
 
 `bun run ios` e `bun run android` usam `expo run:*` e requerem as ferramentas nativas da plataforma. Os diretórios `ios/` e `android/` são gerados pelo Expo e não devem ser editados manualmente.
 
+A biblioteca `react-native-enriched-markdown` tem um patch em `patches/`, aplicado pelo Bun, que encaminha os estilos de texto ao editor nativo e corrige a resolução de fontes Expo e a altura das linhas no iOS, incluindo o placeholder. Mudanças nesse patch exigem recompilar a development build; recarregar o JavaScript não atualiza a implementação nativa.
+
 ### Assinatura para iPhone físico
 
 O `app.json` define `ios.appleTeamId` como `J7V84PT2S6`, a equipe usada pelo app e pelas extensões. Para usar outra conta Apple Developer, ajuste esse campo antes de gerar o projeto nativo.
