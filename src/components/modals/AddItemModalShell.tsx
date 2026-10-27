@@ -1,5 +1,6 @@
+import { ThemedModal as Modal } from '@/components/ThemedModal';
 import type { ReactNode } from 'react';
-import { Modal, View } from 'react-native';
+import { View } from 'react-native';
 
 type Props = {
   visible: boolean;

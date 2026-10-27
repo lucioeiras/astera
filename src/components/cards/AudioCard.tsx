@@ -1,5 +1,6 @@
+import { useAppTheme } from '@/lib/theme';
 import { useAudioPlayer, useAudioPlayerStatus } from 'expo-audio';
-import { PauseIcon, PlayIcon } from 'phosphor-react-native';
+import { Pause, Play } from 'lucide-react-native';
 import { memo, useMemo, useState } from 'react';
 import { Pressable, Text, View, type LayoutChangeEvent } from 'react-native';
 
@@ -30,6 +31,7 @@ export const AudioCard = memo(function AudioCard({
   compactWaveform?: boolean;
   stackedControls?: boolean;
 }) {
+  const { colors: themeColors } = useAppTheme();
   const player = useAudioPlayer(uri);
   const status = useAudioPlayerStatus(player);
   const duration = status.duration || 0;
@@ -84,13 +86,17 @@ export const AudioCard = memo(function AudioCard({
               flex: 1,
               height: Math.max(3, (amplitude / 100) * (stackedControls ? 40 : 26)),
               borderRadius: 2,
-              backgroundColor: index < playedBars ? '#FFFFFF' : '#52525B',
+              backgroundColor:
+                index < playedBars ? themeColors.foreground : themeColors.strongBorder,
             }}
           />
         ))
       ) : (
-        <View pointerEvents="none" className="h-1 w-full overflow-hidden rounded-full bg-zinc-700">
-          <View className="h-full bg-white" style={{ width: `${progress * 100}%` }} />
+        <View
+          pointerEvents="none"
+          className="h-1 w-full overflow-hidden rounded-full bg-theme-border"
+        >
+          <View className="h-full bg-theme-foreground" style={{ width: `${progress * 100}%` }} />
         </View>
       )}
     </Pressable>
@@ -108,9 +114,9 @@ export const AudioCard = memo(function AudioCard({
         onPress={togglePlayback}
         icon={
           status.playing ? (
-            <PauseIcon size={16} color="#000" weight="fill" />
+            <Pause size={16} color={themeColors.canvas} fill={themeColors.canvas} />
           ) : (
-            <PlayIcon size={16} color="#fff" weight="fill" />
+            <Play size={16} color={themeColors.foreground} fill={themeColors.foreground} />
           )
         }
       />
@@ -119,7 +125,7 @@ export const AudioCard = memo(function AudioCard({
 
   const timeText = (
     <Text
-      className={`font-sans ${compactWaveform ? 'text-xs' : 'text-sm'} text-zinc-300 ${stackedControls ? 'text-center' : ''}`}
+      className={`font-sans ${compactWaveform ? 'text-xs' : 'text-sm'} text-theme-body ${stackedControls ? 'text-center' : ''}`}
     >
       {timeLabel(current * 1000)} <LocalizedText>/ </LocalizedText>
       {timeLabel(duration * 1000)}
@@ -130,16 +136,18 @@ export const AudioCard = memo(function AudioCard({
     <Pressable
       onPress={changePlaybackRate}
       accessibilityRole="button"
-      accessibilityLabel={translate('Playback speed %{speed}', { speed: rateLabel })}
-      className="min-w-16 items-center rounded-full bg-zinc-950/80 px-2 py-1 active:opacity-70"
+      accessibilityLabel={translate('Playback speed %{speed}', {
+        speed: rateLabel,
+      })}
+      className="min-w-16 items-center rounded-full bg-theme-canvas/80 px-2 py-1 active:opacity-70"
     >
-      <Text className="font-sans-semibold text-lg text-zinc-200">{rateLabel}</Text>
+      <Text className="font-sans-semibold text-lg text-theme-heading">{rateLabel}</Text>
     </Pressable>
   ) : null;
 
   return (
     <View className="w-full">
-      <View className={`rounded-xl bg-zinc-900 ${stackedControls ? 'h-full p-3' : 'p-4'}`}>
+      <View className={`rounded-xl bg-theme-surface ${stackedControls ? 'h-full p-3' : 'p-4'}`}>
         {stackedControls ? (
           <View
             testID="audio-stacked-controls"
@@ -162,7 +170,7 @@ export const AudioCard = memo(function AudioCard({
       </View>
       {title && (
         <Text
-          className="font-sans-medium text-center text-xs text-zinc-400 leading-[1.6] mt-2"
+          className="font-sans-medium text-center text-xs text-theme-secondary leading-[1.6] mt-2"
           numberOfLines={2}
         >
           {title}

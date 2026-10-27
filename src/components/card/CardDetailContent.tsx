@@ -1,3 +1,4 @@
+import { useAppTheme } from '@/lib/theme';
 import { decodeHTML } from 'entities';
 import * as Clipboard from 'expo-clipboard';
 import { File } from 'expo-file-system';
@@ -6,13 +7,7 @@ import * as MediaLibrary from 'expo-media-library';
 import { router } from 'expo-router';
 import * as Sharing from 'expo-sharing';
 import * as WebBrowser from 'expo-web-browser';
-import {
-  BookmarkSimpleIcon,
-  NotePencilIcon,
-  SubtitlesIcon,
-  TextTIcon,
-  UserIcon,
-} from 'phosphor-react-native';
+import { Bookmark, SquarePen, Captions, Type, User } from 'lucide-react-native';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -31,6 +26,8 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { GameLogs } from '@/components/games/GameLogs';
+import { saveGameLog } from '@/lib/library/gameLogs';
 import { BookLogs } from '@/components/books/BookLogs';
 import { getProgressLabel } from '@/components/cards/ProgressStatus';
 import { AddToFolderModal } from '@/components/modals/AddToFolderModal';
@@ -46,6 +43,7 @@ import { getLibraryFolders, getSourceId } from '@/lib/library/storage';
 import {
   MEDIA_PROGRESS_STATUSES,
   type BookReadingLog,
+  type GamePlayLog,
   type LibraryItem,
   type LibraryItemType,
   type MediaProgressStatus,
@@ -136,11 +134,15 @@ export function CardDetailContent({
   onSelectFolder,
   onSelectType,
 }: CardDetailContentProps) {
+  const { colors: themeColors } = useAppTheme();
   useLocalization();
   const { addTextItem, deleteItem, updateItem, setRelatedItems, searchItems, state, source } =
     useLibrary();
-  const folderStorageKey = `anything:folders:${getSourceId(source)}`;
-  const [savedFolders, setSavedFolders] = useState<{ key: string; names: string[] } | null>(null);
+  const folderStorageKey = `astera:folders:${getSourceId(source)}`;
+  const [savedFolders, setSavedFolders] = useState<{
+    key: string;
+    names: string[];
+  } | null>(null);
   const folderTags = savedFolders?.key === folderStorageKey ? savedFolders.names : [];
 
   useEffect(() => {
@@ -196,6 +198,7 @@ export function CardDetailContent({
   const [progressStatus, setProgressStatus] = useState<MediaProgressStatus>(
     isTrackableItem(item) ? getCurrentProgressStatus(item.type, item.progressStatus) : 'want'
   );
+  const [gameLogRequest, setGameLogRequest] = useState(0);
   const [bookLogRequest, setBookLogRequest] = useState(0);
   const [reviewRating, setReviewRating] = useState(
     item.type === 'book' || item.type === 'movie' || item.type === 'game'
@@ -416,7 +419,9 @@ export function CardDetailContent({
           : '';
     if (existingTitle === cleanTitle) return;
     try {
-      await updateItem(item.id, { title: cleanTitle || undefined } as Partial<LibraryItem>);
+      await updateItem(item.id, {
+        title: cleanTitle || undefined,
+      } as Partial<LibraryItem>);
     } catch (e) {
       console.warn('Failed to save title', e);
     }
@@ -502,6 +507,24 @@ export function CardDetailContent({
     }
   };
 
+  const handleSaveGameLog = async (date: string, note: string, existingLog?: GamePlayLog) => {
+    if (item.type !== 'game') return;
+    await saveGameLog({ ...item, progressStatus }, date, note, existingLog, {
+      items: libraryItems,
+      addNote: (text, gameId) =>
+        addTextItem(text, undefined, { linkedItemId: gameId, forceNote: true }),
+      updateItem,
+      deleteItem,
+    });
+  };
+
+  const handleDeleteGameLog = async (log: GamePlayLog) => {
+    if (item.type !== 'game') return;
+    await updateItem(item.id, {
+      playLogs: (item.playLogs ?? []).filter((entry) => entry.id !== log.id),
+    });
+  };
+
   const handleSaveReadingLog = async (
     date: string,
     page: number,
@@ -525,7 +548,9 @@ export function CardDetailContent({
       if (existingLog?.noteId && previousNote && noteText) {
         noteId = existingLog.noteId;
         updatedNoteText = previousNote.text;
-        await updateItem(existingLog.noteId, { text: noteText } as Partial<LibraryItem>);
+        await updateItem(existingLog.noteId, {
+          text: noteText,
+        } as Partial<LibraryItem>);
       } else if (noteText) {
         const createdNote = await addTextItem(noteText, undefined, {
           linkedItemId: item.id,
@@ -842,8 +867,8 @@ export function CardDetailContent({
     <View className="flex-1 w-full">
       {/* Action Feedback Toast */}
       {actionFeedback && (
-        <View className="absolute top-2 self-center z-50 bg-zinc-800/90 border border-zinc-700 px-4 py-2 rounded-full shadow-lg">
-          <Text className="font-sans-medium text-xs text-white">{actionFeedback}</Text>
+        <View className="absolute top-2 self-center z-50 bg-theme-raised/90 border border-theme-border px-4 py-2 rounded-full shadow-lg">
+          <Text className="font-sans-medium text-xs text-theme-foreground">{actionFeedback}</Text>
         </View>
       )}
 
@@ -893,7 +918,7 @@ export function CardDetailContent({
             onLayout={(e) => {
               section2Y.current = e.nativeEvent.layout.y;
             }}
-            className="w-full flex-1 bg-zinc-950 border-t border-zinc-800"
+            className="w-full flex-1 bg-theme-canvas border-t border-theme-raised"
             style={{ paddingBottom: 140 }}
           >
             <Pressable
@@ -905,8 +930,8 @@ export function CardDetailContent({
             />
 
             {/* Title Section */}
-            <View className="flex-row items-center gap-4 py-5 px-6 border-b border-zinc-800">
-              <TextTIcon size={20} color="#D4D4D8" />
+            <View className="flex-row items-center gap-4 py-5 px-6 border-b border-theme-raised">
+              <Type size={20} color={themeColors.body} />
               <TextInput
                 value={title}
                 onChangeText={setTitle}
@@ -922,8 +947,8 @@ export function CardDetailContent({
                     : tagInputRef.current?.focus()
                 }
                 placeholder={translate('Add a title here...')}
-                placeholderTextColor="#71717A"
-                className="flex-1 font-sans text-xl text-white leading-tight"
+                placeholderTextColor={themeColors.muted}
+                className="flex-1 font-sans text-xl text-theme-foreground leading-tight"
                 style={{ borderWidth: 0, backgroundColor: 'transparent' }}
                 underlineColorAndroid="transparent"
               />
@@ -934,14 +959,16 @@ export function CardDetailContent({
                 onLayout={(event) => {
                   transcriptY.current = event.nativeEvent.layout.y;
                 }}
-                className="py-6 px-6 border-b border-zinc-800 gap-4"
+                className="py-6 px-6 border-b border-theme-raised gap-4"
               >
                 <View className="flex-row items-center gap-2">
-                  <SubtitlesIcon size={14} color="#E4E4E7" />
-                  <Text className="font-sans-semibold text-sm tracking-wider uppercase text-zinc-200">
+                  <Captions size={14} color={themeColors.heading} />
+                  <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
                     <LocalizedText>Transcript</LocalizedText>
                   </Text>
-                  {isTranscribingAudio && <ActivityIndicator size="small" color="#A1A1AA" />}
+                  {isTranscribingAudio && (
+                    <ActivityIndicator size="small" color={themeColors.secondary} />
+                  )}
                 </View>
 
                 <Pressable
@@ -963,10 +990,10 @@ export function CardDetailContent({
                     placeholder={
                       isTranscribingAudio ? 'Transcribing audio…' : 'Transcript will appear here...'
                     }
-                    placeholderTextColor="#71717A"
+                    placeholderTextColor={themeColors.muted}
                     multiline
                     textAlignVertical="top"
-                    className="w-full font-sans text-base text-zinc-100 leading-relaxed min-h-[72px]"
+                    className="w-full font-sans text-base text-theme-bright leading-relaxed min-h-[72px]"
                     style={{ borderWidth: 0, backgroundColor: 'transparent' }}
                     underlineColorAndroid="transparent"
                     accessibilityLabel={translate('Audio transcript')}
@@ -974,7 +1001,7 @@ export function CardDetailContent({
                 </Pressable>
 
                 {transcriptionError && (
-                  <Text className="font-sans text-sm leading-relaxed text-zinc-500">
+                  <Text className="font-sans text-sm leading-relaxed text-theme-muted">
                     <LocalizedText>
                       Automatic transcription failed. Use the microphone action below to try again.
                     </LocalizedText>
@@ -984,16 +1011,16 @@ export function CardDetailContent({
             )}
 
             {item.type === 'quote' && (
-              <View className="flex-row items-center gap-4 py-5 px-6 border-b border-zinc-800">
-                <UserIcon size={20} color="#E4E4E7" />
+              <View className="flex-row items-center gap-4 py-5 px-6 border-b border-theme-raised">
+                <User size={20} color={themeColors.heading} />
 
                 <TextInput
                   value={quoteAuthor}
                   onChangeText={setQuoteAuthor}
                   onBlur={handleSaveQuoteAuthor}
                   placeholder={translate('Add an author...')}
-                  placeholderTextColor="#71717A"
-                  className="flex-1 font-sans text-xl text-zinc-100 leading-tight"
+                  placeholderTextColor={themeColors.muted}
+                  className="flex-1 font-sans text-xl text-theme-bright leading-tight"
                   style={{ borderWidth: 0, backgroundColor: 'transparent' }}
                   underlineColorAndroid="transparent"
                 />
@@ -1002,7 +1029,7 @@ export function CardDetailContent({
 
             {/* Tags section */}
             <TagsBox
-              containerClassName="py-6 px-6 border-b border-zinc-800 gap-4"
+              containerClassName="py-6 px-6 border-b border-theme-raised gap-4"
               tags={tags}
               autoTags={item.autoTags}
               folderTags={folderTags}
@@ -1070,10 +1097,10 @@ export function CardDetailContent({
 
             {/* Note source section */}
             {isNoteOrQuote && linkedContent && isLinkableItem(linkedContent) && (
-              <View className="py-6 px-6 border-b border-zinc-800 gap-5">
+              <View className="py-6 px-6 border-b border-theme-raised gap-5">
                 <View className="flex-row items-center gap-2">
-                  <BookmarkSimpleIcon size={16} color="#E4E4E7" />
-                  <Text className="font-sans-semibold text-sm tracking-wider uppercase text-zinc-200">
+                  <Bookmark size={16} color={themeColors.heading} />
+                  <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
                     <LocalizedText>Source</LocalizedText>
                   </Text>
                 </View>
@@ -1081,7 +1108,10 @@ export function CardDetailContent({
                 <SourcePreview
                   item={linkedContent}
                   onChange={() =>
-                    router.push({ pathname: '/card/[id]', params: { id: linkedContent.id } })
+                    router.push({
+                      pathname: '/card/[id]',
+                      params: { id: linkedContent.id },
+                    })
                   }
                   onRemove={() => handleUpdateLinkedItem(undefined)}
                 />
@@ -1090,10 +1120,10 @@ export function CardDetailContent({
 
             {/* Linked Notes Section */}
             {isLinkableItem(item) && linkedNotes.length > 0 && (
-              <View className="py-6 px-6 border-b border-zinc-800 gap-4">
+              <View className="py-6 px-6 border-b border-theme-raised gap-4">
                 <View className="flex-row items-center gap-2">
-                  <NotePencilIcon size={15} color="#E4E4E7" />
-                  <Text className="font-sans-semibold text-sm tracking-wider uppercase text-zinc-200">
+                  <SquarePen size={15} color={themeColors.heading} />
+                  <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
                     <LocalizedText>Linked notes (</LocalizedText>
                     {linkedNotes.length}
                     <LocalizedText>)</LocalizedText>
@@ -1103,19 +1133,25 @@ export function CardDetailContent({
                   <Pressable
                     key={linkedNote.id}
                     onPress={() =>
-                      router.push({ pathname: '/card/[id]', params: { id: linkedNote.id } })
+                      router.push({
+                        pathname: '/card/[id]',
+                        params: { id: linkedNote.id },
+                      })
                     }
                     accessibilityRole="button"
-                    className="rounded-xl bg-zinc-900 px-4 py-4"
+                    className="rounded-xl bg-theme-surface px-4 py-4"
                   >
                     <Text
-                      className="font-sans-medium text-sm text-zinc-100 leading-[1.8]"
+                      className="font-sans-medium text-sm text-theme-bright leading-[1.8]"
                       numberOfLines={3}
                     >
                       {linkedNote.title || linkedNote.text}
                     </Text>
                     {linkedNote.title && (
-                      <Text className="font-sans text-xs text-zinc-400 mt-1" numberOfLines={2}>
+                      <Text
+                        className="font-sans text-xs text-theme-secondary mt-1"
+                        numberOfLines={2}
+                      >
                         {linkedNote.text}
                       </Text>
                     )}
@@ -1123,6 +1159,22 @@ export function CardDetailContent({
                 ))}
               </View>
             )}
+
+            {item.type === 'game' &&
+              (progressStatus === 'in-progress' ||
+                (progressStatus === 'completed' && !!item.playLogs?.length)) && (
+                <GameLogs
+                  key={gameLogRequest}
+                  game={{ ...item, progressStatus }}
+                  openOnMount={gameLogRequest > 0}
+                  onSave={handleSaveGameLog}
+                  onDelete={handleDeleteGameLog}
+                  getNoteText={(id) => {
+                    const note = libraryItems.find((entry) => entry.id === id);
+                    return note?.type === 'note' || note?.type === 'quote' ? note.text : undefined;
+                  }}
+                />
+              )}
 
             {item.type === 'book' &&
               (progressStatus === 'in-progress' ||
@@ -1173,11 +1225,11 @@ export function CardDetailContent({
               onLayout={(e) => {
                 notesY.current = e.nativeEvent.layout.y;
               }}
-              className="py-6 px-6 border-b border-zinc-800 gap-4"
+              className="py-6 px-6 border-b border-theme-raised gap-4"
             >
               <View className="flex-row items-center gap-2">
-                <NotePencilIcon size={14} color="#E4E4E7" weight="bold" />
-                <Text className="font-sans-semibold text-sm tracking-wider uppercase text-zinc-200">
+                <SquarePen size={14} color={themeColors.heading} strokeWidth={2} />
+                <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
                   <LocalizedText>Notes</LocalizedText>
                 </Text>
               </View>
@@ -1199,10 +1251,10 @@ export function CardDetailContent({
                   onChangeText={setNote}
                   onBlur={handleSaveNote}
                   placeholder={translate('Add notes about this card...')}
-                  placeholderTextColor="#71717A"
+                  placeholderTextColor={themeColors.muted}
                   multiline
                   textAlignVertical="top"
-                  className="w-full font-sans text-base text-zinc-100 leading-relaxed min-h-[72px]"
+                  className="w-full font-sans text-base text-theme-bright leading-relaxed min-h-[72px]"
                   style={{ borderWidth: 0, backgroundColor: 'transparent' }}
                   underlineColorAndroid="transparent"
                 />
@@ -1244,6 +1296,8 @@ export function CardDetailContent({
           onTranscribeAudio={handleTranscribeAudioManually}
           isTranscribingAudio={isTranscribingAudio}
           showTranscribeAudio={item.type === 'audio' && !transcript.trim()}
+          showLogPlay={item.type === 'game' && progressStatus === 'in-progress'}
+          onLogPlay={() => setGameLogRequest((request) => request + 1)}
           showLogReading={item.type === 'book' && progressStatus === 'in-progress'}
           onLogReading={() => setBookLogRequest((request) => request + 1)}
         />

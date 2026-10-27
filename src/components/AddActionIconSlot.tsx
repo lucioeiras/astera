@@ -5,7 +5,12 @@ export function AddActionIconSlot({ children, ...props }: ViewProps) {
     <View
       {...props}
       style={[
-        { width: 24, height: 24, alignItems: 'center', justifyContent: 'center' },
+        {
+          width: 24,
+          height: 24,
+          alignItems: 'center',
+          justifyContent: 'center',
+        },
         props.style,
       ]}
     >

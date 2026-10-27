@@ -3,12 +3,17 @@ name: Navigate tabs and inspect settings
 ---
 - launchApp:
     clearState: true
-- assertVisible: 'You can add anything here'
+- assertVisible: 'Start your collection here'
 - tapOn: 'Folders'
 - assertVisible: 'Want to'
 - tapOn: 'Profile'
 - assertVisible: 'Saved cards'
 - tapOn: 'Settings'
+- assertVisible: 'Appearance'
+- scrollUntilVisible:
+    element: 'E2E Library'
+    direction: DOWN
 - assertVisible: 'Current space'
-- assertVisible: 'AI Model for Texts'
-- assertVisible: 'E2E Library'
+- scrollUntilVisible:
+    element: 'AI Model for Texts'
+    direction: DOWN

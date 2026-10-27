@@ -1,3 +1,4 @@
+import { useAppTheme, type ThemeColors } from '@/lib/theme';
 import {
   EnrichedMarkdownTextInput,
   type EnrichedMarkdownTextInputInstance,
@@ -11,18 +12,18 @@ import { formatInline, formatLine } from '@/lib/noteFormatting';
 import type { NoteRichTextInputHandle, NoteRichTextInputProps } from './NoteRichTextInput.types';
 import { translate } from '@/lib/i18n';
 
-const INPUT_STYLE: TextStyle = {
+const INPUT_STYLE = (themeColors: ThemeColors): TextStyle => ({
   flex: 1,
   width: '100%',
   fontSize: 30,
   lineHeight: 40,
   fontFamily: 'InstrumentSans_400Regular',
-  color: '#FFFFFF',
+  color: themeColors.foreground,
   paddingHorizontal: 32,
   paddingTop: 32,
   paddingBottom: 128,
   backgroundColor: 'transparent',
-};
+});
 
 function containsUnsupportedBlocks(markdown: string) {
   return /(^|\n)\s*>\s?/m.test(markdown) || /(^|\n)\s*[-*+]\s+\[[ xX]\]\s+/m.test(markdown);
@@ -33,10 +34,12 @@ export const NoteRichTextInput = forwardRef<NoteRichTextInputHandle, NoteRichTex
     { value, onChangeMarkdown, onSelectionChange, placeholder, placeholderTextColor },
     ref
   ) {
+    const { colors: themeColors } = useAppTheme();
     const inputRef = useRef<EnrichedMarkdownTextInputInstance>(null);
     const plainInputRef = useRef<TextInput>(null);
     const currentMarkdownRef = useRef(value);
     const selectionRef = useRef({ start: 0, end: 0 });
+    const [textSelection, setTextSelection] = useState({ start: 0, end: 0 });
     const styleStateRef = useRef<StyleState | null>(null);
     const [plainMarkdownMode, setPlainMarkdownMode] = useState(() =>
       containsUnsupportedBlocks(value)
@@ -77,6 +80,7 @@ export const NoteRichTextInput = forwardRef<NoteRichTextInputHandle, NoteRichTex
             currentMarkdownRef.current = result.text;
             setPlainMarkdownMode(containsUnsupportedBlocks(result.text));
             selectionRef.current = result.selection;
+            setTextSelection(result.selection);
             onSelectionChange?.(result.selection);
             onChangeMarkdown(result.text);
             return;
@@ -109,6 +113,7 @@ export const NoteRichTextInput = forwardRef<NoteRichTextInputHandle, NoteRichTex
               editor.setSelection(result.selection.start, result.selection.end);
             }
             selectionRef.current = result.selection;
+            setTextSelection(result.selection);
             onChangeMarkdown(result.text);
           });
         },
@@ -128,15 +133,16 @@ export const NoteRichTextInput = forwardRef<NoteRichTextInputHandle, NoteRichTex
           }}
           onSelectionChange={(event) => {
             selectionRef.current = event.nativeEvent.selection;
+            setTextSelection(event.nativeEvent.selection);
             onSelectionChange?.(event.nativeEvent.selection);
           }}
-          selection={selectionRef.current}
+          selection={textSelection}
           placeholder={placeholder}
           placeholderTextColor={placeholderTextColor}
           multiline
           autoFocus
           textAlignVertical="top"
-          className="flex-1 w-full font-sans text-3xl text-white leading-10 px-8 pt-8 pb-32"
+          className="flex-1 w-full font-sans text-3xl text-theme-foreground leading-10 px-8 pt-8 pb-32"
           style={{ borderWidth: 0, backgroundColor: 'transparent' }}
           underlineColorAndroid="transparent"
           accessibilityLabel={translate('Note text')}
@@ -156,6 +162,7 @@ export const NoteRichTextInput = forwardRef<NoteRichTextInputHandle, NoteRichTex
         }}
         onChangeSelection={(selection) => {
           selectionRef.current = selection;
+          setTextSelection(selection);
           onSelectionChange?.(selection);
         }}
         onChangeState={(state) => {
@@ -166,14 +173,14 @@ export const NoteRichTextInput = forwardRef<NoteRichTextInputHandle, NoteRichTex
         multiline
         autoFocus
         markdownShortcuts
-        style={INPUT_STYLE}
+        style={INPUT_STYLE(themeColors)}
         markdownStyle={{
-          h1: { fontSize: 34, fontWeight: '700', color: '#FFFFFF' },
-          h2: { fontSize: 29, fontWeight: '700', color: '#FFFFFF' },
-          h3: { fontSize: 25, fontWeight: '600', color: '#F4F4F5' },
-          h4: { fontSize: 22, fontWeight: '600', color: '#F4F4F5' },
-          h5: { fontSize: 20, fontWeight: '500', color: '#E4E4E7' },
-          h6: { fontSize: 18, fontWeight: '500', color: '#D4D4D8' },
+          h1: { fontSize: 34, fontWeight: '700', color: themeColors.foreground },
+          h2: { fontSize: 29, fontWeight: '700', color: themeColors.foreground },
+          h3: { fontSize: 25, fontWeight: '600', color: themeColors.bright },
+          h4: { fontSize: 22, fontWeight: '600', color: themeColors.bright },
+          h5: { fontSize: 20, fontWeight: '500', color: themeColors.heading },
+          h6: { fontSize: 18, fontWeight: '500', color: themeColors.body },
           list: { itemSpacing: 4 },
         }}
         accessibilityLabel={translate('Note text')}

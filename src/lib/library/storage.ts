@@ -43,15 +43,15 @@ import {
 } from './types';
 
 // The native module won't exist if running in Expo Go.
-let AnythingLibraryAccess: {
+let AsteraLibraryAccess: {
   bookmarkFolder: (uri: string) => string | null;
   resolveBookmark: (base64: string) => string | null;
 } | null = null;
 
 try {
-  AnythingLibraryAccess =
+  AsteraLibraryAccess =
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    require('../../../modules/anything-library-access/src/AnythingLibraryAccessModule').default;
+    require('../../../modules/astera-library-access/src/AsteraLibraryAccessModule').default;
 } catch {
   // Fallback for environments without custom native modules
 }
@@ -60,7 +60,7 @@ try {
  * Where the library is read from.
  *
  * - `local`: `<App Documents>/Library`. With `enableFileSharing` this shows up in
- *   the Files app under "On My iPhone › anything" and in Finder when the phone is
+ *   the Files app under "On My iPhone › Astera" and in Finder when the phone is
  *   plugged in, so you can drop files in by hand.
  * - `folder`: any folder the user picked with the system document picker,
  *   including folders inside iCloud Drive. iOS grants security-scoped access for
@@ -102,13 +102,13 @@ export function getSourceId(source: LibrarySource): string {
   return source.kind === 'local' ? 'local' : source.uri;
 }
 
-const STORAGE_KEY = 'anything:librarySource';
-const RECENT_FOLDERS_KEY = 'anything:recentFolders';
-const FOLDERS_FILE_NAME = '.anything-folders.json';
+const STORAGE_KEY = 'astera:librarySource';
+const RECENT_FOLDERS_KEY = 'astera:recentFolders';
+const FOLDERS_FILE_NAME = '.astera-folders.json';
 const FOLDERS_SCHEMA_VERSION = 1;
 
 function getLegacyFoldersKey(source: LibrarySource): string {
-  return `anything:folders:${getSourceId(source)}`;
+  return `astera:folders:${getSourceId(source)}`;
 }
 
 function parseFolderNames(value: unknown): string[] {
@@ -181,8 +181,8 @@ export async function getSavedLibrarySource(): Promise<LibrarySource | null> {
     if (parsed.kind === 'local') return { kind: 'local', name: parsed.name || 'App Library' };
 
     if (parsed.kind === 'folder') {
-      if (parsed.bookmark && AnythingLibraryAccess) {
-        const uri = AnythingLibraryAccess.resolveBookmark(parsed.bookmark);
+      if (parsed.bookmark && AsteraLibraryAccess) {
+        const uri = AsteraLibraryAccess.resolveBookmark(parsed.bookmark);
         if (uri) {
           return { kind: 'folder', uri, bookmark: parsed.bookmark, name: parsed.name };
         }
@@ -204,9 +204,9 @@ export async function saveLibrarySource(source: LibrarySource) {
 }
 
 export function resolveFolderSource(source: LibrarySource): LibrarySource {
-  if (source.kind === 'folder' && source.bookmark && AnythingLibraryAccess) {
+  if (source.kind === 'folder' && source.bookmark && AsteraLibraryAccess) {
     try {
-      const uri = AnythingLibraryAccess.resolveBookmark(source.bookmark);
+      const uri = AsteraLibraryAccess.resolveBookmark(source.bookmark);
       if (uri) {
         return { ...source, uri };
       }
@@ -293,7 +293,7 @@ export async function removeRecentFolder(id: string): Promise<SavedFolder[]> {
 /** Opens the system folder picker (Files / iCloud Drive). Throws if cancelled. */
 export async function pickLibraryFolder(): Promise<LibrarySource> {
   const dir = await Directory.pickDirectoryAsync();
-  const bookmark = AnythingLibraryAccess?.bookmarkFolder(dir.uri) ?? undefined;
+  const bookmark = AsteraLibraryAccess?.bookmarkFolder(dir.uri) ?? undefined;
   const name = dir.name || getFolderDisplayName({ kind: 'folder', uri: dir.uri });
   const source: LibrarySource = { kind: 'folder', uri: dir.uri, bookmark, name };
   await saveLibrarySource(source);

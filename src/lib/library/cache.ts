@@ -33,7 +33,7 @@ export type ItemIndexFilter = {
   searchQuery?: string;
 };
 
-const DB_NAME = 'anything_library_cache.db';
+const DB_NAME = 'astera_library_cache.db';
 let cachedDb: SQLiteDatabase | null = null;
 
 export function getCacheDatabase(): SQLiteDatabase {

@@ -1,12 +1,6 @@
+import { useAppTheme, type ThemeColors } from '@/lib/theme';
 import { Image as ExpoImage } from 'expo-image';
-import {
-  CheckIcon,
-  DiscIcon,
-  MagnifyingGlassIcon,
-  MusicNotesIcon,
-  NotePencilIcon,
-  XIcon,
-} from 'phosphor-react-native';
+import { Check, Disc, Search, Music2, SquarePen, X } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -54,6 +48,8 @@ export function NewMusicModal({
   onDismiss,
   onSaved,
 }: NewMusicModalProps) {
+  const { colors: themeColors } = useAppTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
   useLocalization();
   const { addMusicItem, getTags } = useLibrary();
   const insets = useSafeAreaInsets();
@@ -273,10 +269,10 @@ export function NewMusicModal({
           >
             {/* Header */}
             <View className="gap-3 p-8 pt-0">
-              <Text className="font-sans-semibold text-2xl text-white">
+              <Text className="font-sans-semibold text-2xl text-theme-foreground">
                 <LocalizedText>Add music</LocalizedText>
               </Text>
-              <Text className="font-sans text-base text-zinc-400 leading-relaxed">
+              <Text className="font-sans text-base text-theme-secondary leading-relaxed">
                 <LocalizedText>
                   Search songs or albums from the iTunes catalog to add to your library.
                 </LocalizedText>
@@ -285,27 +281,33 @@ export function NewMusicModal({
 
             {/* Selected music banner or search input */}
             {selectedMusic ? (
-              <View className="px-8 py-6 border-t border-b border-zinc-800 flex-row items-center gap-6">
+              <View className="px-8 py-6 border-t border-b border-theme-raised flex-row items-center gap-6">
                 <ExpoImage
                   source={{ uri: selectedMusic.cover }}
-                  className="w-24 h-24 rounded-lg bg-zinc-800"
+                  className="w-24 h-24 rounded-lg bg-theme-raised"
                   contentFit="cover"
                 />
                 <View className="flex-1 gap-2">
-                  <Text className="font-sans-semibold text-lg text-white" numberOfLines={1}>
+                  <Text
+                    className="font-sans-semibold text-lg text-theme-foreground"
+                    numberOfLines={1}
+                  >
                     {selectedMusic.title}
                   </Text>
-                  <Text className="font-sans text-base text-zinc-300" numberOfLines={1}>
+                  <Text className="font-sans text-base text-theme-body" numberOfLines={1}>
                     {selectedMusic.artist}
                   </Text>
                   {selectedMusic.kind === 'album' ? (
-                    <Text className="font-sans text-sm text-zinc-400 mt-0.5">
+                    <Text className="font-sans text-sm text-theme-secondary mt-0.5">
                       <LocalizedText>Album</LocalizedText>
                       {selectedMusic.releaseDate &&
                         ` • ${formatReleaseYear(selectedMusic.releaseDate)}`}
                     </Text>
                   ) : selectedMusic.album ? (
-                    <Text className="font-sans text-sm text-zinc-400 mt-0.5" numberOfLines={1}>
+                    <Text
+                      className="font-sans text-sm text-theme-secondary mt-0.5"
+                      numberOfLines={1}
+                    >
                       {selectedMusic.album}
                       {selectedMusic.releaseDate &&
                         ` • ${formatReleaseYear(selectedMusic.releaseDate)}`}
@@ -315,43 +317,43 @@ export function NewMusicModal({
                 <Pressable
                   onPress={() => setSelectedMusic(null)}
                   hitSlop={10}
-                  className="p-2 rounded-full bg-zinc-800 active:opacity-70"
+                  className="p-2 rounded-full bg-theme-raised active:opacity-70"
                   accessibilityRole="button"
                   accessibilityLabel={translate('Change music selection')}
                 >
-                  <XIcon size={16} color="#E4E4E7" weight="bold" />
+                  <X size={16} color={themeColors.heading} strokeWidth={2} />
                 </Pressable>
               </View>
             ) : (
-              <View className="flex-row items-center gap-4 py-5 px-8 border-t border-b border-zinc-800">
-                <MagnifyingGlassIcon size={20} color="#D4D4D8" />
+              <View className="flex-row items-center gap-4 py-5 px-8 border-t border-b border-theme-raised">
+                <Search size={20} color={themeColors.body} />
 
                 <TextInput
                   ref={searchInputRef}
                   value={query}
                   onChangeText={(text) => handleQueryChange(text)}
                   placeholder={translate('Search song, album, or artist...')}
-                  placeholderTextColor="#71717A"
+                  placeholderTextColor={themeColors.muted}
                   autoCapitalize="none"
                   autoCorrect={false}
                   returnKeyType="search"
-                  className="flex-1 font-sans text-xl text-white leading-tight"
+                  className="flex-1 font-sans text-xl text-theme-foreground leading-tight"
                   style={styles.borderlessInput}
                   underlineColorAndroid="transparent"
                   clearButtonMode="never"
                 />
 
                 {isSearching ? (
-                  <ActivityIndicator size={16} color="#A1A1AA" />
+                  <ActivityIndicator size={16} color={themeColors.secondary} />
                 ) : query.length > 0 ? (
                   <Pressable
                     onPress={handleClearSearch}
                     hitSlop={10}
-                    className="p-1.5 rounded-full bg-zinc-800 items-center justify-center active:opacity-70"
+                    className="p-1.5 rounded-full bg-theme-raised items-center justify-center active:opacity-70"
                     accessibilityRole="button"
                     accessibilityLabel={translate('Clear search')}
                   >
-                    <XIcon size={12} color="#E4E4E7" weight="bold" />
+                    <X size={12} color={themeColors.heading} strokeWidth={2} />
                   </Pressable>
                 ) : null}
               </View>
@@ -364,7 +366,7 @@ export function NewMusicModal({
                   <Pressable
                     key={`${item.kind}-${item.id}`}
                     onPress={() => handleSelectMusic(item)}
-                    className="flex-row items-center gap-5 px-8 py-5 border-b border-zinc-900 active:bg-zinc-900"
+                    className="flex-row items-center gap-5 px-8 py-5 border-b border-theme-surface active:bg-theme-surface"
                     accessibilityRole="button"
                     accessibilityLabel={translate('%{kind}: %{title}, %{artist}', {
                       kind: translate(item.kind === 'album' ? 'Album' : 'Song'),
@@ -372,7 +374,7 @@ export function NewMusicModal({
                       artist: item.artist,
                     })}
                   >
-                    <View className="w-12 h-12 rounded-md bg-zinc-800 overflow-hidden">
+                    <View className="w-12 h-12 rounded-md bg-theme-raised overflow-hidden">
                       {item.cover ? (
                         <ExpoImage
                           source={{ uri: item.cover }}
@@ -381,16 +383,19 @@ export function NewMusicModal({
                         />
                       ) : (
                         <View className="w-full h-full items-center justify-center">
-                          <DiscIcon size={24} color="#71717A" />
+                          <Disc size={24} color={themeColors.muted} />
                         </View>
                       )}
                     </View>
 
                     <View className="flex-1 gap-1">
-                      <Text className="font-sans-medium text-base text-zinc-100" numberOfLines={1}>
+                      <Text
+                        className="font-sans-medium text-base text-theme-bright"
+                        numberOfLines={1}
+                      >
                         {item.title}
                       </Text>
-                      <Text className="font-sans text-sm text-zinc-400" numberOfLines={1}>
+                      <Text className="font-sans text-sm text-theme-secondary" numberOfLines={1}>
                         {item.kind === 'album' ? 'Album' : 'Música'}{' '}
                         <LocalizedText>• </LocalizedText>
                         {item.artist}
@@ -402,7 +407,7 @@ export function NewMusicModal({
                     </View>
 
                     {item.durationMs && (
-                      <Text className="font-sans text-xs text-zinc-500">
+                      <Text className="font-sans text-xs text-theme-muted">
                         {formatDuration(item.durationMs)}
                       </Text>
                     )}
@@ -411,8 +416,8 @@ export function NewMusicModal({
 
                 {results.length === 0 && query.trim().length > 1 && !isSearching && (
                   <View className="py-12 items-center justify-center">
-                    <MusicNotesIcon size={32} color="#52525B" weight="duotone" />
-                    <Text className="font-sans text-sm text-zinc-500 mt-3">
+                    <Music2 size={32} color={themeColors.strongBorder} strokeWidth={2} />
+                    <Text className="font-sans text-sm text-theme-muted mt-3">
                       <LocalizedText>No songs or albums found for "</LocalizedText>
                       {query}
                       <LocalizedText>"</LocalizedText>
@@ -443,10 +448,10 @@ export function NewMusicModal({
                 />
 
                 {/* Notes section */}
-                <View className="py-6 px-8 gap-4 border-t border-zinc-800">
+                <View className="py-6 px-8 gap-4 border-t border-theme-raised">
                   <View className="flex-row items-center gap-2">
-                    <NotePencilIcon size={14} color="#E4E4E7" weight="bold" />
-                    <Text className="font-sans-semibold text-sm tracking-wider uppercase text-zinc-200">
+                    <SquarePen size={14} color={themeColors.heading} strokeWidth={2} />
+                    <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
                       <LocalizedText>Note</LocalizedText>
                     </Text>
                   </View>
@@ -462,10 +467,10 @@ export function NewMusicModal({
                           item: translate(selectedMusic.kind === 'album' ? 'album' : 'song'),
                         }
                       )}
-                      placeholderTextColor="#71717A"
+                      placeholderTextColor={themeColors.muted}
                       multiline
                       textAlignVertical="top"
-                      className="w-full font-sans text-base text-zinc-100 leading-relaxed min-h-[96px]"
+                      className="w-full font-sans text-base text-theme-bright leading-relaxed min-h-[96px]"
                       style={styles.borderlessInput}
                       underlineColorAndroid="transparent"
                     />
@@ -481,7 +486,7 @@ export function NewMusicModal({
               accessibilityLabel={translate('Cancel')}
               onPress={handleClose}
               disabled={saving}
-              icon={<XIcon size={20} color="#FFFFFF" weight="bold" />}
+              icon={<X size={20} color={themeColors.foreground} strokeWidth={2} />}
               text={translate('Cancel')}
             />
             <Button
@@ -493,9 +498,13 @@ export function NewMusicModal({
               disabled={!canSave}
               icon={
                 saving ? (
-                  <ActivityIndicator size={20} color="#000000" />
+                  <ActivityIndicator size={20} color={themeColors.inverse} />
                 ) : (
-                  <CheckIcon size={20} color={canSave ? '#000000' : '#71717A'} weight="bold" />
+                  <Check
+                    size={20}
+                    color={canSave ? themeColors.inverse : themeColors.muted}
+                    strokeWidth={2}
+                  />
                 )
               }
               text={translate('Save %{item}', {
@@ -509,19 +518,20 @@ export function NewMusicModal({
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    width: '100%',
-    backgroundColor: '#09090B',
-  },
-  scrollContent: {
-    flexGrow: 1,
-    paddingVertical: 20,
-    paddingBottom: 120,
-  },
-  borderlessInput: {
-    borderWidth: 0,
-    backgroundColor: 'transparent',
-  },
-});
+const createStyles = (themeColors: ThemeColors) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      width: '100%',
+      backgroundColor: themeColors.canvas,
+    },
+    scrollContent: {
+      flexGrow: 1,
+      paddingVertical: 20,
+      paddingBottom: 120,
+    },
+    borderlessInput: {
+      borderWidth: 0,
+      backgroundColor: 'transparent',
+    },
+  });

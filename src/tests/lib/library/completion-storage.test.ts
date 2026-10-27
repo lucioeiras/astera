@@ -153,3 +153,25 @@ it('rolls back earlier card writes when a later batch update fails', async () =>
 
   expect(mockFiles).toEqual(before);
 });
+
+it('persists multiple play logs through status changes and removal without deleting linked notes', async () => {
+  const logs = [
+    { id: 'first', date: '2026-02-01', createdAt: '2026-02-01T10:00:00Z', noteId: 'note' },
+    { id: 'second', date: '2026-02-01', createdAt: '2026-02-01T12:00:00Z' },
+  ];
+  mockFiles.set(
+    'game.json',
+    JSON.stringify({ ...original, id: 'game', type: 'game', cover: 'cover.jpg' })
+  );
+  mockFiles.set(
+    'note.json',
+    JSON.stringify({ ...original, id: 'note', type: 'note', text: 'Moment', linkedItemId: 'game' })
+  );
+  await updateItemInLibrary(source, 'game', { playLogs: logs, progressStatus: 'in-progress' });
+  await updateItemInLibrary(source, 'game', { progressStatus: 'completed' });
+  expect(parseItem(JSON.parse(mockFiles.get('game.json')!))).toMatchObject({ playLogs: logs });
+  await updateItemInLibrary(source, 'game', { playLogs: [logs[1]] });
+  expect(mockFiles.has('note.json')).toBe(true);
+  await updateItemInLibrary(source, 'game', { progressStatus: 'in-progress' });
+  expect(parseItem(JSON.parse(mockFiles.get('game.json')!))).toMatchObject({ playLogs: [logs[1]] });
+});

@@ -1,4 +1,5 @@
-import { CaretDownIcon, CaretUpIcon, CheckIcon } from 'phosphor-react-native';
+import { useAppTheme } from '@/lib/theme';
+import { ChevronDown, ChevronUp, Check } from 'lucide-react-native';
 import { useState } from 'react';
 import { Pressable, ScrollView, View, Text } from 'react-native';
 import { translate, useLocalization } from '@/lib/i18n';
@@ -10,9 +11,10 @@ type Props = {
   onSelect: (value: string) => void;
 };
 export function ProfileSelect({ label, value, options, onSelect }: Props) {
+  const { colors: themeColors } = useAppTheme();
   useLocalization();
   const [open, setOpen] = useState(false);
-  const Caret = open ? CaretUpIcon : CaretDownIcon;
+  const Caret = open ? ChevronUp : ChevronDown;
   return (
     <View className="relative shrink-0" style={{ zIndex: open ? 20 : 0 }}>
       <Pressable
@@ -25,19 +27,19 @@ export function ProfileSelect({ label, value, options, onSelect }: Props) {
         onPress={() => setOpen((current) => !current)}
         onAccessibilityEscape={() => setOpen(false)}
         hitSlop={{ top: 5, bottom: 5 }}
-        className="flex-row items-center gap-2 rounded-full border border-zinc-700 px-4 py-2"
+        className="flex-row items-center gap-2 rounded-full border border-theme-border px-4 py-2"
       >
-        <Text className="font-sans-medium text-sm text-zinc-300">
+        <Text className="font-sans-medium text-sm text-theme-body">
           {translate(options.find((o) => o.value === value)?.label ?? value)}
         </Text>
-        <Caret size={16} color="#A1A1AA" />
+        <Caret size={16} color={themeColors.secondary} />
       </Pressable>
       {open && (
         <View
           testID={`${label.toLowerCase()}-dropdown`}
           accessibilityRole="menu"
           onAccessibilityEscape={() => setOpen(false)}
-          className="absolute left-0 overflow-hidden rounded-xl border border-zinc-700 bg-zinc-900"
+          className="absolute left-0 overflow-hidden rounded-xl border border-theme-border bg-theme-surface"
           style={{
             top: '100%',
             marginTop: 8,
@@ -61,16 +63,16 @@ export function ProfileSelect({ label, value, options, onSelect }: Props) {
                 accessibilityRole="menuitem"
                 accessibilityLabel={translate(option.label)}
                 accessibilityState={{ selected: option.value === value }}
-                className={`min-h-12 flex-row items-center justify-between gap-3 px-4 py-3 ${option.value === value ? 'bg-zinc-800' : ''}`}
+                className={`min-h-12 flex-row items-center justify-between gap-3 px-4 py-3 ${option.value === value ? 'bg-theme-raised' : ''}`}
                 onPress={() => {
                   onSelect(option.value);
                   setOpen(false);
                 }}
               >
-                <Text className="font-sans-medium text-sm text-zinc-200">
+                <Text className="font-sans-medium text-sm text-theme-heading">
                   {translate(option.label)}
                 </Text>
-                {option.value === value && <CheckIcon size={16} color="#FFFFFF" />}
+                {option.value === value && <Check size={16} color={themeColors.foreground} />}
               </Pressable>
             ))}
           </ScrollView>

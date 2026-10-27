@@ -1,24 +1,26 @@
 import { Button } from '@/components/Button';
+import { LocalizedText } from '@/components/LocalizedText';
 import { ActivityCalendar } from '@/components/profile/ActivityCalendar';
 import { CompletionChart } from '@/components/profile/CompletionChart';
 import { CompletionTypeFilters } from '@/components/profile/CompletionTypeFilters';
+import { LogActivityCalendarSection } from '@/components/profile/LogActivityCalendarSection';
 import { ProfileSelect } from '@/components/profile/ProfileSelect';
-import { ReadingCalendarSection } from '@/components/profile/ReadingCalendarSection';
 import { useLibrary } from '@/hooks/useLibrary';
+import { translate, useLocalization } from '@/lib/i18n';
 import {
   getLibraryActivity,
   getMonthlyCompletions,
   type TrackableType,
 } from '@/lib/library/activity';
+import { useAppTheme } from '@/lib/theme';
 import { router } from 'expo-router';
-import { NutIcon } from 'phosphor-react-native';
+import { Settings } from 'lucide-react-native';
 import { useMemo, useState } from 'react';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { LocalizedText } from '@/components/LocalizedText';
-import { translate, useLocalization } from '@/lib/i18n';
 
 export default function ProfileScreen() {
+  const { colors: themeColors } = useAppTheme();
   const { language } = useLocalization();
   const locale = language === 'pt' ? 'pt-BR' : 'en-US';
   const { state, currentFolderName, setSearchQuery, clearSearchTag, refresh } = useLibrary();
@@ -35,34 +37,42 @@ export default function ProfileScreen() {
     clearSearchTag();
     router.navigate({
       pathname: '/board',
-      params: { addedOn: day, activityToken: String(Date.now()), folderKind: '', folderKey: '' },
+      params: {
+        addedOn: day,
+        activityToken: String(Date.now()),
+        folderKind: '',
+        folderKey: '',
+      },
     });
   };
   return (
-    <SafeAreaView className="flex-1 bg-zinc-950" edges={['top', 'left', 'right']}>
+    <SafeAreaView className="flex-1 bg-theme-canvas" edges={['top', 'left', 'right']}>
       <ScrollView contentContainerClassName="pt-5 pb-40" showsVerticalScrollIndicator={false}>
         <View className="flex-row items-center justify-between gap-4 px-8 pb-8">
           <View className="flex-1 flex-row gap-3 items-center">
-            <Text className="font-sans-semibold text-2xl text-white">
+            <Text className="font-sans-semibold text-2xl text-theme-foreground">
               <LocalizedText>Profile</LocalizedText>
             </Text>
-            <Text className="font-sans text-base text-zinc-400 leading-tight">
+            <Text className="font-sans text-base text-theme-secondary leading-tight">
               {currentFolderName}
             </Text>
           </View>
           <Button
             accessibilityLabel={translate('Settings')}
             size="small"
-            icon={<NutIcon size={20} color="#FFFFFF" />}
+            icon={<Settings size={20} color={themeColors.foreground} />}
             onPress={() => router.push('/settings')}
           />
         </View>
         {state.status === 'loading' && (
-          <ActivityIndicator accessibilityLabel={translate('Loading profile')} color="#71717A" />
+          <ActivityIndicator
+            accessibilityLabel={translate('Loading profile')}
+            color={themeColors.muted}
+          />
         )}
         {state.status === 'error' && (
           <View className="gap-4 px-8">
-            <Text className="font-sans text-base text-zinc-400">
+            <Text className="font-sans text-base text-theme-secondary">
               <LocalizedText>Could not load your library.</LocalizedText>
             </Text>
             <Button
@@ -75,7 +85,7 @@ export default function ProfileScreen() {
 
         {state.status === 'ready' && (
           <>
-            <View className="flex-row flex-wrap border-y border-zinc-800 px-8 py-6">
+            <View className="flex-row flex-wrap border-y border-theme-raised px-8 py-6">
               <Stat label={translate('Saved cards')} value={String(activity.total)} />
               <Stat label={translate('Completed')} value={String(activity.completed)} />
               <Stat
@@ -86,16 +96,16 @@ export default function ProfileScreen() {
             </View>
 
             {activity.total === 0 && (
-              <Text className="px-8 pt-6 font-sans text-base text-zinc-400">
+              <Text className="px-8 pt-6 font-sans text-base text-theme-secondary">
                 <LocalizedText>Save your first card to start your library activity.</LocalizedText>
               </Text>
             )}
 
-            <View className="border-t border-zinc-800 px-8 py-6">
-              <Text className="mb-2 font-sans-semibold text-sm uppercase tracking-wider text-zinc-200">
+            <View className="px-8 py-6">
+              <Text className="mb-2 font-sans-semibold text-sm uppercase tracking-wider text-theme-heading">
                 <LocalizedText>Added cards</LocalizedText>
               </Text>
-              <Text className="mb-4 font-sans text-sm text-zinc-500">
+              <Text className="mb-4 font-sans text-sm text-theme-muted">
                 <LocalizedText>Tap a day to see the cards you saved.</LocalizedText>
               </Text>
               <ActivityCalendar
@@ -106,15 +116,18 @@ export default function ProfileScreen() {
               />
             </View>
 
-            <View className="border-t border-zinc-800 py-6" style={{ zIndex: 1 }}>
-              <Text className="mb-4 px-8 font-sans-semibold text-sm uppercase tracking-wider text-zinc-200">
+            <View className="border-t border-theme-raised py-6" style={{ zIndex: 1 }}>
+              <Text className="mb-4 px-8 font-sans-semibold text-sm uppercase tracking-wider text-theme-heading">
                 <LocalizedText>Completed cards</LocalizedText>
               </Text>
               <View className="flex-row items-center gap-2 pl-8" style={{ zIndex: 1 }}>
                 <ProfileSelect
                   label={translate('Year')}
                   value={String(year)}
-                  options={activity.years.map((y) => ({ value: String(y), label: String(y) }))}
+                  options={activity.years.map((y) => ({
+                    value: String(y),
+                    label: String(y),
+                  }))}
                   onSelect={(value) => setYear(Number(value))}
                 />
                 <CompletionTypeFilters selectedType={type} onSelect={setType} />
@@ -122,7 +135,7 @@ export default function ProfileScreen() {
               <View className="px-8">
                 <CompletionChart months={completions.months} year={year} />
                 {completions.undated > 0 && (
-                  <Text className="mt-4 font-sans text-sm leading-relaxed text-zinc-500">
+                  <Text className="mt-4 font-sans text-sm leading-relaxed text-theme-muted">
                     {completions.undated}{' '}
                     <LocalizedText>
                       completed card(s) have no completion date and are not included in this chart.
@@ -131,7 +144,7 @@ export default function ProfileScreen() {
                 )}
               </View>
             </View>
-            <ReadingCalendarSection items={items} />
+            <LogActivityCalendarSection items={items} />
           </>
         )}
       </ScrollView>
@@ -141,8 +154,8 @@ export default function ProfileScreen() {
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <View className="w-1/2 gap-2 py-3 pr-3">
-      <Text className="font-sans text-xs text-zinc-500">{label}</Text>
-      <Text className="font-sans-semibold text-xl text-white">{value}</Text>
+      <Text className="font-sans text-xs text-theme-muted">{label}</Text>
+      <Text className="font-sans-semibold text-xl text-theme-foreground">{value}</Text>
     </View>
   );
 }

@@ -1,3 +1,4 @@
+import { palettes } from '@/lib/theme/palette';
 import { fireEvent, render } from '@testing-library/react-native';
 
 import { MarkdownNote } from '@/components/card/MarkdownNote';
@@ -49,11 +50,11 @@ describe('MarkdownNote', () => {
     );
 
     expect(getByTestId('markdown-task-text-0').props.style).toMatchObject({
-      color: '#FFFFFF',
+      color: palettes.dark.foreground,
       textDecorationLine: 'none',
     });
     expect(getByTestId('markdown-task-text-1').props.style).toMatchObject({
-      color: '#A1A1AA',
+      color: palettes.dark.secondary,
       textDecorationLine: 'line-through',
     });
   });

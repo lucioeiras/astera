@@ -1,5 +1,6 @@
+import { useAppTheme } from '@/lib/theme';
 import { router, useFocusEffect } from 'expo-router';
-import { PlusIcon } from 'phosphor-react-native';
+import { Plus } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -17,9 +18,13 @@ import { getLibraryFolders, getSourceId, saveLibraryFolders } from '@/lib/librar
 import { translate, useLocalization } from '@/lib/i18n';
 
 export default function OrganizeScreen() {
+  const { colors: themeColors } = useAppTheme();
   useLocalization();
   const { source, state, setSearchQuery, clearSearchTag, updateItem } = useLibrary();
-  const [saved, setSaved] = useState<{ source: string; names: string[] } | null>(null);
+  const [saved, setSaved] = useState<{
+    source: string;
+    names: string[];
+  } | null>(null);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const setFloatingTabOverlay = useFloatingTabOverlay();
   const insets = useSafeAreaInsets();
@@ -48,7 +53,7 @@ export default function OrganizeScreen() {
           <Button
             accessibilityLabel={translate('Create folder')}
             variant="secondary"
-            icon={<PlusIcon size={20} color="#FFFFFF" weight="bold" />}
+            icon={<Plus size={20} color={themeColors.foreground} strokeWidth={2} />}
             text={translate('New Folder')}
             disabled={saved?.source !== sourceId}
             onPress={() => setIsCreateOpen(true)}
@@ -58,7 +63,7 @@ export default function OrganizeScreen() {
       setFloatingTabOverlay(overlay);
 
       return () => setFloatingTabOverlay((current) => clearOverlayIfCurrent(current, overlay));
-    }, [insets.bottom, saved?.source, setFloatingTabOverlay, sourceId])
+    }, [insets.bottom, saved?.source, setFloatingTabOverlay, sourceId, themeColors.foreground])
   );
 
   useEffect(() => {
@@ -82,7 +87,10 @@ export default function OrganizeScreen() {
   const openFolder = (kind: 'status' | 'tag', key: string) => {
     setSearchQuery('');
     clearSearchTag();
-    router.navigate({ pathname: '/board', params: { folderKind: kind, folderKey: key } });
+    router.navigate({
+      pathname: '/board',
+      params: { folderKind: kind, folderKey: key },
+    });
   };
 
   const createFolder = async (name: string): Promise<boolean> => {
@@ -137,19 +145,19 @@ export default function OrganizeScreen() {
 
   if (state.status === 'loading')
     return (
-      <View className="flex-1 justify-center bg-zinc-950">
-        <ActivityIndicator color="#a1a1aa" />
+      <View className="flex-1 justify-center bg-theme-canvas">
+        <ActivityIndicator color={themeColors.secondary} />
       </View>
     );
   if (state.status === 'error')
     return (
-      <View className="flex-1 justify-center bg-zinc-950 p-6">
-        <Text className="text-center text-zinc-50">{state.error}</Text>
+      <View className="flex-1 justify-center bg-theme-canvas p-6">
+        <Text className="text-center text-theme-foreground">{state.error}</Text>
       </View>
     );
 
   return (
-    <SafeAreaView className="flex-1 bg-zinc-950" edges={['top', 'left', 'right']}>
+    <SafeAreaView className="flex-1 bg-theme-canvas" edges={['top', 'left', 'right']}>
       <ScrollView contentContainerClassName="px-6 pb-32 pt-8" showsVerticalScrollIndicator={false}>
         <View className="flex-row flex-wrap">
           {STATUS_FOLDERS.map((folder) => (

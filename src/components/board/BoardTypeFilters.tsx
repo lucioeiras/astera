@@ -1,47 +1,50 @@
+import type { ComponentType } from 'react';
 import {
-  ArticleIcon,
-  BookOpenIcon,
-  FilePdfIcon,
-  FilmSlateIcon,
-  GameControllerIcon,
-  ImageIcon,
-  LinkIcon,
-  MusicNotesIcon,
-  NotePencilIcon,
-  QuotesIcon,
   RedditLogoIcon,
   TiktokLogoIcon,
   TwitterLogoIcon,
-  VideoCameraIcon,
-  WaveformIcon,
   YoutubeLogoIcon,
 } from 'phosphor-react-native';
+import {
+  Newspaper,
+  BookOpen,
+  FileText,
+  Clapperboard,
+  Gamepad2,
+  ImageIcon,
+  LinkIcon,
+  Music2,
+  SquarePen,
+  Quote,
+  Video,
+  AudioLines,
+} from 'lucide-react-native';
 import { ScrollView } from 'react-native';
 
-import { TypeFilterButton } from '@/components/menus/TypeFilterButton';
+import { Button } from '@/components/Button';
 import { CARD_TYPE_LABELS } from '@/lib/library/activity';
 import { ITEM_TYPES, type LibraryItemType } from '@/lib/library/types';
 import { translate, useLocalization } from '@/lib/i18n';
 
 const CARD_TYPE_ICONS = {
-  note: NotePencilIcon,
-  quote: QuotesIcon,
+  note: SquarePen,
+  quote: Quote,
   image: ImageIcon,
-  pdf: FilePdfIcon,
-  video: VideoCameraIcon,
-  audio: WaveformIcon,
+  pdf: FileText,
+  video: Video,
+  audio: AudioLines,
   link: LinkIcon,
-  article: ArticleIcon,
+  article: Newspaper,
   youtube: YoutubeLogoIcon,
   tiktok: TiktokLogoIcon,
   tweet: TwitterLogoIcon,
   reddit: RedditLogoIcon,
-  book: BookOpenIcon,
-  music: MusicNotesIcon,
-  movie: FilmSlateIcon,
-  tvshow: FilmSlateIcon,
-  game: GameControllerIcon,
-} satisfies Record<LibraryItemType, typeof NotePencilIcon>;
+  book: BookOpen,
+  music: Music2,
+  movie: Clapperboard,
+  tvshow: Clapperboard,
+  game: Gamepad2,
+} satisfies Record<LibraryItemType, ComponentType<{ size?: number; color?: string }>>;
 
 export function BoardTypeFilters({
   selectedType,
@@ -62,10 +65,20 @@ export function BoardTypeFilters({
       {ITEM_TYPES.map((type) => {
         const Icon = CARD_TYPE_ICONS[type];
         return (
-          <TypeFilterButton
+          <Button
             key={type}
-            label={translate(CARD_TYPE_LABELS[type])}
-            icon={Icon}
+            accessibilityLabel={translate(CARD_TYPE_LABELS[type])}
+            text={translate(CARD_TYPE_LABELS[type])}
+            icon={
+              <Icon
+                size={20}
+                {...(['youtube', 'tiktok', 'tweet', 'reddit'].includes(type)
+                  ? { weight: 'regular' as const }
+                  : { strokeWidth: 2 })}
+              />
+            }
+            size="small"
+            variant={selectedType === type ? 'primary' : 'secondary'}
             selected={selectedType === type}
             onPress={() => onSelect(type)}
           />

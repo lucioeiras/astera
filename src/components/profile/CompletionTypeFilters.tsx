@@ -1,21 +1,16 @@
-import {
-  ArticleIcon,
-  BookOpenIcon,
-  FilmSlateIcon,
-  GameControllerIcon,
-  YoutubeLogoIcon,
-} from 'phosphor-react-native';
+import { YoutubeLogoIcon } from 'phosphor-react-native';
+import { Newspaper, BookOpen, Clapperboard, Gamepad2 } from 'lucide-react-native';
 import { ScrollView } from 'react-native';
 import { TypeFilterButton } from '@/components/menus/TypeFilterButton';
 import { CARD_TYPE_LABELS, TRACKABLE_TYPES, type TrackableType } from '@/lib/library/activity';
 import { translate, useLocalization } from '@/lib/i18n';
 
 const ICONS = {
-  book: BookOpenIcon,
-  movie: FilmSlateIcon,
-  tvshow: FilmSlateIcon,
-  game: GameControllerIcon,
-  article: ArticleIcon,
+  book: BookOpen,
+  movie: Clapperboard,
+  tvshow: Clapperboard,
+  game: Gamepad2,
+  article: Newspaper,
   youtube: YoutubeLogoIcon,
 };
 

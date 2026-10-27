@@ -1,16 +1,11 @@
-import {
-  CalendarBlankIcon,
-  CheckIcon,
-  NotePencilIcon,
-  TrashSimpleIcon,
-  XIcon,
-} from 'phosphor-react-native';
+import { ThemedModal as Modal } from '@/components/ThemedModal';
+import { useAppTheme } from '@/lib/theme';
+import { Calendar, Check, SquarePen, Trash2, X } from 'lucide-react-native';
 import { useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
   KeyboardAvoidingView,
-  Modal,
   Platform,
   Pressable,
   ScrollView,
@@ -55,6 +50,7 @@ export function BookLogModal({
   onSaved,
   onClose,
 }: BookLogModalProps) {
+  const { colors: themeColors } = useAppTheme();
   useLocalization();
   const insets = useSafeAreaInsets();
   const [formMonth, setFormMonth] = useState(() =>
@@ -149,7 +145,7 @@ export function BookLogModal({
     >
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        className="flex-1 bg-zinc-950"
+        className="flex-1 bg-theme-canvas"
       >
         <View className="flex-1" style={{ paddingTop: Math.max(insets.top, 16) }}>
           <ScrollView
@@ -159,20 +155,20 @@ export function BookLogModal({
             showsVerticalScrollIndicator={false}
           >
             <View className="gap-3 px-8 pb-8">
-              <Text className="font-sans-semibold text-2xl text-white">
+              <Text className="font-sans-semibold text-2xl text-theme-foreground">
                 <LocalizedText>Log reading</LocalizedText>
               </Text>
-              <Text className="font-sans text-base text-zinc-400 leading-relaxed">
+              <Text className="font-sans text-base text-theme-secondary leading-relaxed">
                 <LocalizedText>
                   Track where you are in this book and save a thought from today.
                 </LocalizedText>
               </Text>
             </View>
 
-            <View className="border-t border-b border-zinc-800 px-8 py-6 gap-5">
+            <View className="border-t border-b border-theme-raised px-8 py-6 gap-5">
               <View className="flex-row items-center gap-2">
-                <CalendarBlankIcon size={14} color="#E4E4E7" weight="bold" />
-                <Text className="font-sans-semibold text-sm tracking-wider uppercase text-zinc-200">
+                <Calendar size={14} color={themeColors.heading} strokeWidth={2} />
+                <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
                   <LocalizedText>Reading date</LocalizedText>
                 </Text>
               </View>
@@ -186,31 +182,31 @@ export function BookLogModal({
               />
             </View>
 
-            <View className="flex-row gap-6 border-b border-zinc-800">
+            <View className="flex-row gap-6 border-b border-theme-raised">
               <TextInput
                 value={page}
                 onChangeText={setPage}
                 keyboardType="number-pad"
                 placeholder={translate('Current page')}
-                placeholderTextColor="#71717A"
+                placeholderTextColor={themeColors.muted}
                 accessibilityLabel={translate('Current page')}
-                className="font-sans text-lg text-white flex-1 px-8 py-6 leading-tight border-r border-zinc-800"
+                className="font-sans text-lg text-theme-foreground flex-1 px-8 py-6 leading-tight border-r border-theme-raised"
               />
               <TextInput
                 value={totalPages}
                 onChangeText={setTotalPages}
                 keyboardType="number-pad"
                 placeholder={translate('Total pages')}
-                placeholderTextColor="#71717A"
+                placeholderTextColor={themeColors.muted}
                 accessibilityLabel={translate('Total pages')}
-                className="font-sans text-lg text-white flex-1 px-8 py-6 leading-tight"
+                className="font-sans text-lg text-theme-foreground flex-1 px-8 py-6 leading-tight"
               />
             </View>
 
             <View className="px-8 py-6 gap-4">
               <View className="flex-row items-center gap-2">
-                <NotePencilIcon size={14} color="#E4E4E7" weight="bold" />
-                <Text className="font-sans-semibold text-sm tracking-wider uppercase text-zinc-200">
+                <SquarePen size={14} color={themeColors.heading} strokeWidth={2} />
+                <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
                   <LocalizedText>Note</LocalizedText>
                 </Text>
               </View>
@@ -220,30 +216,30 @@ export function BookLogModal({
                 multiline
                 textAlignVertical="top"
                 placeholder={translate('What stood out today?')}
-                placeholderTextColor="#71717A"
+                placeholderTextColor={themeColors.muted}
                 accessibilityLabel={translate('Reading note')}
-                className="min-h-24 font-sans text-base text-zinc-100 leading-relaxed"
+                className="min-h-24 font-sans text-base text-theme-bright leading-relaxed"
               />
             </View>
 
             {!!error && (
-              <View className="mx-8 rounded-xl border border-rose-800/60 bg-rose-950/40 p-4">
-                <Text className="font-sans text-sm text-rose-300 leading-relaxed">{error}</Text>
+              <View className="mx-8 rounded-xl border border-rose-800/60 bg-theme-pink/10 p-4">
+                <Text className="font-sans text-sm text-theme-pink leading-relaxed">{error}</Text>
               </View>
             )}
           </ScrollView>
 
-          <View className="flex-row border-t border-zinc-800 bg-zinc-950">
+          <View className="flex-row border-t border-theme-raised bg-theme-canvas">
             <Pressable
               onPress={close}
               disabled={saving}
               accessibilityRole="button"
               accessibilityLabel={translate('Cancel')}
-              className="flex-1 flex-row items-center justify-center gap-3 border-r border-zinc-800 pt-6 active:bg-zinc-900"
+              className="flex-1 flex-row items-center justify-center gap-3 border-r border-theme-raised pt-6 active:bg-theme-surface"
               style={{ paddingBottom: Math.max(insets.bottom, 24) }}
             >
-              <XIcon size={20} color="#FFFFFF" weight="bold" />
-              <Text className="font-sans-bold text-lg text-white">
+              <X size={20} color={themeColors.foreground} strokeWidth={2} />
+              <Text className="font-sans-bold text-lg text-theme-foreground">
                 <LocalizedText>Cancel</LocalizedText>
               </Text>
             </Pressable>
@@ -253,11 +249,11 @@ export function BookLogModal({
                 disabled={saving}
                 accessibilityRole="button"
                 accessibilityLabel={translate('Remove reading log')}
-                className="flex-1 flex-row items-center justify-center gap-3 border-r border-zinc-800 pt-6 active:bg-zinc-900"
+                className="flex-1 flex-row items-center justify-center gap-3 border-r border-theme-raised pt-6 active:bg-theme-surface"
                 style={{ paddingBottom: Math.max(insets.bottom, 24) }}
               >
-                <TrashSimpleIcon size={20} color="#F87171" />
-                <Text className="font-sans-semibold text-lg text-rose-400">
+                <Trash2 size={20} color={themeColors.red} />
+                <Text className="font-sans-semibold text-lg text-theme-pink">
                   <LocalizedText>Remove</LocalizedText>
                 </Text>
               </Pressable>
@@ -267,15 +263,15 @@ export function BookLogModal({
               disabled={saving}
               accessibilityRole="button"
               accessibilityLabel={translate('Save reading log')}
-              className="flex-1 flex-row items-center justify-center gap-3 pt-6 active:bg-zinc-900"
+              className="flex-1 flex-row items-center justify-center gap-3 pt-6 active:bg-theme-surface"
               style={{ paddingBottom: Math.max(insets.bottom, 24) }}
             >
               {saving ? (
                 <ActivityIndicator size={20} color="#F59E0B" />
               ) : (
-                <CheckIcon size={20} color="#F59E0B" weight="bold" />
+                <Check size={20} color="#F59E0B" strokeWidth={2} />
               )}
-              <Text className="font-sans-semibold text-lg text-amber-500">
+              <Text className="font-sans-semibold text-lg text-theme-amber">
                 <LocalizedText>Save log</LocalizedText>
               </Text>
             </Pressable>

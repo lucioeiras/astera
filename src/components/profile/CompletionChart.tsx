@@ -1,13 +1,8 @@
+import { useAppTheme } from '@/lib/theme';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
-import {
-  ArticleIcon,
-  BookOpenIcon,
-  FilmSlateIcon,
-  TelevisionIcon,
-  GameControllerIcon,
-  YoutubeLogoIcon,
-} from 'phosphor-react-native';
+import { YoutubeLogoIcon } from 'phosphor-react-native';
+import { Newspaper, BookOpen, Clapperboard, Tv, Gamepad2 } from 'lucide-react-native';
 import { useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
@@ -25,7 +20,7 @@ export function CompletionChart({ months, year }: { months: LibraryItem[][]; yea
   const total = months.reduce((sum, items) => sum + items.length, 0);
   return (
     <View className="mt-6">
-      <Text className="mb-4 font-sans text-sm text-zinc-400">
+      <Text className="mb-4 font-sans text-sm text-theme-secondary">
         {translate(
           total === 1 ? '1 card completed in %{year}' : '%{count} cards completed in %{year}',
           {
@@ -41,18 +36,22 @@ export function CompletionChart({ months, year }: { months: LibraryItem[][]; yea
             <View key={month} className="flex-row items-center gap-3">
               <Text
                 accessibilityLabel={translate('%{month} %{year}: %{count} cards completed', {
-                  month: new Date(year, index, 1).toLocaleDateString(locale, { month: 'long' }),
+                  month: new Date(year, index, 1).toLocaleDateString(locale, {
+                    month: 'long',
+                  }),
                   year,
                   count: items.length,
                 })}
-                className="w-8 font-sans-medium text-xs text-zinc-500"
+                className="w-8 font-sans-medium text-xs text-theme-muted"
               >
-                {new Date(year, index, 1).toLocaleDateString(locale, { month: 'short' })}
+                {new Date(year, index, 1).toLocaleDateString(locale, {
+                  month: 'short',
+                })}
               </Text>
               <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
-                className="flex-1 rounded-xl bg-zinc-900/60"
+                className="flex-1 rounded-xl bg-theme-surface/60"
                 style={{ height: 80 }}
                 contentContainerStyle={{
                   flexGrow: 1,
@@ -78,7 +77,7 @@ export function CompletionChart({ months, year }: { months: LibraryItem[][]; yea
         })}
       </View>
       {total === 0 && (
-        <Text className="mt-4 font-sans text-sm text-zinc-500">
+        <Text className="mt-4 font-sans text-sm text-theme-muted">
           <LocalizedText>No completions recorded for this selection.</LocalizedText>
         </Text>
       )}
@@ -103,20 +102,21 @@ function getArtwork(item: LibraryItem): string | undefined {
 }
 
 function CompletionCover({ item, artwork }: { item: LibraryItem; artwork?: string }) {
+  const { colors: themeColors } = useAppTheme();
   const [failed, setFailed] = useState(false);
   const title = getRelatedCardTitle(item);
   const Icon =
     item.type === 'book'
-      ? BookOpenIcon
+      ? BookOpen
       : item.type === 'movie'
-        ? FilmSlateIcon
+        ? Clapperboard
         : item.type === 'tvshow'
-          ? TelevisionIcon
+          ? Tv
           : item.type === 'game'
-            ? GameControllerIcon
+            ? Gamepad2
             : item.type === 'youtube'
               ? YoutubeLogoIcon
-              : ArticleIcon;
+              : Newspaper;
   return (
     <Pressable
       accessibilityRole="button"
@@ -124,7 +124,7 @@ function CompletionCover({ item, artwork }: { item: LibraryItem; artwork?: strin
       accessibilityHint={translate('View completed card details')}
       onPress={() => router.push({ pathname: '/card/[id]', params: { id: item.id } })}
       style={{ width: 44, height: 64 }}
-      className="overflow-hidden rounded-sm bg-zinc-800 active:opacity-70"
+      className="overflow-hidden rounded-sm bg-theme-raised active:opacity-70"
     >
       {artwork && !failed ? (
         <Image
@@ -140,8 +140,8 @@ function CompletionCover({ item, artwork }: { item: LibraryItem; artwork?: strin
           testID={`completion-cover-fallback-${item.id}`}
           className="flex-1 items-center justify-center gap-1 px-1"
         >
-          <Icon size={20} color="#A1A1AA" />
-          <Text numberOfLines={2} className="text-center font-sans text-[9px] text-zinc-400">
+          <Icon size={20} color={themeColors.secondary} />
+          <Text numberOfLines={2} className="text-center font-sans text-[9px] text-theme-secondary">
             {title}
           </Text>
         </View>

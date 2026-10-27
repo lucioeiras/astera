@@ -1,3 +1,4 @@
+import { useAppTheme } from '@/lib/theme';
 import { useEffect, useRef, useState } from 'react';
 import { Text, View } from 'react-native';
 
@@ -22,6 +23,7 @@ export function RestoreToast({
   onRestore,
   onDismiss,
 }: RestoreToastProps) {
+  const { colors: themeColors } = useAppTheme();
   useLocalization();
   const [progress, setProgress] = useState(1);
   const onDismissRef = useRef(onDismiss);
@@ -73,12 +75,12 @@ export function RestoreToast({
       }}
     >
       <View
-        className="relative flex-row items-center gap-32 overflow-hidden rounded-full border border-white/10 px-2 py-2"
-        style={{ backgroundColor: 'rgba(24, 24, 27, 0.88)' }}
+        className="relative flex-row items-center gap-32 overflow-hidden rounded-full border border-theme-foreground/10 px-2 py-2"
+        style={{ backgroundColor: themeColors.surface + 'e0' }}
       >
-        <Text className="pl-2 font-sans-medium text-base text-zinc-300 ml-2">
+        <Text className="pl-2 font-sans-medium text-base text-theme-body ml-2">
           <LocalizedText>You deleted </LocalizedText>
-          <Text className="font-sans-bold text-white">{count}</Text>{' '}
+          <Text className="font-sans-bold text-theme-foreground">{count}</Text>{' '}
           {count === 1 ? 'card' : 'cards'}
         </Text>
 
@@ -88,13 +90,13 @@ export function RestoreToast({
           icon={undefined}
           text={translate('Restore')}
           onPress={onRestore}
-          shadowColor="#FFFFFF"
+          shadowColor={themeColors.foreground}
           shadowOpacity={0.16}
         />
 
         <View
           pointerEvents="none"
-          className="absolute bottom-0 left-0 h-[2px] bg-white"
+          className="absolute bottom-0 left-0 h-[2px] bg-theme-foreground"
           style={{ width: `${Math.max(0, Math.min(1, progress)) * 100}%` }}
         />
       </View>

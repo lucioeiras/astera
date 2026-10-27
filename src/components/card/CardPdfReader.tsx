@@ -1,5 +1,7 @@
-import { XIcon } from 'phosphor-react-native';
-import { Modal, Pressable, Text, View } from 'react-native';
+import { ThemedModal as Modal } from '@/components/ThemedModal';
+import { useAppTheme } from '@/lib/theme';
+import { X } from 'lucide-react-native';
+import { Pressable, Text, View } from 'react-native';
 
 import { PdfPreview } from '@/components/PdfPreview';
 import type { LibraryItem } from '@/lib/library/types';
@@ -18,11 +20,12 @@ export function CardPdfReader({
   onClose: () => void;
   topInset: number;
 }) {
+  const { colors: themeColors } = useAppTheme();
   useLocalization();
   return (
     <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
-      <View className="flex-1 bg-zinc-950" style={{ paddingTop: topInset }}>
-        <View className="h-14 flex-row items-center px-4 border-b border-zinc-800">
+      <View className="flex-1 bg-theme-canvas" style={{ paddingTop: topInset }}>
+        <View className="h-14 flex-row items-center px-4 border-b border-theme-raised">
           <Pressable
             onPress={onClose}
             hitSlop={12}
@@ -30,10 +33,10 @@ export function CardPdfReader({
             accessibilityRole="button"
             accessibilityLabel={translate('Close PDF')}
           >
-            <XIcon size={22} color="#FFFFFF" />
+            <X size={22} color={themeColors.foreground} />
           </Pressable>
           <Text
-            className="flex-1 font-sans-medium text-base text-white text-center"
+            className="flex-1 font-sans-medium text-base text-theme-foreground text-center"
             numberOfLines={1}
           >
             {item.originalFileName || item.title || translate('PDF Document')}

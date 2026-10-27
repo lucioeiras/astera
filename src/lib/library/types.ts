@@ -251,12 +251,21 @@ export type TvShowItem = BaseItem & {
   seasons: TvShowSeason[];
 };
 
+export type GamePlayLog = {
+  id: string;
+  /** Local calendar date in YYYY-MM-DD format. */
+  date: string;
+  createdAt: string;
+  noteId?: string;
+};
+
 export type GameItem = BaseItem & {
   type: 'game';
   review?: MediaReview;
   /** ISO timestamp of the current completion; absent for legacy cards. */
   completedAt?: string;
   progressStatus?: MediaProgressStatus;
+  playLogs?: GamePlayLog[];
   rawgId?: number;
   title: string;
   cover: ImageRef;

@@ -1,11 +1,12 @@
+import { ThemedModal as Modal } from '@/components/ThemedModal';
+import { useAppTheme, type ThemeColors } from '@/lib/theme';
 import { useAudioPlayer, useAudioPlayerStatus } from 'expo-audio';
-import { CheckIcon, MicrophoneIcon, NotePencilIcon, TextTIcon, XIcon } from 'phosphor-react-native';
+import { Check, Mic, SquarePen, Type, X } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
   KeyboardAvoidingView,
-  Modal,
   Platform,
   Pressable,
   ScrollView,
@@ -35,6 +36,8 @@ type NewAudioModalProps = {
 };
 
 export function NewAudioModal({ visible, asset, onClose, onDismiss, onSaved }: NewAudioModalProps) {
+  const { colors: themeColors } = useAppTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
   useLocalization();
   const { addAudio, getTags } = useLibrary();
   const insets = useSafeAreaInsets();
@@ -176,41 +179,41 @@ export function NewAudioModal({ visible, asset, onClose, onDismiss, onSaved }: N
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
           >
-            <View className="flex-row p-8 pt-0 gap-6 items-center max-h-48 border-b border-zinc-800">
+            <View className="flex-row p-8 pt-0 gap-6 items-center max-h-48 border-b border-theme-raised">
               <Pressable
                 onPress={() => (playerStatus.playing ? player.pause() : player.play())}
                 accessibilityRole="button"
                 accessibilityLabel={
                   playerStatus.playing ? 'Pause recording preview' : 'Play recording preview'
                 }
-                className="h-20 w-20 shrink-0 items-center justify-center rounded-xl bg-zinc-900/80 border border-zinc-800 active:opacity-70"
+                className="h-20 w-20 shrink-0 items-center justify-center rounded-xl bg-theme-surface/80 border border-theme-raised active:opacity-70"
               >
-                <MicrophoneIcon size={24} color="#EF4444" weight="duotone" />
-                <Text className="mt-2 font-sans-semibold text-xs text-zinc-400">
+                <Mic size={24} color="#EF4444" strokeWidth={2} />
+                <Text className="mt-2 font-sans-semibold text-xs text-theme-secondary">
                   {playerStatus.playing ? 'Pause' : durationLabel}
                 </Text>
               </Pressable>
               <View className="flex-1 gap-3">
-                <Text className="font-sans-semibold text-2xl text-white">
+                <Text className="font-sans-semibold text-2xl text-theme-foreground">
                   <LocalizedText>Add a recording</LocalizedText>
                 </Text>
-                <Text className="font-sans text-base text-zinc-400 leading-relaxed">
+                <Text className="font-sans text-base text-theme-secondary leading-relaxed">
                   <LocalizedText>Add a title, tags and note to this audio.</LocalizedText>
                 </Text>
               </View>
             </View>
 
-            <View className="flex-row items-center gap-4 py-5 px-8 border-b border-zinc-800">
-              <TextTIcon size={20} color="#D4D4D8" />
+            <View className="flex-row items-center gap-4 py-5 px-8 border-b border-theme-raised">
+              <Type size={20} color={themeColors.body} />
               <TextInput
                 ref={titleInputRef}
                 value={title}
                 onChangeText={setTitle}
                 placeholder={translate('Add a title to this audio')}
-                placeholderTextColor="#71717A"
+                placeholderTextColor={themeColors.muted}
                 returnKeyType="next"
                 onSubmitEditing={() => tagsInputRef.current?.focus()}
-                className="flex-1 font-sans text-xl text-white leading-tight"
+                className="flex-1 font-sans text-xl text-theme-foreground leading-tight"
                 style={styles.borderlessInput}
                 underlineColorAndroid="transparent"
               />
@@ -232,8 +235,8 @@ export function NewAudioModal({ visible, asset, onClose, onDismiss, onSaved }: N
 
             <View className="flex-1 py-6 px-8 gap-4">
               <View className="flex-row items-center gap-2">
-                <NotePencilIcon size={14} color="#E4E4E7" weight="bold" />
-                <Text className="font-sans-semibold text-sm tracking-wider uppercase text-zinc-200">
+                <SquarePen size={14} color={themeColors.heading} strokeWidth={2} />
+                <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
                   <LocalizedText>Note</LocalizedText>
                 </Text>
               </View>
@@ -243,10 +246,10 @@ export function NewAudioModal({ visible, asset, onClose, onDismiss, onSaved }: N
                   value={note}
                   onChangeText={setNote}
                   placeholder={translate('Add a text note to this audio...')}
-                  placeholderTextColor="#71717A"
+                  placeholderTextColor={themeColors.muted}
                   multiline
                   textAlignVertical="top"
-                  className="w-full font-sans text-base text-zinc-100 leading-relaxed min-h-[96px]"
+                  className="w-full font-sans text-base text-theme-bright leading-relaxed min-h-[96px]"
                   style={styles.borderlessInput}
                   underlineColorAndroid="transparent"
                 />
@@ -259,7 +262,7 @@ export function NewAudioModal({ visible, asset, onClose, onDismiss, onSaved }: N
               accessibilityLabel={translate('Cancel')}
               onPress={handleClose}
               disabled={saving}
-              icon={<XIcon size={20} color="#FFFFFF" weight="bold" />}
+              icon={<X size={20} color={themeColors.foreground} strokeWidth={2} />}
               text={translate('Cancel')}
             />
             <Button
@@ -269,9 +272,13 @@ export function NewAudioModal({ visible, asset, onClose, onDismiss, onSaved }: N
               disabled={!canSave}
               icon={
                 saving ? (
-                  <ActivityIndicator size={20} color="#000000" />
+                  <ActivityIndicator size={20} color={themeColors.inverse} />
                 ) : (
-                  <CheckIcon size={20} color={canSave ? '#000000' : '#71717A'} weight="bold" />
+                  <Check
+                    size={20}
+                    color={canSave ? themeColors.inverse : themeColors.muted}
+                    strokeWidth={2}
+                  />
                 )
               }
               text={translate('Save audio')}
@@ -283,19 +290,20 @@ export function NewAudioModal({ visible, asset, onClose, onDismiss, onSaved }: N
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    width: '100%',
-    backgroundColor: '#09090B',
-  },
-  scrollContent: {
-    flexGrow: 1,
-    paddingVertical: 20,
-    paddingBottom: 40,
-  },
-  borderlessInput: {
-    borderWidth: 0,
-    backgroundColor: 'transparent',
-  },
-});
+const createStyles = (themeColors: ThemeColors) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      width: '100%',
+      backgroundColor: themeColors.canvas,
+    },
+    scrollContent: {
+      flexGrow: 1,
+      paddingVertical: 20,
+      paddingBottom: 40,
+    },
+    borderlessInput: {
+      borderWidth: 0,
+      backgroundColor: 'transparent',
+    },
+  });

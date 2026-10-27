@@ -1,5 +1,5 @@
 {
-  "name": "anything",
+  "name": "astera",
   "main": "expo-router/entry",
   "version": "1.0.0",
   "dependencies": {
@@ -30,10 +30,12 @@
     "expo-sharing": "~57.0.22",
     "expo-splash-screen": "~57.0.9",
     "expo-sqlite": "~57.0.4",
+    "expo-system-ui": "~57.0.4",
     "expo-video": "~57.0.5",
     "expo-web-browser": "~57.0.3",
     "i18n-js": "^4.5.4",
     "llama.rn": "^0.13.0-rc.7",
+    "lucide-react-native": "^1.61.0",
     "nativewind": "^4.2.7",
     "phosphor-react-native": "^3.0.6",
     "react": "19.2.3",
@@ -90,7 +92,8 @@
     "moduleNameMapper": {
       "^@/assets/(.*)$": "<rootDir>/assets/$1",
       "^@/(.*)$": "<rootDir>/src/$1",
-      "\\.svg$": "<rootDir>/__mocks__/svgMock.tsx"
+      "\\.svg$": "<rootDir>/__mocks__/svgMock.tsx",
+      "^lucide-react-native$": "<rootDir>/node_modules/lucide-react-native/dist/cjs/lucide-react-native.js"
     },
     "setupFilesAfterEnv": [
       "<rootDir>/jest.setup.ts"

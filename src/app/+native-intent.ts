@@ -7,7 +7,7 @@ export function redirectSystemPath({ path }: { path: string; initial: boolean })
     }
 
     if (
-      url.protocol === 'anything:' &&
+      url.protocol === 'astera:' &&
       (url.hostname === 'control-add' || url.pathname === '/control-add' || url.hostname === 'add')
     ) {
       const controlItem = url.searchParams.get('controlItem');

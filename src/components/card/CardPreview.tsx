@@ -1,10 +1,9 @@
+import { useAppTheme } from '@/lib/theme';
 import { Image as ExpoImage } from 'expo-image';
-import { DiscIcon } from 'phosphor-react-native';
+import { Disc, Quote } from 'lucide-react-native';
 import { useCallback, useRef, useState } from 'react';
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 
-import QuoteClose from '@/../assets/quote-close.svg';
-import QuoteOpen from '@/../assets/quote-open.svg';
 import { ItemCard } from '@/components/cards/ItemCard';
 import { MarkdownNote } from '@/components/card/MarkdownNote';
 import { VinylRecord } from '@/components/effects/VinylRecord';
@@ -31,15 +30,18 @@ export function CardPreview({
   onTextFocus,
   onDismissEditingTags,
 }: CardPreviewProps) {
+  const { colors: themeColors } = useAppTheme();
   useLocalization();
   const isMusic = item.type === 'music';
   const isNoteOrQuote = item.type === 'note' || item.type === 'quote';
   const displayItem: LibraryItem =
     title && 'title' in item ? ({ ...item, title } as LibraryItem) : item;
   const [isPlayingMusic, setIsPlayingMusic] = useState(false);
-  const musicPlayerRef = useRef<{ play: () => void; pause: () => void; playing: boolean } | null>(
-    null
-  );
+  const musicPlayerRef = useRef<{
+    play: () => void;
+    pause: () => void;
+    playing: boolean;
+  } | null>(null);
   const handleToggleMusic = useCallback(() => {
     if (!musicPlayerRef.current) return;
     if (musicPlayerRef.current.playing) musicPlayerRef.current.pause();
@@ -86,7 +88,7 @@ export function CardPreview({
                 zIndex: 2,
                 borderRadius: 10,
                 overflow: 'hidden',
-                backgroundColor: '#18181b',
+                backgroundColor: themeColors.surface,
                 borderWidth: 1,
                 borderColor: 'rgba(255, 255, 255, 0.12)',
                 shadowColor: '#000000',
@@ -103,8 +105,8 @@ export function CardPreview({
                   contentFit="cover"
                 />
               ) : (
-                <View className="w-full h-full items-center justify-center bg-zinc-800">
-                  <DiscIcon size={64} color="#71717A" weight="duotone" />
+                <View className="w-full h-full items-center justify-center bg-theme-raised">
+                  <Disc size={64} color={themeColors.muted} strokeWidth={2} />
                 </View>
               )}
 
@@ -142,7 +144,7 @@ export function CardPreview({
         <View className="w-full max-w-lg px-2">
           {item.type === 'quote' ? (
             <View className="items-center w-full py-2">
-              <QuoteOpen width={18} height={18} />
+              <Quote size={18} color="#71717B" style={{ transform: [{ rotate: '180deg' }] }} />
               <TextInput
                 value={editedText}
                 onChangeText={onTextChange}
@@ -150,12 +152,12 @@ export function CardPreview({
                 onFocus={onTextFocus}
                 multiline
                 placeholder={translate('Type quote here...')}
-                placeholderTextColor="#71717A"
-                className="w-full font-sans-medium text-2xl text-white leading-10 text-center mt-6 mb-11"
+                placeholderTextColor={themeColors.muted}
+                className="w-full font-sans-medium text-2xl text-theme-foreground leading-10 text-center mt-6 mb-11"
                 style={{ backgroundColor: 'transparent' }}
                 underlineColorAndroid="transparent"
               />
-              <QuoteClose width={18} height={18} />
+              <Quote size={18} color="#71717B" />
             </View>
           ) : (
             <MarkdownNote markdown={editedText} onMarkdownChange={onTextChange} />

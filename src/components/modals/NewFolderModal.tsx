@@ -1,9 +1,11 @@
-import { CheckIcon, FolderIcon, XIcon } from 'phosphor-react-native';
+import { useMemo } from 'react';
+import { ThemedModal as Modal } from '@/components/ThemedModal';
+import { useAppTheme, type ThemeColors } from '@/lib/theme';
+import { Check, Folder, X } from 'lucide-react-native';
 import { useState } from 'react';
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
-  Modal,
   Platform,
   Pressable,
   ScrollView,
@@ -26,6 +28,8 @@ type NewFolderModalProps = {
 };
 
 export function NewFolderModal({ visible, onClose, onCreate }: NewFolderModalProps) {
+  const { colors: themeColors } = useAppTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
   useLocalization();
   const insets = useSafeAreaInsets();
   const [name, setName] = useState('');
@@ -61,6 +65,7 @@ export function NewFolderModal({ visible, onClose, onCreate }: NewFolderModalPro
       statusBarTranslucent
     >
       <KeyboardAvoidingView
+        testID="new-folder-modal-surface"
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={styles.container}
       >
@@ -72,18 +77,18 @@ export function NewFolderModal({ visible, onClose, onCreate }: NewFolderModalPro
             showsVerticalScrollIndicator={false}
           >
             <View className="gap-3 p-8 pt-0">
-              <Text className="font-sans-semibold text-2xl text-white">
+              <Text className="font-sans-semibold text-2xl text-theme-foreground">
                 <LocalizedText>Create a new folder</LocalizedText>
               </Text>
-              <Text className="font-sans text-base text-zinc-400 leading-relaxed">
+              <Text className="font-sans text-base text-theme-secondary leading-relaxed">
                 <LocalizedText>
                   Add the folder name as a tag to any card to place it here.
                 </LocalizedText>
               </Text>
             </View>
 
-            <View className="flex-row items-center gap-4 py-5 px-8 border-t border-b border-zinc-800">
-              <FolderIcon size={20} color="#D4D4D8" />
+            <View className="flex-row items-center gap-4 py-5 px-8 border-t border-b border-theme-raised">
+              <Folder size={20} color={themeColors.body} />
               <TextInput
                 autoFocus
                 value={name}
@@ -92,9 +97,9 @@ export function NewFolderModal({ visible, onClose, onCreate }: NewFolderModalPro
                 returnKeyType="done"
                 maxLength={40}
                 placeholder={translate('Folder name')}
-                placeholderTextColor="#71717A"
+                placeholderTextColor={themeColors.muted}
                 accessibilityLabel={translate('Folder name')}
-                className="flex-1 font-sans text-xl text-white leading-tight"
+                className="flex-1 font-sans text-xl text-theme-foreground leading-tight"
                 style={styles.borderlessInput}
                 underlineColorAndroid="transparent"
               />
@@ -102,11 +107,11 @@ export function NewFolderModal({ visible, onClose, onCreate }: NewFolderModalPro
                 <Pressable
                   onPress={() => setName('')}
                   hitSlop={10}
-                  className="p-1.5 rounded-full bg-zinc-800 items-center justify-center active:opacity-70"
+                  className="p-1.5 rounded-full bg-theme-raised items-center justify-center active:opacity-70"
                   accessibilityRole="button"
                   accessibilityLabel={translate('Clear folder name')}
                 >
-                  <XIcon size={12} color="#E4E4E7" weight="bold" />
+                  <X size={12} color={themeColors.heading} strokeWidth={2} />
                 </Pressable>
               )}
             </View>
@@ -117,7 +122,7 @@ export function NewFolderModal({ visible, onClose, onCreate }: NewFolderModalPro
               accessibilityLabel={translate('Cancel')}
               onPress={handleClose}
               disabled={saving}
-              icon={<XIcon size={20} color="#FFFFFF" weight="bold" />}
+              icon={<X size={20} color={themeColors.foreground} strokeWidth={2} />}
               text={translate('Cancel')}
             />
 
@@ -128,9 +133,13 @@ export function NewFolderModal({ visible, onClose, onCreate }: NewFolderModalPro
               disabled={!canSave}
               icon={
                 saving ? (
-                  <ActivityIndicator size={20} color="#000000" />
+                  <ActivityIndicator size={20} color={themeColors.inverse} />
                 ) : (
-                  <CheckIcon size={20} color={canSave ? '#000000' : '#71717A'} weight="bold" />
+                  <Check
+                    size={20}
+                    color={canSave ? themeColors.inverse : themeColors.muted}
+                    strokeWidth={2}
+                  />
                 )
               }
               text={translate('Create folder')}
@@ -142,19 +151,20 @@ export function NewFolderModal({ visible, onClose, onCreate }: NewFolderModalPro
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    width: '100%',
-    backgroundColor: '#09090B',
-  },
-  scrollContent: {
-    flexGrow: 1,
-    paddingVertical: 20,
-    paddingBottom: 40,
-  },
-  borderlessInput: {
-    borderWidth: 0,
-    backgroundColor: 'transparent',
-  },
-});
+const createStyles = (themeColors: ThemeColors) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      width: '100%',
+      backgroundColor: themeColors.canvas,
+    },
+    scrollContent: {
+      flexGrow: 1,
+      paddingVertical: 20,
+      paddingBottom: 40,
+    },
+    borderlessInput: {
+      borderWidth: 0,
+      backgroundColor: 'transparent',
+    },
+  });

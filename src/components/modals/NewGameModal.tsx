@@ -1,12 +1,7 @@
+import { useAppTheme, type ThemeColors } from '@/lib/theme';
 import { decodeHTML } from 'entities';
 import { Image as ExpoImage } from 'expo-image';
-import {
-  CheckIcon,
-  GameControllerIcon,
-  MagnifyingGlassIcon,
-  NotePencilIcon,
-  XIcon,
-} from 'phosphor-react-native';
+import { Check, Gamepad2, Search, SquarePen, X } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -55,6 +50,8 @@ export function NewGameModal({
   onDismiss,
   onSaved,
 }: NewGameModalProps) {
+  const { colors: themeColors } = useAppTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
   useLocalization();
   const { addGameItem, getTags } = useLibrary();
   const insets = useSafeAreaInsets();
@@ -312,18 +309,18 @@ export function NewGameModal({
           >
             {/* Header */}
             <View className="gap-3 p-8 pt-0">
-              <Text className="font-sans-semibold text-2xl text-white">
+              <Text className="font-sans-semibold text-2xl text-theme-foreground">
                 <LocalizedText>Add game</LocalizedText>
               </Text>
-              <Text className="font-sans text-base text-zinc-400 leading-relaxed">
+              <Text className="font-sans text-base text-theme-secondary leading-relaxed">
                 <LocalizedText>Search games from RAWG to add them to your library.</LocalizedText>
               </Text>
             </View>
 
             {/* Selected Game Banner or Search Input */}
             {selectedGame ? (
-              <View className="px-8 py-6 border-t border-b border-zinc-800 flex-row items-center gap-6">
-                <View className="w-24 h-16 rounded-lg bg-zinc-800 overflow-hidden items-center justify-center">
+              <View className="px-8 py-6 border-t border-b border-theme-raised flex-row items-center gap-6">
+                <View className="w-24 h-16 rounded-lg bg-theme-raised overflow-hidden items-center justify-center">
                   {selectedGame.background_image ? (
                     <ExpoImage
                       source={{ uri: selectedGame.background_image }}
@@ -331,14 +328,17 @@ export function NewGameModal({
                       contentFit="cover"
                     />
                   ) : (
-                    <GameControllerIcon size={24} color="#71717A" weight="duotone" />
+                    <Gamepad2 size={24} color={themeColors.muted} strokeWidth={2} />
                   )}
                 </View>
                 <View className="flex-1 gap-2">
-                  <Text className="font-sans-semibold text-lg text-white" numberOfLines={2}>
+                  <Text
+                    className="font-sans-semibold text-lg text-theme-foreground"
+                    numberOfLines={2}
+                  >
                     {decodeHTML(selectedGame.name)}
                   </Text>
-                  <Text className="font-sans text-base text-zinc-400" numberOfLines={1}>
+                  <Text className="font-sans text-base text-theme-secondary" numberOfLines={1}>
                     {extractReleaseYear(selectedGame.released) || '—'}
                     {selectedGame.metacritic ? ` • Metacritic ${selectedGame.metacritic}` : ''}
                   </Text>
@@ -349,44 +349,44 @@ export function NewGameModal({
                     clearAutoTags();
                   }}
                   hitSlop={10}
-                  className="p-2 rounded-full bg-zinc-800 active:opacity-70"
+                  className="p-2 rounded-full bg-theme-raised active:opacity-70"
                   accessibilityRole="button"
                   accessibilityLabel={translate('Change game')}
                 >
-                  <XIcon size={16} color="#E4E4E7" weight="bold" />
+                  <X size={16} color={themeColors.heading} strokeWidth={2} />
                 </Pressable>
               </View>
             ) : (
-              <View className="flex-row items-center gap-4 py-5 px-8 border-t border-b border-zinc-800">
-                <MagnifyingGlassIcon size={20} color="#D4D4D8" />
+              <View className="flex-row items-center gap-4 py-5 px-8 border-t border-b border-theme-raised">
+                <Search size={20} color={themeColors.body} />
 
                 <TextInput
                   ref={inputRef}
                   value={searchQuery}
                   onChangeText={handleQueryChange}
                   placeholder={translate('Search game title...')}
-                  placeholderTextColor="#71717A"
+                  placeholderTextColor={themeColors.muted}
                   autoCapitalize="none"
                   autoCorrect={false}
                   returnKeyType="search"
                   onSubmitEditing={() => executeSearch(searchQuery)}
-                  className="flex-1 font-sans text-xl text-white leading-tight"
+                  className="flex-1 font-sans text-xl text-theme-foreground leading-tight"
                   style={styles.borderlessInput}
                   underlineColorAndroid="transparent"
                   clearButtonMode="never"
                 />
 
                 {searching ? (
-                  <ActivityIndicator size={16} color="#A1A1AA" />
+                  <ActivityIndicator size={16} color={themeColors.secondary} />
                 ) : searchQuery.length > 0 ? (
                   <Pressable
                     onPress={handleClearSearch}
                     hitSlop={10}
-                    className="p-1.5 rounded-full bg-zinc-800 items-center justify-center active:opacity-70"
+                    className="p-1.5 rounded-full bg-theme-raised items-center justify-center active:opacity-70"
                     accessibilityRole="button"
                     accessibilityLabel={translate('Clear search')}
                   >
-                    <XIcon size={12} color="#E4E4E7" weight="bold" />
+                    <X size={12} color={themeColors.heading} strokeWidth={2} />
                   </Pressable>
                 ) : null}
               </View>
@@ -394,8 +394,8 @@ export function NewGameModal({
 
             {/* Error Message */}
             {errorMessage && (
-              <View className="mx-8 my-4 p-4 rounded-xl bg-rose-950/40 border border-rose-800/60">
-                <Text className="font-sans text-sm text-rose-300 leading-relaxed">
+              <View className="mx-8 my-4 p-4 rounded-xl bg-theme-pink/10 border border-rose-800/60">
+                <Text className="font-sans text-sm text-theme-pink leading-relaxed">
                   {errorMessage}
                 </Text>
               </View>
@@ -415,9 +415,9 @@ export function NewGameModal({
                     <Pressable
                       key={item.id}
                       onPress={() => handleSelectGame(item)}
-                      className="flex-row items-center gap-5 px-8 py-5 border-b border-zinc-800 active:bg-zinc-900"
+                      className="flex-row items-center gap-5 px-8 py-5 border-b border-theme-raised active:bg-theme-surface"
                     >
-                      <View className="w-24 h-16 rounded-md bg-zinc-800 overflow-hidden items-center justify-center">
+                      <View className="w-24 h-16 rounded-md bg-theme-raised overflow-hidden items-center justify-center">
                         {item.background_image ? (
                           <ExpoImage
                             source={{ uri: item.background_image }}
@@ -425,18 +425,18 @@ export function NewGameModal({
                             contentFit="cover"
                           />
                         ) : (
-                          <GameControllerIcon size={24} color="#71717A" weight="duotone" />
+                          <Gamepad2 size={24} color={themeColors.muted} strokeWidth={2} />
                         )}
                       </View>
 
                       <View className="flex-1 gap-1.5">
                         <Text
-                          className="font-sans-medium text-base text-zinc-100"
+                          className="font-sans-medium text-base text-theme-bright"
                           numberOfLines={1}
                         >
                           {decodeHTML(item.name)}
                         </Text>
-                        <Text className="font-sans text-sm text-zinc-400" numberOfLines={1}>
+                        <Text className="font-sans text-sm text-theme-secondary" numberOfLines={1}>
                           {year || '—'}
                           {platforms.length > 0 ? ` • ${platforms.join(', ')}` : ''}
                         </Text>
@@ -450,8 +450,8 @@ export function NewGameModal({
                   !searching &&
                   !errorMessage && (
                     <View className="py-12 items-center justify-center">
-                      <GameControllerIcon size={32} color="#52525B" weight="duotone" />
-                      <Text className="font-sans text-sm text-zinc-500 mt-3">
+                      <Gamepad2 size={32} color={themeColors.strongBorder} strokeWidth={2} />
+                      <Text className="font-sans text-sm text-theme-muted mt-3">
                         <LocalizedText>No games found for "</LocalizedText>
                         {searchQuery}
                         <LocalizedText>"</LocalizedText>
@@ -478,10 +478,10 @@ export function NewGameModal({
                   }}
                 />
 
-                <View className="py-6 px-8 gap-4 border-t border-zinc-800">
+                <View className="py-6 px-8 gap-4 border-t border-theme-raised">
                   <View className="flex-row items-center gap-2">
-                    <NotePencilIcon size={14} color="#E4E4E7" weight="bold" />
-                    <Text className="font-sans-semibold text-sm tracking-wider uppercase text-zinc-200">
+                    <SquarePen size={14} color={themeColors.heading} strokeWidth={2} />
+                    <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
                       <LocalizedText>Note</LocalizedText>
                     </Text>
                   </View>
@@ -492,10 +492,10 @@ export function NewGameModal({
                       value={note}
                       onChangeText={setNote}
                       placeholder={translate('Add personal thoughts or notes about this game...')}
-                      placeholderTextColor="#71717A"
+                      placeholderTextColor={themeColors.muted}
                       multiline
                       textAlignVertical="top"
-                      className="w-full font-sans text-base text-zinc-100 leading-relaxed min-h-[96px]"
+                      className="w-full font-sans text-base text-theme-bright leading-relaxed min-h-[96px]"
                       style={styles.borderlessInput}
                       underlineColorAndroid="transparent"
                     />
@@ -511,7 +511,7 @@ export function NewGameModal({
               accessibilityLabel={translate('Cancel')}
               onPress={handleClose}
               disabled={saving}
-              icon={<XIcon size={20} color="#FFFFFF" weight="bold" />}
+              icon={<X size={20} color={themeColors.foreground} strokeWidth={2} />}
               text={translate('Cancel')}
             />
             <Button
@@ -521,9 +521,13 @@ export function NewGameModal({
               disabled={!canSave}
               icon={
                 saving ? (
-                  <ActivityIndicator size={20} color="#000000" />
+                  <ActivityIndicator size={20} color={themeColors.inverse} />
                 ) : (
-                  <CheckIcon size={20} color={canSave ? '#000000' : '#71717A'} weight="bold" />
+                  <Check
+                    size={20}
+                    color={canSave ? themeColors.inverse : themeColors.muted}
+                    strokeWidth={2}
+                  />
                 )
               }
               text={translate('Save game')}
@@ -535,19 +539,20 @@ export function NewGameModal({
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    width: '100%',
-    backgroundColor: '#09090B',
-  },
-  scrollContent: {
-    flexGrow: 1,
-    paddingVertical: 20,
-    paddingBottom: 120,
-  },
-  borderlessInput: {
-    borderWidth: 0,
-    backgroundColor: 'transparent',
-  },
-});
+const createStyles = (themeColors: ThemeColors) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      width: '100%',
+      backgroundColor: themeColors.canvas,
+    },
+    scrollContent: {
+      flexGrow: 1,
+      paddingVertical: 20,
+      paddingBottom: 120,
+    },
+    borderlessInput: {
+      borderWidth: 0,
+      backgroundColor: 'transparent',
+    },
+  });

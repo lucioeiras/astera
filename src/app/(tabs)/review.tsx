@@ -1,6 +1,7 @@
+import { useAppTheme } from '@/lib/theme';
 import { BlurView } from 'expo-blur';
 import { router, useFocusEffect } from 'expo-router';
-import { CheckIcon, XIcon } from 'phosphor-react-native';
+import { Check, X } from 'lucide-react-native';
 import { memo, useCallback, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
@@ -38,6 +39,7 @@ import { translate, useLocalization } from '@/lib/i18n';
 type ReviewQueueState = { sourceId: string; ids: string[] };
 
 export default function ReviewScreen() {
+  const { colors: themeColors, isDark } = useAppTheme();
   useLocalization();
   const { source, state, deleteItems, restoreItems } = useLibrary();
   const setFloatingTabOverlay = useFloatingTabOverlay();
@@ -299,7 +301,7 @@ export default function ReviewScreen() {
               <Button
                 accessibilityLabel={translate('Delete card')}
                 variant="secondary"
-                icon={<XIcon size={20} weight="bold" />}
+                icon={<X size={20} strokeWidth={2} />}
                 text={translate('Delete')}
                 onPress={() => beginSwipe('delete')}
                 disabled={!currentItem || !!outgoingItem}
@@ -307,7 +309,7 @@ export default function ReviewScreen() {
               <Button
                 accessibilityLabel={translate('Keep card')}
                 variant="secondary"
-                icon={<CheckIcon size={20} weight="bold" />}
+                icon={<Check size={20} strokeWidth={2} />}
                 text={translate('Keep')}
                 onPress={() => beginSwipe('keep')}
                 disabled={!currentItem || !!outgoingItem}
@@ -332,25 +334,33 @@ export default function ReviewScreen() {
   );
 
   return (
-    <View className="flex-1 bg-zinc-950">
+    <View className="flex-1 bg-theme-canvas">
       <BoardBackdrop items={items} sourceId={sourceId} />
-      <BlurView intensity={64} tint="dark" pointerEvents="none" style={StyleSheet.absoluteFill} />
+      <BlurView
+        intensity={64}
+        tint={isDark ? 'dark' : 'light'}
+        pointerEvents="none"
+        style={StyleSheet.absoluteFill}
+      />
       <View
         pointerEvents="none"
-        style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0, 0, 0, 0.55)' }]}
+        style={[StyleSheet.absoluteFill, { backgroundColor: themeColors.canvas + '8c' }]}
       />
 
       <SafeAreaView className="flex-1 bg-transparent" edges={['top', 'left', 'right']}>
         <View className="flex-1 px-12" style={{ paddingBottom: 92 + insets.bottom }}>
           {state.status === 'loading' && (
             <View className="flex-1 items-center justify-center">
-              <ActivityIndicator accessibilityLabel={translate('Loading cards')} color="#a1a1aa" />
+              <ActivityIndicator
+                accessibilityLabel={translate('Loading cards')}
+                color={themeColors.secondary}
+              />
             </View>
           )}
 
           {state.status === 'error' && (
             <View className="flex-1 items-center justify-center gap-3 px-4">
-              <Text className="text-center font-sans text-base text-zinc-400">
+              <Text className="text-center font-sans text-base text-theme-secondary">
                 <LocalizedText>Could not load your library.</LocalizedText>
               </Text>
             </View>
@@ -358,10 +368,10 @@ export default function ReviewScreen() {
 
           {state.status === 'ready' && items.length === 0 && (
             <View className="flex-1 items-center justify-center px-4">
-              <Text className="text-center font-sans-semibold text-lg text-white">
+              <Text className="text-center font-sans-semibold text-lg text-theme-foreground">
                 <LocalizedText>No cards to review yet</LocalizedText>
               </Text>
-              <Text className="mt-2 text-center font-sans text-base text-zinc-400">
+              <Text className="mt-2 text-center font-sans text-base text-theme-secondary">
                 <LocalizedText>Cards you save will appear here.</LocalizedText>
               </Text>
             </View>
@@ -388,7 +398,10 @@ export default function ReviewScreen() {
                         <ScrollView
                           className="flex-1"
                           showsVerticalScrollIndicator={false}
-                          contentContainerStyle={{ justifyContent: 'center', flexGrow: 1 }}
+                          contentContainerStyle={{
+                            justifyContent: 'center',
+                            flexGrow: 1,
+                          }}
                         >
                           <ItemCard item={currentItem} onPress={openDetails} />
                         </ScrollView>
@@ -397,7 +410,7 @@ export default function ReviewScreen() {
                           className="absolute right-3 top-5 rounded-lg border-2 border-emerald-400 px-3 py-1"
                           style={[{ transform: [{ rotate: '-12deg' }] }, keepStampAnimatedStyle]}
                         >
-                          <Text className="font-sans-bold text-xl tracking-widest text-emerald-400">
+                          <Text className="font-sans-bold text-xl tracking-widest text-theme-green">
                             <LocalizedText>KEEP</LocalizedText>
                           </Text>
                         </Animated.View>
@@ -406,7 +419,7 @@ export default function ReviewScreen() {
                           className="absolute left-3 top-5 rounded-lg border-2 border-rose-400 px-3 py-1"
                           style={[{ transform: [{ rotate: '12deg' }] }, deleteStampAnimatedStyle]}
                         >
-                          <Text className="font-sans-bold text-xl tracking-widest text-rose-400">
+                          <Text className="font-sans-bold text-xl tracking-widest text-theme-pink">
                             <LocalizedText>DELETE</LocalizedText>
                           </Text>
                         </Animated.View>
@@ -431,7 +444,10 @@ export default function ReviewScreen() {
                       <ScrollView
                         className="flex-1"
                         showsVerticalScrollIndicator={false}
-                        contentContainerStyle={{ justifyContent: 'center', flexGrow: 1 }}
+                        contentContainerStyle={{
+                          justifyContent: 'center',
+                          flexGrow: 1,
+                        }}
                       >
                         <ItemCard item={outgoingItem} />
                       </ScrollView>
@@ -440,7 +456,7 @@ export default function ReviewScreen() {
                         className="absolute right-3 top-5 rounded-lg border-2 border-emerald-400 px-3 py-1"
                         style={[{ transform: [{ rotate: '-12deg' }] }, outgoingKeepStampStyle]}
                       >
-                        <Text className="font-sans-bold text-xl tracking-widest text-emerald-400">
+                        <Text className="font-sans-bold text-xl tracking-widest text-theme-green">
                           <LocalizedText>KEEP</LocalizedText>
                         </Text>
                       </Animated.View>
@@ -449,7 +465,7 @@ export default function ReviewScreen() {
                         className="absolute left-3 top-5 rounded-lg border-2 border-rose-400 px-3 py-1"
                         style={[{ transform: [{ rotate: '12deg' }] }, outgoingDeleteStampStyle]}
                       >
-                        <Text className="font-sans-bold text-xl tracking-widest text-rose-400">
+                        <Text className="font-sans-bold text-xl tracking-widest text-theme-pink">
                           <LocalizedText>DELETE</LocalizedText>
                         </Text>
                       </Animated.View>
@@ -460,7 +476,7 @@ export default function ReviewScreen() {
                   <View className="items-center justify-center">
                     <ActivityIndicator
                       accessibilityLabel={translate('Preparing review cards')}
-                      color="#a1a1aa"
+                      color={themeColors.secondary}
                     />
                   </View>
                 )}

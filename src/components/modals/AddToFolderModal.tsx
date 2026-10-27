@@ -1,6 +1,8 @@
-import { PlusIcon, XIcon } from 'phosphor-react-native';
+import { ThemedModal as Modal } from '@/components/ThemedModal';
+import { useAppTheme } from '@/lib/theme';
+import { Plus, X } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Alert, Modal, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ActionFooter } from '@/components/ActionFooter';
@@ -22,10 +24,11 @@ type Props = {
 };
 
 export function AddToFolderModal({ visible, items, onClose, onAdded }: Props) {
+  const { colors: themeColors } = useAppTheme();
   useLocalization();
   const { source, state, updateItem } = useLibrary();
   const insets = useSafeAreaInsets();
-  const storageKey = `anything:folders:${getSourceId(source)}`;
+  const storageKey = `astera:folders:${getSourceId(source)}`;
   const [saved, setSaved] = useState<{ key: string; names: string[] } | null>(null);
   const [saving, setSaving] = useState(false);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -146,17 +149,17 @@ export function AddToFolderModal({ visible, items, onClose, onAdded }: Props) {
       onRequestClose={handleClose}
       statusBarTranslucent
     >
-      <View className="flex-1 bg-zinc-950" style={{ paddingTop: Math.max(insets.top, 16) }}>
+      <View className="flex-1 bg-theme-canvas" style={{ paddingTop: Math.max(insets.top, 16) }}>
         <ScrollView
           className="flex-1"
           contentContainerClassName="flex-grow px-6 pb-12 pt-8"
           showsVerticalScrollIndicator={false}
         >
           <View className="gap-2 px-2 pb-8">
-            <Text className="font-sans-semibold text-2xl text-white text-center">
+            <Text className="font-sans-semibold text-2xl text-theme-foreground text-center">
               <LocalizedText>Add to folder</LocalizedText>
             </Text>
-            <Text className="font-sans text-base text-zinc-400 text-center">
+            <Text className="font-sans text-base text-theme-secondary text-center">
               {translate(items.length === 1 ? '1 card selected' : '%{count} cards selected', {
                 count: items.length,
               })}
@@ -180,13 +183,15 @@ export function AddToFolderModal({ visible, items, onClose, onAdded }: Props) {
               );
             })}
           </View>
-          {folderNames === null && <ActivityIndicator className="py-6" color="#A1A1AA" />}
+          {folderNames === null && (
+            <ActivityIndicator className="py-6" color={themeColors.secondary} />
+          )}
           {folderNames?.length === 0 && (
             <View className="flex-1 items-center justify-center px-8 py-12">
-              <Text className="font-sans-medium text-lg text-zinc-100">
+              <Text className="font-sans-medium text-lg text-theme-bright">
                 <LocalizedText>No folders yet</LocalizedText>
               </Text>
-              <Text className="mt-2 text-center font-sans text-base text-zinc-500">
+              <Text className="mt-2 text-center font-sans text-base text-theme-muted">
                 <LocalizedText>Create a folder to organize these cards.</LocalizedText>
               </Text>
             </View>
@@ -200,9 +205,9 @@ export function AddToFolderModal({ visible, items, onClose, onAdded }: Props) {
             disabled={saving}
             icon={
               saving ? (
-                <ActivityIndicator size={20} color="#A1A1AA" />
+                <ActivityIndicator size={20} color={themeColors.secondary} />
               ) : (
-                <XIcon size={20} color="#FFFFFF" weight="bold" />
+                <X size={20} color={themeColors.foreground} strokeWidth={2} />
               )
             }
             text={translate('Cancel')}
@@ -212,7 +217,7 @@ export function AddToFolderModal({ visible, items, onClose, onAdded }: Props) {
             variant="secondary"
             onPress={() => setIsCreateOpen(true)}
             disabled={saving}
-            icon={<PlusIcon size={20} color="#FFFFFF" weight="bold" />}
+            icon={<Plus size={20} color={themeColors.foreground} strokeWidth={2} />}
             text={translate('New Folder')}
           />
         </ActionFooter>

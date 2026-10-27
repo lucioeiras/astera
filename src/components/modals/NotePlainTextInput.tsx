@@ -49,7 +49,7 @@ export const NoteRichTextInput = forwardRef<NoteRichTextInputHandle, NoteRichTex
         multiline
         autoFocus
         textAlignVertical="top"
-        className="flex-1 w-full font-sans text-3xl text-white leading-10 px-8 pt-8 pb-32"
+        className="flex-1 w-full font-sans text-3xl text-theme-foreground leading-10 px-8 pt-8 pb-32"
         style={{ borderWidth: 0, backgroundColor: 'transparent' }}
         underlineColorAndroid="transparent"
         accessibilityLabel={translate('Note text')}

@@ -106,7 +106,7 @@ it('uses progressively lighter blue backgrounds for days with more additions', a
   );
   const color = (day: string) =>
     screen.getByTestId(`activity-day-${day}`).props.style.backgroundColor;
-  expect(color('2026-01-05')).toBe('#18181B');
+  expect(color('2026-01-05')).toBe('#18181b');
   expect(color('2026-01-01')).toBe('rgb(30, 58, 138)');
   const dark = color('2026-01-01').match(/\d+/g).map(Number);
   const medium = color('2026-01-02').match(/\d+/g).map(Number);

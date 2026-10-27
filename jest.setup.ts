@@ -1,5 +1,6 @@
 jest.mock('nativewind', () => ({
   cssInterop: jest.fn(),
+  vars: (values: Record<string, string>) => values,
 }));
 
 jest.mock('expo-image', () => ({

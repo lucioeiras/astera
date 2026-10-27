@@ -1,4 +1,5 @@
-import { HourglassIcon } from 'phosphor-react-native';
+import { useAppTheme } from '@/lib/theme';
+import { Hourglass } from 'lucide-react-native';
 import { useState } from 'react';
 import { Text, View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
@@ -34,6 +35,7 @@ export function BookLogs({
   readOnly?: boolean;
   openOnMount?: boolean;
 }) {
+  const { colors: themeColors } = useAppTheme();
   const logs = book.readingLogs ?? [];
   const latest = [...logs].sort((a, b) =>
     a.date === b.date ? b.createdAt.localeCompare(a.createdAt) : b.date.localeCompare(a.date)
@@ -48,20 +50,20 @@ export function BookLogs({
   const [selectedLogDate, setSelectedLogDate] = useState<string | null>(null);
 
   return (
-    <View className={`pb-0 border-b border-zinc-800 ${readOnly ? '' : 'pt-6 gap-5'}`}>
+    <View className={`pb-0 border-b border-theme-raised ${readOnly ? '' : 'pt-6 gap-5'}`}>
       {/* Header */}
       {readOnly ? (
         <View className="flex-row items-center gap-2 px-6 mt-7">
-          <HourglassIcon size={14} color="#ffffff" weight="bold" />
-          <Text className="font-sans-semibold text-sm tracking-wider uppercase text-zinc-200">
+          <Hourglass size={14} color={themeColors.foreground} strokeWidth={2} />
+          <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
             <LocalizedText>Progress</LocalizedText>
           </Text>
         </View>
       ) : (
         <View className="flex-row items-center justify-between">
           <View className="flex-row items-center gap-2 px-6">
-            <HourglassIcon size={14} color="#ffffff" weight="bold" />
-            <Text className="font-sans-semibold text-sm tracking-wider uppercase text-zinc-200">
+            <Hourglass size={14} color={themeColors.foreground} strokeWidth={2} />
+            <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
               <LocalizedText>Progress</LocalizedText>
             </Text>
           </View>
@@ -86,7 +88,7 @@ export function BookLogs({
                 cx={18}
                 cy={18}
                 r={PROGRESS_RADIUS}
-                stroke="#3F3F46"
+                stroke={themeColors.border}
                 strokeWidth={4}
                 fill="none"
               />
@@ -95,7 +97,7 @@ export function BookLogs({
                   cx={18}
                   cy={18}
                   r={PROGRESS_RADIUS}
-                  stroke="#FBBF24"
+                  stroke={themeColors.amber}
                   strokeWidth={4}
                   strokeLinecap="round"
                   strokeDasharray={PROGRESS_CIRCUMFERENCE}
@@ -107,11 +109,11 @@ export function BookLogs({
               )}
             </Svg>
 
-            <Text className="font-sans-semibold text-base text-white">
+            <Text className="font-sans-semibold text-base text-theme-foreground">
               {percentage === null ? '—' : percentage}
               <LocalizedText>%</LocalizedText>
               {'  '}
-              <Text className="font-sans text-zinc-400">
+              <Text className="font-sans text-theme-secondary">
                 <LocalizedText>(</LocalizedText>
                 {latest?.page ?? 0}
                 <LocalizedText>/</LocalizedText>

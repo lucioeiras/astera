@@ -1,4 +1,5 @@
-import { FolderPlusIcon, PushPinSimpleIcon, TrashSimpleIcon, XIcon } from 'phosphor-react-native';
+import { useAppTheme } from '@/lib/theme';
+import { FolderPlus, Pin, Trash2, X } from 'lucide-react-native';
 import { Text, View } from 'react-native';
 
 import { Button } from '@/components/Button';
@@ -26,6 +27,7 @@ export function CardSelectionBar({
   onTogglePin,
   onCancel,
 }: CardSelectionBarProps) {
+  const { colors: themeColors } = useAppTheme();
   useLocalization();
   if (!visible) return null;
 
@@ -47,14 +49,14 @@ export function CardSelectionBar({
           <Button
             accessibilityLabel={translate('Cancel selection')}
             variant="secondary"
-            icon={<XIcon size={24} color="#FFFFFF" weight="bold" />}
+            icon={<X size={24} color={themeColors.foreground} strokeWidth={2} />}
             onPress={onCancel}
           />
           <Button
             accessibilityLabel={translate('Add selected cards to folder')}
             variant="secondary"
-            contentColor="#FFFFFF"
-            icon={<FolderPlusIcon size={24} color="#FFFFFF" weight="bold" />}
+            contentColor={themeColors.foreground}
+            icon={<FolderPlus size={24} color={themeColors.foreground} strokeWidth={2} />}
             disabled={!hasSelection}
             onPress={onAddToFolder}
           />
@@ -62,8 +64,8 @@ export function CardSelectionBar({
             <Button
               accessibilityLabel={pinActionLabel}
               variant="secondary"
-              contentColor="#FFFFFF"
-              icon={<PushPinSimpleIcon size={24} color="#FFFFFF" weight="bold" />}
+              contentColor={themeColors.foreground}
+              icon={<Pin size={24} color={themeColors.foreground} strokeWidth={2} />}
               disabled={!hasSelection}
               onPress={onTogglePin}
             />
@@ -74,10 +76,10 @@ export function CardSelectionBar({
             shadowColor="#EF4444"
             shadowOpacity={hasSelection ? 0.2 : 0}
             icon={
-              <TrashSimpleIcon
+              <Trash2
                 size={24}
-                color={hasSelection ? '#EF4444' : '#A1A1AA'}
-                weight="bold"
+                color={hasSelection ? '#EF4444' : themeColors.secondary}
+                strokeWidth={2}
               />
             }
             disabled={!hasSelection}
@@ -85,20 +87,20 @@ export function CardSelectionBar({
           />
         </View>
 
-        <Text className="font-sans-medium text-base text-white">
+        <Text className="font-sans-medium text-base text-theme-foreground">
           {hasSelection ? (
             <>
-              <Text className="text-white font-sans-bold">
+              <Text className="text-theme-foreground font-sans-bold">
                 {selectedCount}
                 {'  '}
               </Text>
-              <Text className="text-zinc-400 font-sans-semibold">
+              <Text className="text-theme-secondary font-sans-semibold">
                 {' '}
                 <LocalizedText>selected</LocalizedText>
               </Text>
             </>
           ) : (
-            <Text className="text-zinc-400">
+            <Text className="text-theme-secondary">
               <LocalizedText>Select cards</LocalizedText>
             </Text>
           )}

@@ -1,0 +1,35 @@
+appId: ${APP_ID}
+name: Choose appearance and retain it after reopening
+---
+- launchApp:
+    clearState: true
+- tapOn: 'Profile'
+- tapOn: 'Settings'
+- assertVisible: 'Appearance'
+- tapOn:
+    id: 'appearance-light'
+- assertVisible:
+    id: 'appearance-light'
+    checked: true
+- tapOn: 'Back to profile'
+- tapOn: 'Board'
+- tapOn: 'Folders'
+- tapOn: 'Profile'
+- tapOn: 'Settings'
+- assertVisible:
+    id: 'appearance-light'
+    checked: true
+- tapOn:
+    id: 'appearance-dark'
+- stopApp
+- launchApp
+- tapOn: 'Profile'
+- tapOn: 'Settings'
+- assertVisible:
+    id: 'appearance-dark'
+    checked: true
+- tapOn:
+    id: 'appearance-system'
+- assertVisible:
+    id: 'appearance-system'
+    checked: true

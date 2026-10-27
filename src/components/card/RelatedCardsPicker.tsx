@@ -1,7 +1,9 @@
+import { ThemedModal as Modal } from '@/components/ThemedModal';
+import { useAppTheme } from '@/lib/theme';
 import { FlashList } from '@shopify/flash-list';
-import { CheckIcon, MagnifyingGlassIcon, XIcon } from 'phosphor-react-native';
+import { Check, Search, X } from 'lucide-react-native';
 import { useMemo, useRef, useState } from 'react';
-import { Modal, Pressable, Text, TextInput, View } from 'react-native';
+import { Pressable, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ActionFooter } from '@/components/ActionFooter';
@@ -30,6 +32,7 @@ export function RelatedCardsPicker({
   onSave,
   onClose,
 }: Props) {
+  const { colors: themeColors } = useAppTheme();
   useLocalization();
   const insets = useSafeAreaInsets();
   const [query, setQuery] = useState('');
@@ -69,21 +72,21 @@ export function RelatedCardsPicker({
 
   return (
     <Modal visible animationType="slide" onRequestClose={close}>
-      <View className="flex-1 bg-zinc-950" style={{ paddingTop: insets.top + 16 }}>
+      <View className="flex-1 bg-theme-canvas" style={{ paddingTop: insets.top + 16 }}>
         <View className="flex-row items-center justify-between px-6 mb-5">
-          <Text className="font-sans-semibold text-2xl text-white">
+          <Text className="font-sans-semibold text-2xl text-theme-foreground">
             <LocalizedText>Select related cards</LocalizedText>
           </Text>
         </View>
-        <View className="flex-row items-center gap-4 border-t border-b border-zinc-800 px-6 mb-4 py-5">
-          <MagnifyingGlassIcon size={20} color="#E4E4E7" />
+        <View className="flex-row items-center gap-4 border-t border-b border-theme-raised px-6 mb-4 py-5">
+          <Search size={20} color={themeColors.heading} />
           <TextInput
             value={query}
             onChangeText={setQuery}
             placeholder={translate('Search your library')}
             accessibilityLabel={translate('Search related cards')}
-            placeholderTextColor="#71717A"
-            className="flex-1 font-sans text-xl text-white leading-tight"
+            placeholderTextColor={themeColors.muted}
+            className="flex-1 font-sans text-xl text-theme-foreground leading-tight"
             autoCorrect={false}
             autoCapitalize="none"
           />
@@ -94,12 +97,12 @@ export function RelatedCardsPicker({
               accessibilityLabel={translate('Clear search')}
               hitSlop={12}
             >
-              <XIcon size={20} color="#E4E4E7" />
+              <X size={20} color={themeColors.heading} />
             </Pressable>
           )}
         </View>
         {error && (
-          <Text accessibilityRole="alert" className="px-6 pb-4 font-sans text-sm text-red-400">
+          <Text accessibilityRole="alert" className="px-6 pb-4 font-sans text-sm text-theme-red">
             {error}
           </Text>
         )}
@@ -128,7 +131,7 @@ export function RelatedCardsPicker({
             />
           )}
           ListEmptyComponent={
-            <Text className="font-sans text-sm text-zinc-500 py-8 text-center">
+            <Text className="font-sans text-sm text-theme-muted py-8 text-center">
               {query.trim() ? 'No matching cards' : 'No other cards available'}
             </Text>
           }
@@ -144,13 +147,13 @@ export function RelatedCardsPicker({
             <View className="flex-row items-center gap-2">
               <Button
                 accessibilityLabel={translate('Cancel related cards')}
-                icon={<XIcon size={24} color="#FFFFFF" weight="bold" />}
+                icon={<X size={24} color={themeColors.foreground} strokeWidth={2} />}
                 disabled={saving}
                 onPress={close}
               />
               <Button
                 accessibilityLabel={translate('Save related cards')}
-                icon={<CheckIcon size={24} color="#FFFFFF" weight="bold" />}
+                icon={<Check size={24} color={themeColors.foreground} strokeWidth={2} />}
                 variant="primary"
                 disabled={saving}
                 onPress={() => {
@@ -158,12 +161,12 @@ export function RelatedCardsPicker({
                 }}
               />
             </View>
-            <Text className="font-sans-medium text-base text-white">
+            <Text className="font-sans-medium text-base text-theme-foreground">
               <Text className="font-sans-bold">
                 {selectedIdsToSave.length}
                 {'  '}
               </Text>
-              <Text className="font-sans-semibold text-zinc-400">
+              <Text className="font-sans-semibold text-theme-secondary">
                 <LocalizedText>selected</LocalizedText>
               </Text>
               {saving && (

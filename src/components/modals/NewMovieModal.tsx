@@ -1,11 +1,6 @@
+import { useAppTheme, type ThemeColors } from '@/lib/theme';
 import { Image as ExpoImage } from 'expo-image';
-import {
-  CheckIcon,
-  FilmSlateIcon,
-  MagnifyingGlassIcon,
-  NotePencilIcon,
-  XIcon,
-} from 'phosphor-react-native';
+import { Check, Clapperboard, Search, SquarePen, X } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -57,6 +52,8 @@ export function NewMovieModal({
   onDismiss,
   onSaved,
 }: NewMovieModalProps) {
+  const { colors: themeColors } = useAppTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
   useLocalization();
   const { addMovieItem, getTags } = useLibrary();
   const insets = useSafeAreaInsets();
@@ -307,10 +304,10 @@ export function NewMovieModal({
           >
             {/* Header */}
             <View className="gap-3 p-8 pt-0">
-              <Text className="font-sans-semibold text-2xl text-white">
+              <Text className="font-sans-semibold text-2xl text-theme-foreground">
                 <LocalizedText>Add movie</LocalizedText>
               </Text>
-              <Text className="font-sans text-base text-zinc-400 leading-relaxed">
+              <Text className="font-sans text-base text-theme-secondary leading-relaxed">
                 <LocalizedText>
                   Search movies from The Movie Database (TMDB) to add to your library.
                 </LocalizedText>
@@ -319,23 +316,28 @@ export function NewMovieModal({
 
             {/* Selected Movie Banner or Search Input */}
             {selectedMovie ? (
-              <View className="px-8 py-6 border-t border-b border-zinc-800 flex-row items-center gap-6">
-                <View className="w-16 h-24 rounded-lg bg-zinc-800 overflow-hidden items-center justify-center">
+              <View className="px-8 py-6 border-t border-b border-theme-raised flex-row items-center gap-6">
+                <View className="w-16 h-24 rounded-lg bg-theme-raised overflow-hidden items-center justify-center">
                   {selectedMovie.poster_path ? (
                     <ExpoImage
-                      source={{ uri: getPosterUrl(selectedMovie.poster_path, 'w185') }}
+                      source={{
+                        uri: getPosterUrl(selectedMovie.poster_path, 'w185'),
+                      }}
                       className="w-full h-full"
                       contentFit="cover"
                     />
                   ) : (
-                    <FilmSlateIcon size={24} color="#71717A" />
+                    <Clapperboard size={24} color={themeColors.muted} />
                   )}
                 </View>
                 <View className="flex-1 gap-2">
-                  <Text className="font-sans-semibold text-lg text-white" numberOfLines={1}>
+                  <Text
+                    className="font-sans-semibold text-lg text-theme-foreground"
+                    numberOfLines={1}
+                  >
                     {selectedMovie.title}
                   </Text>
-                  <Text className="font-sans text-base text-zinc-400" numberOfLines={1}>
+                  <Text className="font-sans text-base text-theme-secondary" numberOfLines={1}>
                     {getReleaseYear(selectedMovie.release_date) || '—'}
                     {selectedMovie.runtime ? ` • ${selectedMovie.runtime} ${translate('min')}` : ''}
                   </Text>
@@ -343,43 +345,43 @@ export function NewMovieModal({
                 <Pressable
                   onPress={() => setSelectedMovie(null)}
                   hitSlop={10}
-                  className="p-2 rounded-full bg-zinc-800 active:opacity-70"
+                  className="p-2 rounded-full bg-theme-raised active:opacity-70"
                   accessibilityRole="button"
                   accessibilityLabel={translate('Change movie')}
                 >
-                  <XIcon size={16} color="#E4E4E7" weight="bold" />
+                  <X size={16} color={themeColors.heading} strokeWidth={2} />
                 </Pressable>
               </View>
             ) : (
-              <View className="flex-row items-center gap-4 py-5 px-8 border-t border-b border-zinc-800">
-                <MagnifyingGlassIcon size={20} color="#D4D4D8" />
+              <View className="flex-row items-center gap-4 py-5 px-8 border-t border-b border-theme-raised">
+                <Search size={20} color={themeColors.body} />
 
                 <TextInput
                   ref={searchInputRef}
                   value={query}
                   onChangeText={handleQueryChange}
                   placeholder={translate('Search movie title...')}
-                  placeholderTextColor="#71717A"
+                  placeholderTextColor={themeColors.muted}
                   autoCapitalize="none"
                   autoCorrect={false}
                   returnKeyType="search"
-                  className="flex-1 font-sans text-xl text-white leading-tight"
+                  className="flex-1 font-sans text-xl text-theme-foreground leading-tight"
                   style={styles.borderlessInput}
                   underlineColorAndroid="transparent"
                   clearButtonMode="never"
                 />
 
                 {isSearching ? (
-                  <ActivityIndicator size={16} color="#A1A1AA" />
+                  <ActivityIndicator size={16} color={themeColors.secondary} />
                 ) : query.length > 0 ? (
                   <Pressable
                     onPress={handleClearSearch}
                     hitSlop={10}
-                    className="p-1.5 rounded-full bg-zinc-800 items-center justify-center active:opacity-70"
+                    className="p-1.5 rounded-full bg-theme-raised items-center justify-center active:opacity-70"
                     accessibilityRole="button"
                     accessibilityLabel={translate('Clear search')}
                   >
-                    <XIcon size={12} color="#E4E4E7" weight="bold" />
+                    <X size={12} color={themeColors.heading} strokeWidth={2} />
                   </Pressable>
                 ) : null}
               </View>
@@ -390,8 +392,8 @@ export function NewMovieModal({
               <View className="w-full">
                 {isLoadingDetails && (
                   <View className="py-8 items-center justify-center">
-                    <ActivityIndicator size={24} color="#60A5FA" />
-                    <Text className="font-sans text-sm text-zinc-400 mt-2">
+                    <ActivityIndicator size={24} color={themeColors.blue} />
+                    <Text className="font-sans text-sm text-theme-secondary mt-2">
                       <LocalizedText>Loading movie details...</LocalizedText>
                     </Text>
                   </View>
@@ -402,28 +404,30 @@ export function NewMovieModal({
                     <Pressable
                       key={item.id}
                       onPress={() => handleSelectMovie(item)}
-                      className="flex-row items-center gap-5 px-8 py-5 border-b border-zinc-900 active:bg-zinc-900"
+                      className="flex-row items-center gap-5 px-8 py-5 border-b border-theme-surface active:bg-theme-surface"
                     >
-                      <View className="w-12 h-16 rounded-md bg-zinc-800 overflow-hidden items-center justify-center">
+                      <View className="w-12 h-16 rounded-md bg-theme-raised overflow-hidden items-center justify-center">
                         {item.poster_path ? (
                           <ExpoImage
-                            source={{ uri: getPosterUrl(item.poster_path, 'w185') }}
+                            source={{
+                              uri: getPosterUrl(item.poster_path, 'w185'),
+                            }}
                             className="w-full h-full"
                             contentFit="cover"
                           />
                         ) : (
-                          <FilmSlateIcon size={24} color="#71717A" />
+                          <Clapperboard size={24} color={themeColors.muted} />
                         )}
                       </View>
 
                       <View className="flex-1 gap-1.5">
                         <Text
-                          className="font-sans-medium text-base text-zinc-100"
+                          className="font-sans-medium text-base text-theme-bright"
                           numberOfLines={1}
                         >
                           {item.title}
                         </Text>
-                        <Text className="font-sans text-sm text-zinc-400" numberOfLines={1}>
+                        <Text className="font-sans text-sm text-theme-secondary" numberOfLines={1}>
                           {getReleaseYear(item.release_date) || '—'}
                           {item.original_title && item.original_title !== item.title
                             ? ` • ${item.original_title}`
@@ -438,8 +442,8 @@ export function NewMovieModal({
                   query.trim().length > 1 &&
                   !isSearching && (
                     <View className="py-12 items-center justify-center">
-                      <FilmSlateIcon size={32} color="#52525B" weight="duotone" />
-                      <Text className="font-sans text-sm text-zinc-500 mt-3">
+                      <Clapperboard size={32} color={themeColors.strongBorder} strokeWidth={2} />
+                      <Text className="font-sans text-sm text-theme-muted mt-3">
                         <LocalizedText>No movies found for "</LocalizedText>
                         {query}
                         <LocalizedText>"</LocalizedText>
@@ -470,10 +474,10 @@ export function NewMovieModal({
                 />
 
                 {/* Notes section */}
-                <View className="py-6 px-8 gap-4 border-t border-zinc-800">
+                <View className="py-6 px-8 gap-4 border-t border-theme-raised">
                   <View className="flex-row items-center gap-2">
-                    <NotePencilIcon size={14} color="#E4E4E7" weight="bold" />
-                    <Text className="font-sans-semibold text-sm tracking-wider uppercase text-zinc-200">
+                    <SquarePen size={14} color={themeColors.heading} strokeWidth={2} />
+                    <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
                       <LocalizedText>Note</LocalizedText>
                     </Text>
                   </View>
@@ -484,10 +488,10 @@ export function NewMovieModal({
                       value={note}
                       onChangeText={setNote}
                       placeholder={translate('Add personal thoughts or notes about this movie...')}
-                      placeholderTextColor="#71717A"
+                      placeholderTextColor={themeColors.muted}
                       multiline
                       textAlignVertical="top"
-                      className="w-full font-sans text-base text-zinc-100 leading-relaxed min-h-[96px]"
+                      className="w-full font-sans text-base text-theme-bright leading-relaxed min-h-[96px]"
                       style={styles.borderlessInput}
                       underlineColorAndroid="transparent"
                     />
@@ -503,7 +507,7 @@ export function NewMovieModal({
               accessibilityLabel={translate('Cancel')}
               onPress={handleClose}
               disabled={saving}
-              icon={<XIcon size={20} color="#FFFFFF" weight="bold" />}
+              icon={<X size={20} color={themeColors.foreground} strokeWidth={2} />}
               text={translate('Cancel')}
             />
             <Button
@@ -513,9 +517,13 @@ export function NewMovieModal({
               disabled={!canSave}
               icon={
                 saving ? (
-                  <ActivityIndicator size={20} color="#000000" />
+                  <ActivityIndicator size={20} color={themeColors.inverse} />
                 ) : (
-                  <CheckIcon size={20} color={canSave ? '#000000' : '#71717A'} weight="bold" />
+                  <Check
+                    size={20}
+                    color={canSave ? themeColors.inverse : themeColors.muted}
+                    strokeWidth={2}
+                  />
                 )
               }
               text={translate('Save movie')}
@@ -527,19 +535,20 @@ export function NewMovieModal({
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    width: '100%',
-    backgroundColor: '#09090B',
-  },
-  scrollContent: {
-    flexGrow: 1,
-    paddingVertical: 20,
-    paddingBottom: 120,
-  },
-  borderlessInput: {
-    borderWidth: 0,
-    backgroundColor: 'transparent',
-  },
-});
+const createStyles = (themeColors: ThemeColors) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      width: '100%',
+      backgroundColor: themeColors.canvas,
+    },
+    scrollContent: {
+      flexGrow: 1,
+      paddingVertical: 20,
+      paddingBottom: 120,
+    },
+    borderlessInput: {
+      borderWidth: 0,
+      backgroundColor: 'transparent',
+    },
+  });

@@ -1,7 +1,7 @@
 import { Image as ExpoImage } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { cssInterop } from 'nativewind';
-import { BookOpenIcon } from 'phosphor-react-native';
+import { BookOpen } from 'lucide-react-native';
 import { useState } from 'react';
 import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 
@@ -50,7 +50,7 @@ export const BookCover = ({
         />
       ) : (
         <View className="w-full h-full bg-amber-950/40 items-center justify-center p-6 border-b border-amber-900/30">
-          <BookOpenIcon size={36} color="#F59E0B" weight="duotone" />
+          <BookOpen size={36} color="#F59E0B" strokeWidth={2} />
         </View>
       )}
 

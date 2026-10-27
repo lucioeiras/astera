@@ -1,10 +1,6 @@
+import { useAppTheme } from '@/lib/theme';
 import { Tabs } from 'expo-router';
-import {
-  ArrowCounterClockwiseIcon,
-  FolderIcon,
-  UserCircleIcon,
-  SquaresFourIcon,
-} from 'phosphor-react-native';
+import { RotateCcw, Folder, CircleUser, LayoutGrid } from 'lucide-react-native';
 
 import { ProgressiveBlur } from '@/components/effects/ProgressiveBlur';
 import { FloatingTabOverlayProvider } from '@/components/menus/FloatingTabOverlay';
@@ -13,6 +9,7 @@ import { translate, useLocalization } from '@/lib/i18n';
 const iconSize = 28;
 
 export default function TabLayout() {
+  const { colors: themeColors } = useAppTheme();
   useLocalization();
   return (
     <FloatingTabOverlayProvider>
@@ -20,8 +17,8 @@ export default function TabLayout() {
         initialRouteName="board"
         screenOptions={{
           headerShown: false,
-          tabBarActiveTintColor: '#FFFFFF', // tailwind blue-500
-          tabBarInactiveTintColor: '#9F9FA9', // tailwind zinc-500
+          tabBarActiveTintColor: themeColors.foreground, // tailwind blue-500
+          tabBarInactiveTintColor: themeColors.secondary, // tailwind zinc-500
           tabBarBackground: () => <ProgressiveBlur height={160} darkLayerOpacity={0.9} />,
           tabBarStyle: {
             position: 'absolute',
@@ -42,12 +39,8 @@ export default function TabLayout() {
           name="board"
           options={{
             title: translate('Board'),
-            tabBarIcon: ({ color, focused }) => (
-              <SquaresFourIcon
-                size={iconSize}
-                color={color as string}
-                weight={focused ? 'fill' : 'regular'}
-              />
+            tabBarIcon: ({ color }) => (
+              <LayoutGrid size={iconSize} color={color as string} strokeWidth={2} />
             ),
           }}
         />
@@ -55,12 +48,8 @@ export default function TabLayout() {
           name="folders"
           options={{
             title: translate('Folders'),
-            tabBarIcon: ({ color, focused }) => (
-              <FolderIcon
-                size={iconSize}
-                color={color as string}
-                weight={focused ? 'fill' : 'regular'}
-              />
+            tabBarIcon: ({ color }) => (
+              <Folder size={iconSize} color={color as string} strokeWidth={2} />
             ),
           }}
         />
@@ -68,12 +57,8 @@ export default function TabLayout() {
           name="review"
           options={{
             title: translate('Review'),
-            tabBarIcon: ({ color, focused }) => (
-              <ArrowCounterClockwiseIcon
-                size={iconSize}
-                color={color as string}
-                weight={focused ? 'fill' : 'regular'}
-              />
+            tabBarIcon: ({ color }) => (
+              <RotateCcw size={iconSize} color={color as string} strokeWidth={2} />
             ),
           }}
         />
@@ -82,12 +67,8 @@ export default function TabLayout() {
           name="profile"
           options={{
             title: translate('Profile'),
-            tabBarIcon: ({ color, focused }) => (
-              <UserCircleIcon
-                size={iconSize}
-                color={color as string}
-                weight={focused ? 'fill' : 'regular'}
-              />
+            tabBarIcon: ({ color }) => (
+              <CircleUser size={iconSize} color={color as string} strokeWidth={2} />
             ),
           }}
         />

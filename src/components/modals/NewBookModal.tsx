@@ -1,10 +1,5 @@
-import {
-  BookIcon,
-  CheckIcon,
-  MagnifyingGlassIcon,
-  NotePencilIcon,
-  XIcon,
-} from 'phosphor-react-native';
+import { useAppTheme, type ThemeColors } from '@/lib/theme';
+import { Book, Check, Search, SquarePen, X } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -48,6 +43,8 @@ export function NewBookModal({
   onDismiss,
   onSaved,
 }: NewBookModalProps) {
+  const { colors: themeColors } = useAppTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
   useLocalization();
   const { addBookItem, getTags } = useLibrary();
   const insets = useSafeAreaInsets();
@@ -271,10 +268,10 @@ export function NewBookModal({
           >
             {/* Header */}
             <View className="gap-3 p-8 pt-0">
-              <Text className="font-sans-semibold text-2xl text-white">
+              <Text className="font-sans-semibold text-2xl text-theme-foreground">
                 <LocalizedText>Add a new book</LocalizedText>
               </Text>
-              <Text className="font-sans text-base text-zinc-400 leading-relaxed">
+              <Text className="font-sans text-base text-theme-secondary leading-relaxed">
                 <LocalizedText>
                   Enter the book&apos;s ISBN (10 or 13 digits) to automatically fetch its details,
                   authors, cover and synopsis.
@@ -283,21 +280,21 @@ export function NewBookModal({
             </View>
 
             {/* ISBN Input Section */}
-            <View className="flex-row items-center gap-3 py-5 px-8 border-t border-b border-zinc-800">
-              <BookIcon size={22} color="#D4D4D8" />
+            <View className="flex-row items-center gap-3 py-5 px-8 border-t border-b border-theme-raised">
+              <Book size={22} color={themeColors.body} />
 
               <TextInput
                 ref={inputRef}
                 value={isbn}
                 onChangeText={handleIsbnChange}
                 placeholder={translate('ISBN (e.g. 9780132350884)')}
-                placeholderTextColor="#71717A"
+                placeholderTextColor={themeColors.muted}
                 autoCapitalize="characters"
                 autoCorrect={false}
                 keyboardType="numbers-and-punctuation"
                 returnKeyType="search"
                 onSubmitEditing={() => handleSearch(isbn)}
-                className="flex-1 font-sans text-xl text-white leading-tight"
+                className="flex-1 font-sans text-xl text-theme-foreground leading-tight"
                 style={styles.borderlessInput}
                 underlineColorAndroid="transparent"
                 clearButtonMode="never"
@@ -314,17 +311,17 @@ export function NewBookModal({
                     accessibilityRole="button"
                     accessibilityLabel={translate('Search ISBN')}
                   >
-                    <MagnifyingGlassIcon size={16} color="#F59E0B" weight="bold" />
+                    <Search size={16} color="#F59E0B" strokeWidth={2} />
                   </Pressable>
 
                   <Pressable
                     onPress={handleClearIsbn}
                     hitSlop={8}
-                    className="p-1.5 rounded-full bg-zinc-800 items-center justify-center active:opacity-70"
+                    className="p-1.5 rounded-full bg-theme-raised items-center justify-center active:opacity-70"
                     accessibilityRole="button"
                     accessibilityLabel={translate('Clear ISBN')}
                   >
-                    <XIcon size={12} color="#E4E4E7" weight="bold" />
+                    <X size={12} color={themeColors.heading} strokeWidth={2} />
                   </Pressable>
                 </View>
               ) : null}
@@ -332,8 +329,8 @@ export function NewBookModal({
 
             {/* Error Message */}
             {errorMessage && (
-              <View className="mx-8 my-4 p-4 rounded-xl bg-rose-950/40 border border-rose-800/60">
-                <Text className="font-sans text-sm text-rose-300 leading-relaxed">
+              <View className="mx-8 my-4 p-4 rounded-xl bg-theme-pink/10 border border-rose-800/60">
+                <Text className="font-sans text-sm text-theme-pink leading-relaxed">
                   {errorMessage}
                 </Text>
               </View>
@@ -341,7 +338,7 @@ export function NewBookModal({
 
             {/* Book Preview Section */}
             {book && (
-              <View className="px-8 py-5 p-5 bg-zinc-950 border-b border-zinc-800">
+              <View className="px-8 py-5 p-5 bg-theme-canvas border-b border-theme-raised">
                 <View className="flex-row gap-8">
                   <BookCover
                     cover={book.cover}
@@ -354,7 +351,7 @@ export function NewBookModal({
 
                   <View className="flex-1 justify-center gap-2">
                     <Text
-                      className="font-sans-medium text-xl text-white leading-snug"
+                      className="font-sans-medium text-xl text-theme-foreground leading-snug"
                       numberOfLines={3}
                     >
                       {book.title}
@@ -362,7 +359,7 @@ export function NewBookModal({
 
                     {book.authors.length > 0 && (
                       <Text
-                        className="font-sans text-base text-amber-400 leading-tight"
+                        className="font-sans text-base text-theme-amber leading-tight"
                         numberOfLines={2}
                       >
                         {book.authors.join(', ')}
@@ -371,18 +368,18 @@ export function NewBookModal({
 
                     <View className="flex-row flex-wrap items-center gap-2 mt-1">
                       {book.publishedDate && (
-                        <Text className="font-sans text-sm text-zinc-300">
+                        <Text className="font-sans text-sm text-theme-body">
                           {book.publishedDate.split('-')[0]}
                         </Text>
                       )}
                       {book.pageCount && (
-                        <Text className="font-sans text-sm text-zinc-400">
+                        <Text className="font-sans text-sm text-theme-secondary">
                           <LocalizedText>• </LocalizedText>
                           {book.pageCount} <LocalizedText>pgs</LocalizedText>
                         </Text>
                       )}
                       {book.publisher && (
-                        <Text className="font-sans text-sm text-zinc-400" numberOfLines={1}>
+                        <Text className="font-sans text-sm text-theme-secondary" numberOfLines={1}>
                           <LocalizedText>• </LocalizedText>
                           {book.publisher}
                         </Text>
@@ -393,7 +390,7 @@ export function NewBookModal({
 
                 {book.description ? (
                   <Text
-                    className="font-sans text-xs text-zinc-400 leading-relaxed"
+                    className="font-sans text-xs text-theme-secondary leading-relaxed"
                     numberOfLines={4}
                   >
                     {book.description}
@@ -422,8 +419,8 @@ export function NewBookModal({
             {/* Notes section */}
             <View className="flex-1 py-6 px-8 gap-4">
               <View className="flex-row items-center gap-2">
-                <NotePencilIcon size={14} color="#E4E4E7" weight="bold" />
-                <Text className="font-sans-semibold text-sm tracking-wider uppercase text-zinc-200">
+                <SquarePen size={14} color={themeColors.heading} strokeWidth={2} />
+                <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
                   <LocalizedText>Note</LocalizedText>
                 </Text>
               </View>
@@ -434,10 +431,10 @@ export function NewBookModal({
                   value={note}
                   onChangeText={setNote}
                   placeholder={translate('Add a personal note about this book...')}
-                  placeholderTextColor="#71717A"
+                  placeholderTextColor={themeColors.muted}
                   multiline
                   textAlignVertical="top"
-                  className="w-full font-sans text-base text-zinc-100 leading-relaxed min-h-[96px]"
+                  className="w-full font-sans text-base text-theme-bright leading-relaxed min-h-[96px]"
                   style={styles.borderlessInput}
                   underlineColorAndroid="transparent"
                 />
@@ -451,7 +448,7 @@ export function NewBookModal({
               accessibilityLabel={translate('Cancel')}
               onPress={handleClose}
               disabled={saving}
-              icon={<XIcon size={20} color="#FFFFFF" weight="bold" />}
+              icon={<X size={20} color={themeColors.foreground} strokeWidth={2} />}
               text={translate('Cancel')}
             />
             <Button
@@ -461,9 +458,13 @@ export function NewBookModal({
               disabled={!canSave}
               icon={
                 saving ? (
-                  <ActivityIndicator size={20} color="#FFFFFF" />
+                  <ActivityIndicator size={20} color={themeColors.foreground} />
                 ) : (
-                  <CheckIcon size={20} color={canSave ? '#000000' : '#71717A'} weight="bold" />
+                  <Check
+                    size={20}
+                    color={canSave ? themeColors.inverse : themeColors.muted}
+                    strokeWidth={2}
+                  />
                 )
               }
               text={translate('Save book')}
@@ -475,19 +476,20 @@ export function NewBookModal({
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    width: '100%',
-    backgroundColor: '#09090B',
-  },
-  scrollContent: {
-    flexGrow: 1,
-    paddingVertical: 20,
-    paddingBottom: 120,
-  },
-  borderlessInput: {
-    borderWidth: 0,
-    backgroundColor: 'transparent',
-  },
-});
+const createStyles = (themeColors: ThemeColors) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      width: '100%',
+      backgroundColor: themeColors.canvas,
+    },
+    scrollContent: {
+      flexGrow: 1,
+      paddingVertical: 20,
+      paddingBottom: 120,
+    },
+    borderlessInput: {
+      borderWidth: 0,
+      backgroundColor: 'transparent',
+    },
+  });

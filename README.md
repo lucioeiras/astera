@@ -1,6 +1,6 @@
-# Anything
+# Astera
 
-**Anything** é uma biblioteca pessoal para guardar e organizar o que você quer ler, assistir, jogar, ouvir ou consultar depois. O app reúne notas, links e mídias em um board pesquisável, com tags, pastas e arquivos que ficam sob controle do usuário.
+**Astera** é uma biblioteca pessoal para guardar e organizar o que você quer ler, assistir, jogar, ouvir ou consultar depois. O app reúne notas, links e mídias em um board pesquisável, com tags, pastas e arquivos que ficam sob controle do usuário.
 
 O aplicativo é desenvolvido com Expo, React Native, TypeScript e Expo Router. A biblioteca pode ficar no armazenamento local do app ou em uma pasta escolhida pelo usuário; cada item é salvo como JSON e imagens e PDFs ficam em diretórios próprios junto aos dados.
 
@@ -8,9 +8,9 @@ O aplicativo é desenvolvido com Expo, React Native, TypeScript e Expo Router. A
 
 - **Captura de conteúdo:** notas, citações, tarefas, links, artigos, vídeos do YouTube, publicações do X/Twitter e Reddit, imagens, PDFs, livros, músicas, filmes, séries e jogos.
 - **Board e busca:** grade de cartões, pesquisa de texto, filtros por tipo e tag, seleção de vários itens, exclusão com opção de restaurar e visualização dos detalhes.
-- **Perfil e atividade:** estatísticas da biblioteca aberta, calendário de adições com filtro do board por dia e visualização mensal com capas dos cards concluídos, filtrada por ano e tipo. O calendário de leitura reúne livros com logs em cada dia e destaca as maiores sequências de dias consecutivos do ano. Configurações ficam acessíveis pelo perfil. A data de conclusão é registrada ao entrar em Completed; cards antigos sem essa data ficam fora do gráfico, com aviso.
+- **Perfil e atividade:** estatísticas da biblioteca aberta, calendário de adições com filtro do board por dia e visualização mensal com capas dos cards concluídos, filtrada por ano e tipo. O calendário de atividade reúne registros de leitura e sessão de jogo, com filtros para todos, livros ou jogos, e destaca as maiores sequências de dias consecutivos do ano. Configurações ficam acessíveis pelo perfil. A data de conclusão é registrada ao entrar em Completed; cards antigos sem essa data ficam fora do gráfico, com aviso.
 - **Organização:** tags manuais e sugestões automáticas, pastas personalizadas e pastas por andamento — “Want to”, “In progress”, “Completed” e “Abandoned” — para itens compatíveis.
-- **Acompanhamento e avaliações:** progresso de leitura, filmes, temporadas de séries e jogos; avaliações e comentários; registro de páginas lidas em livros.
+- **Acompanhamento e avaliações:** progresso de leitura, filmes, temporadas de séries e jogos; avaliações e comentários; registro de páginas lidas em livros e diário de jogos com data e notas opcionais, permitindo várias entradas por dia.
 - **Metadados:** leitura de metadados de links, consulta de livros por ISBN, busca de música no iTunes, letras via LRCLIB, filmes via TMDB e jogos via RAWG.
 - **Conteúdo relacionado:** vincule itens da biblioteca entre si.
 - **Arquivos:** importe imagens e PDFs, visualize PDFs e compartilhe itens usando as opções do sistema.
@@ -31,13 +31,15 @@ O aplicativo é desenvolvido com Expo, React Native, TypeScript e Expo Router. A
 | Livro | ISBN, autores, capa, dados editoriais, progresso, avaliações e diário de leitura |
 | Música | Faixa ou álbum, artista, capa e prévia quando disponível |
 | Filme | Dados do catálogo TMDB, andamento, avaliação e comentários |
-| Jogo | Dados do catálogo RAWG, plataformas, andamento e avaliação |
+| Jogo | Dados do catálogo RAWG, plataformas, andamento, avaliação e diário de sessão de jogo |
+
+Em jogos com status **Playing**, a ação de registrar sessão de jogo salva uma data e uma nota opcional. É possível registrar várias entradas no mesmo dia e editar ou excluir cada uma pelo calendário do jogo. Após concluir o jogo, o histórico continua disponível para edição e exclusão. Excluir um registro preserva sua nota vinculada na biblioteca. O calendário de atividade do perfil combina leitura e sessão de jogo; os filtros recalculam a sequência de dias conforme o tipo selecionado.
 
 Os metadados externos dependem da disponibilidade dos serviços e, em alguns casos, de chaves de API. Os itens já salvos continuam disponíveis na biblioteca local.
 
 ## Armazenamento da biblioteca
 
-Cada item é um arquivo `<id>.json` na raiz da biblioteca. Arquivos de mídia locais ficam em `images/` e `pdfs/`; os itens apontam para eles com caminhos relativos, como `images/capa.jpg`. As pastas personalizadas também são gravadas na biblioteca, em `.anything-folders.json`.
+Cada item é um arquivo `<id>.json` na raiz da biblioteca. Arquivos de mídia locais ficam em `images/` e `pdfs/`; os itens apontam para eles com caminhos relativos, como `images/capa.jpg`. As pastas personalizadas também são gravadas na biblioteca, em `.astera-folders.json`.
 
 No iOS, as opções de armazenamento incluem a biblioteca do app, **iCloud Drive** (se o container estiver configurado) e uma pasta escolhida no app Arquivos. A biblioteca local do app pode ser acessada pelo app Arquivos em “No Meu iPhone”. O acesso persistente a pastas selecionadas usa um módulo nativo do projeto.
 
@@ -51,8 +53,8 @@ No iOS, as opções de armazenamento incluem a biblioteca do app, **iCloud Drive
 ## Rodar localmente
 
 ```bash
-git clone https://github.com/lucioeiras/anything.git
-cd anything
+git clone <URL-do-repositório> astera
+cd astera
 bun install
 bun run start
 ```
@@ -67,6 +69,26 @@ bun run web
 
 `bun run ios` e `bun run android` usam `expo run:*` e requerem as ferramentas nativas da plataforma. Os diretórios `ios/` e `android/` são gerados pelo Expo e não devem ser editados manualmente.
 
+### Assinatura para iPhone físico
+
+O `app.json` define `ios.appleTeamId` como `J7V84PT2S6`, a equipe usada pelo app e pelas extensões. Para usar outra conta Apple Developer, ajuste esse campo antes de gerar o projeto nativo.
+
+Se `bun run ios --device` falhar com `No profiles ... were found`, sincronize a configuração e abra `ios/Astera.xcworkspace` no Xcode:
+
+```bash
+bunx expo prebuild --platform ios
+```
+
+Em **Xcode > Settings > Accounts**, entre na conta Apple Developer com acesso à equipe. No projeto `Astera`, confira **Signing & Capabilities** dos três targets: `Astera`, `expo-sharing-extension` e `AsteraControls`. Todos devem usar a mesma equipe e **Automatically manage signing**. A equipe precisa ter acesso aos três Bundle IDs e ao App Group `group.com.diegoeiras.astera`.
+
+Selecione o iPhone como destino e execute o scheme `Astera` uma vez pelo Xcode para criar ou baixar os perfis de desenvolvimento. Depois, volte a usar:
+
+```bash
+bun run ios --device
+```
+
+Na CLI Expo instalada, quando os targets já têm uma equipe configurada, a chamada a `xcodebuild` pode omitir `-allowProvisioningUpdates`. Por isso, o log pode anunciar assinatura automática e ainda falhar por falta de perfis. Apenas definir o Team ID ou repetir o comando não cria os perfis nesse caso; conclua a assinatura pelo Xcode.
+
 ### Expo Go e development build
 
 Expo Go serve para testar partes do app compatíveis com o ambiente padrão do Expo. Este projeto também usa módulos nativos locais e bibliotecas nativas, incluindo acesso persistente a pastas e execução de modelo de IA. Para testar o conjunto completo, crie uma development build com EAS:
@@ -76,13 +98,13 @@ bunx eas-cli build --profile development --platform ios
 bunx eas-cli build --profile development --platform android
 ```
 
-O suporte a iCloud depende também de habilitar o container `iCloud.com.diegoeiras.anything` no App ID da conta Apple Developer usada para assinar o app.
+O suporte a iCloud depende também de habilitar o container `iCloud.com.diegoeiras.astera` no App ID da conta Apple Developer usada para assinar o app.
 
 ### Releases no GitHub
 
-Um push para `main` gera um build Android (`.apk`) pelo EAS Build e publica o arquivo como asset de uma GitHub Release. Configure o secret `EXPO_TOKEN` nas configurações do repositório e vincule o projeto ao EAS com `bunx eas-cli init`; o `projectId` gerado precisa estar no `app.json`. Configure as credenciais de assinatura do Android no EAS antes do primeiro build não interativo.
+Um push para `main` gera um build Android (`.apk`) pelo EAS Build e publica o arquivo como asset de uma GitHub Release. Configure o secret `EXPO_TOKEN` nas configurações do repositório e vincule o projeto ao EAS com `bunx eas-cli init`; o `projectId` gerado precisa estar no `app.json`. Configure as credenciais de assinatura do Android no EAS antes do primeiro build não interativo. O projeto vinculado no painel Expo/EAS deve usar o slug `astera`, conforme o `app.json`.
 
-O perfil `release` incrementa remotamente os números de build. O APK pode ser instalado diretamente em dispositivos Android compatíveis.
+O perfil `release` incrementa remotamente os números de build. O APK pode ser instalado diretamente em dispositivos Android compatíveis. A identidade nativa é `com.diegoeiras.astera`, com App Group `group.com.diegoeiras.astera`. Builds anteriores com outra identidade são instalações separadas; preferências, cache e metadados de pastas usam o namespace `astera`, sem migração automática. Arquivos de cartões em pastas escolhidas pelo usuário continuam podendo ser abertos.
 
 ## Chaves de API
 
@@ -118,6 +140,12 @@ sample-library/    Biblioteca de exemplo
 
 As rotas ficam em `src/app/`. Mantenha componentes e lógica reutilizável fora desse diretório para que não sejam tratados como telas pelo Expo Router.
 
+## Ícone e splash screen
+
+Os PNGs originais do símbolo e das camadas Android ficam em `assets/brand/`. As versões usadas pelo app ficam em `assets/images/`: `icon.png` e `icon-dark.png` têm fundos opacos branco e `#09090B`; as camadas Android têm margem para as máscaras do sistema. O Android usa a camada monocromática para ícones temáticos.
+
+O splash reutiliza o símbolo transparente sobre fundo branco ou `#09090B`, conforme o tema do sistema, com `imageWidth: 160`. O iOS usa as versões PNG clara e escura definidas em `ios.icon`; o projeto antigo do Icon Composer não é utilizado. Mudanças nesses recursos exigem regenerar os projetos nativos e fazer uma nova build. Confira o splash em uma build release.
+
 ## Verificações e comandos
 
 ```bash
@@ -138,7 +166,7 @@ Scripts disponíveis em `package.json`:
 
 ## Contribuir
 
-1. Consulte as [Issues abertas](https://github.com/lucioeiras/anything/issues) e o [Project do GitHub](https://github.com/lucioeiras/anything/projects) para encontrar histórias, bugs e trabalho em andamento.
+1. Consulte as [Issues abertas](../../issues) e o [Project do GitHub](../../projects) para encontrar histórias, bugs e trabalho em andamento.
 2. Se a ideia ainda não tiver Issue, abra uma descrevendo o problema ou a proposta, o resultado esperado e, quando ajudar, passos para reproduzir ou imagens.
 3. Use o board Kanban para acompanhar a história. Mantenha a Issue ligada ao cartão do Project e atualize seu status conforme o trabalho avança. O board é a visão de fluxo; a Issue mantém contexto, discussão e critérios de conclusão.
 4. Crie uma branch a partir da branch principal e faça uma alteração focada. Use mensagens de commit no padrão Conventional Commits, como `feat: add book filters` ou `fix: preserve selected folder`.
@@ -151,8 +179,16 @@ O repositório usa Expo Router, TypeScript e NativeWind. Siga os padrões existe
 
 O desenvolvimento é acompanhado em um **GitHub Project** com visualização Kanban. As histórias e tarefas são registradas como **Issues** do repositório e podem ser vinculadas aos cartões do Project. Assim, a Issue concentra descrição, critérios de aceitação, conversa e referência a PRs; o board mostra em que etapa cada trabalho está.
 
-Comece por [Issues](https://github.com/lucioeiras/anything/issues) para consultar ou propor trabalho e pelo [Project](https://github.com/lucioeiras/anything/projects) para ver o fluxo geral. Colunas, campos e filtros podem evoluir com o processo; mantenha os cartões ligados às Issues correspondentes e siga os status definidos no próprio board.
+Comece por [Issues](../../issues) para consultar ou propor trabalho e pelo [Project](../../projects) para ver o fluxo geral. Colunas, campos e filtros podem evoluir com o processo; mantenha os cartões ligados às Issues correspondentes e siga os status definidos no próprio board.
 
 ## Licença
 
 Consulte [LICENSE](LICENSE) para os termos de uso e distribuição.
+
+### Aparência
+
+Em Configurações → Aparência, escolha Sistema, Claro ou Escuro. Sistema é o padrão e acompanha as mudanças do dispositivo. A preferência manual fica salva neste dispositivo e vale para todas as bibliotecas, sem modificar seus arquivos JSON.
+
+As cores compartilhadas ficam em `src/lib/theme/`: use as classes semânticas `*-theme-*` do NativeWind ou `useAppTheme().colors` em estilos JavaScript. Modais devem usar `ThemedModal` para propagar as variáveis também nos portais web. Preserve cores próprias de mídias e controles sobre imagens.
+
+O suporte nativo usa `userInterfaceStyle: automatic` e `expo-system-ui`. Após atualizar dependências ou configuração nativa, regenere os projetos com `bunx expo prebuild` e gere uma nova development build. O fluxo `.maestro/flows/appearance-settings.yaml` verifica a seleção e a persistência da preferência.

@@ -1,6 +1,20 @@
 import { fireEvent, render } from '@testing-library/react-native';
 import { AudioCard } from '@/components/cards/AudioCard';
 
+jest.mock('lucide-react-native', () => ({
+  Play: (props: object) =>
+    jest
+      .requireActual('react')
+      .createElement(jest.requireActual('react-native').View, { ...props, testID: 'play-icon' }),
+  Pause: (props: object) =>
+    jest.requireActual('react').createElement(jest.requireActual('react-native').View, {
+      ...props,
+      testID: 'pause-icon',
+    }),
+}));
+
+let mockPlaying = false;
+
 const mockPlayer = {
   playbackRate: 1,
   setPlaybackRate: jest.fn(),
@@ -15,7 +29,7 @@ jest.mock('expo-audio', () => ({
     duration: 30,
     currentTime: 0,
     playbackRate: 1,
-    playing: false,
+    playing: mockPlaying,
   }),
 }));
 
@@ -23,6 +37,7 @@ describe('AudioCard', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockPlayer.playbackRate = 1;
+    mockPlaying = false;
   });
 
   it('changes speed while paused and uses the selected speed when playback starts', async () => {
@@ -47,4 +62,21 @@ describe('AudioCard', () => {
     expect(getByLabelText('Play audio')).toBeTruthy();
     expect(getByTestId('audio-waveform')).toBeTruthy();
   });
+});
+
+it('switches between filled Lucide play and pause controls with accessible actions', async () => {
+  mockPlaying = false;
+  const view = await render(<AudioCard uri="file:///audio.m4a" />);
+  const play = view.getByTestId('play-icon');
+  expect(play.props.fill).toBe(play.props.color);
+  await fireEvent.press(view.getByLabelText('Play audio'));
+  expect(mockPlayer.play).toHaveBeenCalled();
+
+  mockPlaying = true;
+  await view.rerender(<AudioCard uri="file:///audio.m4a" title="Playing" />);
+  const pause = view.getByTestId('pause-icon');
+  expect(pause.props.fill).toBe(pause.props.color);
+  expect(view.queryByTestId('play-icon')).toBeNull();
+  await fireEvent.press(view.getByLabelText('Pause audio'));
+  expect(mockPlayer.pause).toHaveBeenCalled();
 });

@@ -1,10 +1,11 @@
-import { CheckIcon, FilePdfIcon, NotePencilIcon, TextTIcon, XIcon } from 'phosphor-react-native';
+import { ThemedModal as Modal } from '@/components/ThemedModal';
+import { useAppTheme, type ThemeColors } from '@/lib/theme';
+import { Check, FileText, SquarePen, Type, X } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
   KeyboardAvoidingView,
-  Modal,
   Platform,
   Pressable,
   ScrollView,
@@ -42,6 +43,8 @@ type NewPdfModalProps = {
 };
 
 export function NewPdfModal({ visible, pdfAsset, onClose, onDismiss, onSaved }: NewPdfModalProps) {
+  const { colors: themeColors } = useAppTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
   useLocalization();
   const [title, setTitle] = useState('');
   const [tags, setTags] = useState<string[]>([]);
@@ -213,21 +216,21 @@ export function NewPdfModal({ visible, pdfAsset, onClose, onDismiss, onSaved }: 
             showsVerticalScrollIndicator={false}
           >
             {/* Header */}
-            <View className="flex-row p-8 pt-0 gap-8 items-center max-h-48 border-b border-zinc-800">
-              <View className="w-20 h-24 bg-white border border-zinc-800 rounded-sm shadow-md overflow-hidden items-center justify-center">
+            <View className="flex-row p-8 pt-0 gap-8 items-center max-h-48 border-b border-theme-raised">
+              <View className="w-20 h-24 bg-theme-foreground border border-theme-raised rounded-sm shadow-md overflow-hidden items-center justify-center">
                 {pdfAsset?.uri ? (
                   <PdfPreview uri={pdfAsset.uri} />
                 ) : (
-                  <FilePdfIcon size={36} color="#ef4444" weight="duotone" />
+                  <FileText size={36} color="#ef4444" strokeWidth={2} />
                 )}
               </View>
 
               <View className="flex-1 gap-2">
-                <Text className="font-sans-semibold text-2xl text-white">
+                <Text className="font-sans-semibold text-2xl text-theme-foreground">
                   <LocalizedText>Add a new PDF</LocalizedText>
                 </Text>
                 <Text
-                  className="font-sans text-base text-zinc-400 leading-relaxed"
+                  className="font-sans text-base text-theme-secondary leading-relaxed"
                   numberOfLines={2}
                 >
                   {pdfAsset?.fileName || translate('PDF Document')}
@@ -236,20 +239,20 @@ export function NewPdfModal({ visible, pdfAsset, onClose, onDismiss, onSaved }: 
             </View>
 
             {/* Title Input */}
-            <View className="flex-row items-center gap-4 py-5 px-8 border-b border-zinc-800">
-              <TextTIcon size={20} color="#D4D4D8" />
+            <View className="flex-row items-center gap-4 py-5 px-8 border-b border-theme-raised">
+              <Type size={20} color={themeColors.body} />
 
               <TextInput
                 ref={titleInputRef}
                 value={title}
                 onChangeText={setTitle}
                 placeholder={translate('Add a title to this PDF')}
-                placeholderTextColor="#71717A"
+                placeholderTextColor={themeColors.muted}
                 returnKeyType="next"
                 onSubmitEditing={() => {
                   tagsInputRef.current?.focus();
                 }}
-                className="w-full font-sans text-xl text-white leading-tight"
+                className="w-full font-sans text-xl text-theme-foreground leading-tight"
                 style={styles.borderlessInput}
                 underlineColorAndroid="transparent"
               />
@@ -275,8 +278,8 @@ export function NewPdfModal({ visible, pdfAsset, onClose, onDismiss, onSaved }: 
             {/* Notes section */}
             <View className="flex-1 py-6 px-8 gap-4">
               <View className="flex-row items-center gap-2">
-                <NotePencilIcon size={14} color="#E4E4E7" weight="bold" />
-                <Text className="font-sans-semibold text-sm tracking-wider uppercase text-zinc-200">
+                <SquarePen size={14} color={themeColors.heading} strokeWidth={2} />
+                <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
                   <LocalizedText>Note</LocalizedText>
                 </Text>
               </View>
@@ -287,10 +290,10 @@ export function NewPdfModal({ visible, pdfAsset, onClose, onDismiss, onSaved }: 
                   value={note}
                   onChangeText={setNote}
                   placeholder={translate('Add a text note to this PDF...')}
-                  placeholderTextColor="#71717A"
+                  placeholderTextColor={themeColors.muted}
                   multiline
                   textAlignVertical="top"
-                  className="w-full font-sans text-base text-zinc-100 leading-relaxed min-h-[96px]"
+                  className="w-full font-sans text-base text-theme-bright leading-relaxed min-h-[96px]"
                   style={styles.borderlessInput}
                   underlineColorAndroid="transparent"
                 />
@@ -304,7 +307,7 @@ export function NewPdfModal({ visible, pdfAsset, onClose, onDismiss, onSaved }: 
               accessibilityLabel={translate('Cancel')}
               onPress={handleClose}
               disabled={saving}
-              icon={<XIcon size={20} color="#FFFFFF" weight="bold" />}
+              icon={<X size={20} color={themeColors.foreground} strokeWidth={2} />}
               text={translate('Cancel')}
             />
             <Button
@@ -314,9 +317,13 @@ export function NewPdfModal({ visible, pdfAsset, onClose, onDismiss, onSaved }: 
               disabled={!canSave}
               icon={
                 saving ? (
-                  <ActivityIndicator size={20} color="#000000" />
+                  <ActivityIndicator size={20} color={themeColors.inverse} />
                 ) : (
-                  <CheckIcon size={20} color={canSave ? '#000000' : '#71717A'} weight="bold" />
+                  <Check
+                    size={20}
+                    color={canSave ? themeColors.inverse : themeColors.muted}
+                    strokeWidth={2}
+                  />
                 )
               }
               text={translate('Save PDF')}
@@ -328,19 +335,20 @@ export function NewPdfModal({ visible, pdfAsset, onClose, onDismiss, onSaved }: 
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    width: '100%',
-    backgroundColor: '#09090B',
-  },
-  scrollContent: {
-    flexGrow: 1,
-    paddingVertical: 20,
-    paddingBottom: 40,
-  },
-  borderlessInput: {
-    borderWidth: 0,
-    backgroundColor: 'transparent',
-  },
-});
+const createStyles = (themeColors: ThemeColors) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      width: '100%',
+      backgroundColor: themeColors.canvas,
+    },
+    scrollContent: {
+      flexGrow: 1,
+      paddingVertical: 20,
+      paddingBottom: 40,
+    },
+    borderlessInput: {
+      borderWidth: 0,
+      backgroundColor: 'transparent',
+    },
+  });

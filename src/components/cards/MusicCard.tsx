@@ -1,6 +1,8 @@
+import { useMemo } from 'react';
+import { useAppTheme, type ThemeColors } from '@/lib/theme';
 import { decodeHTML } from 'entities';
 import { Image as ExpoImage } from 'expo-image';
-import { DiscIcon } from 'phosphor-react-native';
+import { Disc } from 'lucide-react-native';
 import { useState } from 'react';
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import { VinylRecord } from '../effects/VinylRecord';
@@ -20,6 +22,8 @@ export const MusicCard = ({
   hideTitleAndAuthor = false,
   subtleVinylShadow = false,
 }: MusicCardProps) => {
+  const { colors: themeColors } = useAppTheme();
+  const styles = useMemo(() => createStyles(themeColors), [themeColors]);
   const [containerWidth, setContainerWidth] = useState(() =>
     Math.round((Dimensions.get('window').width - 32) / 2)
   );
@@ -82,7 +86,7 @@ export const MusicCard = ({
             />
           ) : (
             <View style={styles.fallbackCover}>
-              <DiscIcon size={40} color="#71717A" weight="duotone" />
+              <Disc size={40} color={themeColors.muted} strokeWidth={2} />
             </View>
           )}
 
@@ -94,13 +98,13 @@ export const MusicCard = ({
       {!hideTitleAndAuthor && (
         <View className="w-full gap-1.5 my-3">
           <Text
-            className="font-sans-medium text-sm leading-snug text-zinc-50 text-center"
+            className="font-sans-medium text-sm leading-snug text-theme-foreground text-center"
             numberOfLines={2}
           >
             {decodeHTML(title)}
           </Text>
 
-          <Text className="font-sans text-xs text-zinc-400 text-center" numberOfLines={1}>
+          <Text className="font-sans text-xs text-theme-secondary text-center" numberOfLines={1}>
             {decodeHTML(artist)}
           </Text>
         </View>
@@ -109,56 +113,57 @@ export const MusicCard = ({
   );
 };
 
-const styles = StyleSheet.create({
-  subtleVinylShadow: {
-    shadowColor: '#71717a',
-    shadowOffset: { width: 1, height: 2 },
-    shadowOpacity: 0.55,
-    shadowRadius: 4,
-    elevation: 8,
-  },
-  showcaseContainer: {
-    width: '100%',
-    position: 'relative',
-    backgroundColor: 'transparent',
-    overflow: 'visible',
-  },
-  discWrapper: {
-    position: 'absolute',
-    zIndex: 1,
-  },
-  sleeve: {
-    position: 'absolute',
-    zIndex: 2,
-    borderRadius: 6,
-    overflow: 'hidden',
-    backgroundColor: '#18181b',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
-    shadowColor: '#000000',
-    shadowOffset: { width: 5, height: 2 },
-    shadowOpacity: 0.55,
-    shadowRadius: 6,
-    elevation: 6,
-  },
-  coverImage: {
-    width: '100%',
-    height: '100%',
-    borderRadius: 5,
-  },
-  fallbackCover: {
-    width: '100%',
-    height: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#1c1917',
-  },
-  sleeveOpeningEdge: {
-    position: 'absolute',
-    right: 0,
-    top: 0,
-    bottom: 0,
-    width: 3,
-    backgroundColor: 'rgba(0, 0, 0, 0.35)',
-  },
-});
+const createStyles = (themeColors: ThemeColors) =>
+  StyleSheet.create({
+    subtleVinylShadow: {
+      shadowColor: '#71717a',
+      shadowOffset: { width: 1, height: 2 },
+      shadowOpacity: 0.55,
+      shadowRadius: 4,
+      elevation: 8,
+    },
+    showcaseContainer: {
+      width: '100%',
+      position: 'relative',
+      backgroundColor: 'transparent',
+      overflow: 'visible',
+    },
+    discWrapper: {
+      position: 'absolute',
+      zIndex: 1,
+    },
+    sleeve: {
+      position: 'absolute',
+      zIndex: 2,
+      borderRadius: 6,
+      overflow: 'hidden',
+      backgroundColor: themeColors.surface,
+      borderWidth: 1,
+      borderColor: 'rgba(255, 255, 255, 0.08)',
+      shadowColor: '#000000',
+      shadowOffset: { width: 5, height: 2 },
+      shadowOpacity: 0.55,
+      shadowRadius: 6,
+      elevation: 6,
+    },
+    coverImage: {
+      width: '100%',
+      height: '100%',
+      borderRadius: 5,
+    },
+    fallbackCover: {
+      width: '100%',
+      height: '100%',
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: themeColors.raised,
+    },
+    sleeveOpeningEdge: {
+      position: 'absolute',
+      right: 0,
+      top: 0,
+      bottom: 0,
+      width: 3,
+      backgroundColor: 'rgba(0, 0, 0, 0.35)',
+    },
+  });

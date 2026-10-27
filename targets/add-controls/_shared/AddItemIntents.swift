@@ -12,14 +12,14 @@ extension AddItemControlIntent {
   func perform() async throws -> some IntentResult {
     let item = Self.item ?? "all"
     let request = "\(item)|\(UUID().uuidString)"
-    UserDefaults(suiteName: "group.com.diegoeiras.anything")?.set(request, forKey: "pendingControlAdd")
+    UserDefaults(suiteName: "group.com.diegoeiras.astera")?.set(request, forKey: "pendingControlAdd")
     return .result()
   }
 }
 
 @available(iOS 18.0, *)
-struct AddAnythingIntent: AddItemControlIntent {
-  static let title: LocalizedStringResource = "Add anything"
+struct AddAsteraIntent: AddItemControlIntent {
+  static let title: LocalizedStringResource = "Add to Astera"
   static let description = IntentDescription(stringLiteral: "Open the add screen.")
   static let openAppWhenRun = true
   static let isDiscoverable = true

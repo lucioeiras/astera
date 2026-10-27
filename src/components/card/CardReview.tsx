@@ -1,4 +1,5 @@
-import { SmileyIcon, StarIcon } from 'phosphor-react-native';
+import { useAppTheme } from '@/lib/theme';
+import { Smile, Star } from 'lucide-react-native';
 import { Pressable, Text, TextInput, View } from 'react-native';
 import { LocalizedText } from '@/components/LocalizedText';
 import { translate, useLocalization } from '@/lib/i18n';
@@ -18,16 +19,17 @@ export function CardReview({
   onCommentsChange: setReviewComments,
   compact = false,
 }: CardReviewProps) {
+  const { colors: themeColors } = useAppTheme();
   useLocalization();
   return (
-    <View className={compact ? 'gap-4 pt-4' : 'py-6 px-6 border-b border-zinc-800 gap-4'}>
+    <View className={compact ? 'gap-4 pt-4' : 'py-6 px-6 border-b border-theme-raised gap-4'}>
       <View
         className={`w-full flex-row items-center ${compact ? 'justify-start' : 'justify-between'}`}
       >
         {!compact && (
           <View className="flex-row items-center gap-2">
-            <SmileyIcon size={16} color="#D4D4D8" />
-            <Text className="font-sans-semibold text-sm tracking-wider uppercase text-zinc-200">
+            <Smile size={16} color={themeColors.body} />
+            <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
               <LocalizedText>My review</LocalizedText>
             </Text>
           </View>
@@ -50,13 +52,18 @@ export function CardReview({
                 key={index}
                 className={`h-7 w-10 justify-center ${compact ? 'items-start' : 'items-center'}`}
               >
-                <StarIcon size={24} color="#52525B" weight="light" />
+                <Star size={24} color={themeColors.strongBorder} strokeWidth={1.5} />
                 {fillWidth > 0 && (
                   <View
                     className="absolute overflow-hidden"
-                    style={{ left: compact ? 0 : 8, top: 2, width: fillWidth, height: 24 }}
+                    style={{
+                      left: compact ? 0 : 8,
+                      top: 2,
+                      width: fillWidth,
+                      height: 24,
+                    }}
                   >
-                    <StarIcon size={24} color="#FFFFFF" weight="fill" />
+                    <Star size={24} color={themeColors.foreground} fill={themeColors.foreground} />
                   </View>
                 )}
                 <Pressable
@@ -88,9 +95,9 @@ export function CardReview({
         onChangeText={setReviewComments}
         multiline
         placeholder={translate('What is your opinion on this?')}
-        placeholderTextColor="#71717A"
+        placeholderTextColor={themeColors.muted}
         textAlignVertical="top"
-        className="min-h-24 font-sans text-base text-white"
+        className="min-h-24 font-sans text-base text-theme-foreground"
         style={{ padding: 0, backgroundColor: 'transparent' }}
         underlineColorAndroid="transparent"
       />
