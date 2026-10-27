@@ -1,5 +1,0 @@
-{
-  "platforms": ["apple", "android", "web"],
-  "apple": { "modules": ["AnythingAudioTranscriptionModule"] },
-  "android": { "modules": ["expo.modules.anythingaudiotranscription.AnythingAudioTranscriptionModule"] }
-}

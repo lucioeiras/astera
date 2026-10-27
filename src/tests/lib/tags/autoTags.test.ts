@@ -5,7 +5,7 @@ import {
   normalizeTag,
 } from '@/lib/tags/autoTags';
 
-jest.mock('@/../modules/anything-library-access/src/AnythingLibraryAccessModule', () => ({
+jest.mock('@/../modules/astera-library-access/src/AsteraLibraryAccessModule', () => ({
   __esModule: true,
   default: { extractEntitiesAndTags: () => [] },
 }));

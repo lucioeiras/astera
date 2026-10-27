@@ -21,7 +21,7 @@ export function AppearanceSettings() {
         </Text>
       </View>
       <Text className="font-sans text-base leading-relaxed text-theme-secondary">
-        {t('Choose the appearance used by Anything.')}
+        {t('Choose the appearance used by Astera.')}
       </Text>
       <View
         accessibilityRole="radiogroup"

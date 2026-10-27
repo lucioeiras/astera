@@ -20,7 +20,7 @@ try {
 try {
   converterModule =
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    require('@/../modules/anything-audio-transcription/src/AnythingAudioTranscriptionModule').default;
+    require('@/../modules/astera-audio-transcription/src/AsteraAudioTranscriptionModule').default;
 } catch {
   // The local converter is registered in iOS and Android development builds.
 }

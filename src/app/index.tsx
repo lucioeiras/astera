@@ -101,7 +101,7 @@ export default function FolderSelectScreen() {
           <LocalizedText>Welcome to</LocalizedText>{' '}
           <Text className="font-serif-italic text-4xl text-theme-blue text-center">
             {' '}
-            <LocalizedText>anything</LocalizedText>
+            <LocalizedText>Astera</LocalizedText>
           </Text>
         </Text>
         <Text className="font-sans text-lg text-theme-body mt-3 text-center">
@@ -109,7 +109,7 @@ export default function FolderSelectScreen() {
         </Text>
         <Text className="font-sans text-base text-theme-secondary mt-3 text-center max-w-80">
           <LocalizedText>
-            Anything is offline-first and believes files should remain under your control.
+            Astera is offline-first and believes files should remain under your control.
           </LocalizedText>
         </Text>
 

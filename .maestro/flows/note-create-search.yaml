@@ -3,7 +3,7 @@ name: Create and find a note
 ---
 - launchApp:
     clearState: true
-- assertVisible: 'You can add anything here'
+- assertVisible: 'Start your collection here'
 - tapOn: 'Add new item'
 - tapOn: 'Note, quote or to-do'
 - assertVisible: 'Type here...'

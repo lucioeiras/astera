@@ -121,7 +121,7 @@ export default function SettingsScreen() {
             </Text>
           </View>
           <Text className="font-sans text-base leading-relaxed text-theme-secondary">
-            <LocalizedText>Choose the language used by Anything.</LocalizedText>
+            <LocalizedText>Choose the language used by Astera.</LocalizedText>
           </Text>
           <View
             accessibilityRole="radiogroup"

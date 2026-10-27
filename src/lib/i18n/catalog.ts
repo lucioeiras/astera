@@ -42,10 +42,10 @@ const portugueseCatalog = {
   Light: 'Claro',
   Dark: 'Escuro',
   'Select app appearance': 'Selecionar aparência do aplicativo',
-  'Choose the appearance used by Anything.': 'Escolha a aparência usada pelo Anything.',
+  'Choose the appearance used by Astera.': 'Escolha a aparência usada pelo Astera.',
   System: 'Sistema',
   Language: 'Idioma',
-  'Choose the language used by Anything.': 'Escolha o idioma usado pelo Anything.',
+  'Choose the language used by Astera.': 'Escolha o idioma usado pelo Astera.',
   'Current language': 'Idioma atual',
   'Back to profile': 'Voltar ao perfil',
   'No cards added on %{date} match your filters':
@@ -80,8 +80,8 @@ const portugueseCatalog = {
   Added: 'Adicionado em',
   'Added cards': 'Cartões adicionados',
   Album: 'Álbum',
-  'Anything is offline-first and believes files should remain under your control.':
-    'O Anything funciona offline e acredita que seus arquivos devem permanecer sob seu controle.',
+  'Astera is offline-first and believes files should remain under your control.':
+    'O Astera funciona offline e acredita que seus arquivos devem permanecer sob seu controle.',
   'Automatic transcription failed. Use the microphone action below to try again.':
     'A transcrição automática falhou. Use o botão do microfone abaixo para tentar novamente.',
   'Back to board': 'Voltar ao mural',
@@ -156,7 +156,7 @@ const portugueseCatalog = {
     'Salve vídeos da galeria no seu mural com título, tags e nota.',
   'Save your first card to start your library activity.':
     'Salve seu primeiro cartão para começar a atividade da biblioteca.',
-  'Save anything you want': 'Salve o que quiser',
+  'Save what matters': 'Salve o que importa',
   'Saving…': 'Salvando…',
   'Search TV shows from The Movie Database (TMDB) to add to your library.':
     'Pesquise séries no The Movie Database (TMDB) para adicioná-las à biblioteca.',
@@ -349,10 +349,9 @@ const portugueseCatalog = {
   'Search cards, tags, notes...': 'Buscar cartões, tags e notas...',
   'Search within...': 'Buscar aqui dentro...',
   'No results found': 'Nenhum resultado encontrado',
-  'You can add anything here': 'Você pode adicionar qualquer coisa aqui',
+  'Start your collection here': 'Comece sua coleção aqui',
   "Couldn't open the library": 'Não foi possível abrir a biblioteca',
-  'This board is yours to save anything you want':
-    'Este mural é seu para guardar tudo o que quiser',
+  'Keep everything you want to revisit here': 'Guarde aqui tudo o que quiser revisitar',
   'Try again': 'Tentar novamente',
   'New Folder': 'Nova pasta',
   Keep: 'Manter',

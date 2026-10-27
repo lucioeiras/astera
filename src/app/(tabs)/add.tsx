@@ -297,7 +297,7 @@ export default function AddElementScreen() {
         className="w-full"
       >
         <Text className="font-sans-medium text-2xl text-theme-foreground text-center w-full">
-          {translate('Save anything you want')}
+          {translate('Save what matters')}
         </Text>
         <Text className="font-sans text-base text-theme-secondary mt-3 text-center max-w-96">
           <LocalizedText>

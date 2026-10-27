@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "anything",
+      "name": "astera",
       "dependencies": {
         "@bacons/apple-targets": "^5.0.0",
         "@config-plugins/react-native-blob-util": "^14.0.2",

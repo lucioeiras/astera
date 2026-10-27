@@ -3,7 +3,7 @@ name: Navigate tabs and inspect settings
 ---
 - launchApp:
     clearState: true
-- assertVisible: 'You can add anything here'
+- assertVisible: 'Start your collection here'
 - tapOn: 'Folders'
 - assertVisible: 'Want to'
 - tapOn: 'Profile'

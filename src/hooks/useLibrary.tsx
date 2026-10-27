@@ -311,7 +311,7 @@ export function LibraryProvider({ children }: { children: React.ReactNode }) {
         setSourceInternal(null);
         setHasSavedSource(false);
         try {
-          await AsyncStorage.removeItem('anything:librarySource');
+          await AsyncStorage.removeItem('astera:librarySource');
         } catch {
           // ignore
         }

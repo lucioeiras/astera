@@ -962,8 +962,8 @@ export default function BoardScreen() {
 
     return (
       <Centered
-        title={translate('You can add anything here')}
-        message={translate('This board is yours to save anything you want')}
+        title={translate('Start your collection here')}
+        message={translate('Keep everything you want to revisit here')}
       >
         <Pressable
           onPress={() => router.push('/add')}
