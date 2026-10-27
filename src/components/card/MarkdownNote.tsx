@@ -1,4 +1,6 @@
 import { useAppTheme, type ThemeColors } from '@/lib/theme';
+import { NOTE_BODY_TYPOGRAPHY } from '@/lib/noteTypography';
+import * as Linking from 'expo-linking';
 import { useMemo } from 'react';
 import { Check } from 'lucide-react-native';
 import { Pressable, Text, View } from 'react-native';
@@ -50,21 +52,31 @@ const HEADING_STYLES = (themeColors: ThemeColors) => [
 ];
 
 function renderInline(value: string, themeColors: ThemeColors) {
-  const parts = value.split(/(\*\*[^*]+\*\*|`[^`]+`|\*[^*]+\*)/g);
+  const parts = value.split(/(\[[^\]]+\]\(https?:\/\/[^\s)]+\)|\*\*[^*]+\*\*|`[^`]+`|\*[^*]+\*)/g);
   return parts.map((part, index) => {
+    const link = /^\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)$/.exec(part);
     const bold = part.startsWith('**') && part.endsWith('**');
     const italic = !bold && part.startsWith('*') && part.endsWith('*');
     const code = part.startsWith('`') && part.endsWith('`');
     return (
       <Text
         key={index}
+        accessibilityRole={link ? 'link' : undefined}
+        onPress={link ? () => void Linking.openURL(link[2]).catch(() => undefined) : undefined}
         style={[
+          link
+            ? {
+                color: themeColors.secondary,
+                textDecorationLine: 'underline',
+                textDecorationColor: 'rgba(113, 113, 122, 0.45)',
+              }
+            : null,
           bold ? { fontWeight: '700' } : null,
           italic ? { fontStyle: 'italic' } : null,
           code ? { fontFamily: 'monospace', color: themeColors.blueSoft } : null,
         ]}
       >
-        {bold || italic || code ? part.slice(bold ? 2 : 1, bold ? -2 : -1) : part}
+        {link ? link[1] : bold || italic || code ? part.slice(bold ? 2 : 1, bold ? -2 : -1) : part}
       </Text>
     );
   });
@@ -88,10 +100,7 @@ export function MarkdownNote({
     }, 0)
   );
   const content = (
-    <View
-      className="w-full gap-4"
-      style={compact ? { maxHeight: 176, overflow: 'hidden' } : undefined}
-    >
+    <View testID="markdown-note-content" className="w-full gap-4" style={{ flexShrink: 0 }}>
       {blocks.map((block, index) => {
         const blockStart = blockOffsets[index];
         const lines = block.split('\n');
@@ -128,14 +137,14 @@ export function MarkdownNote({
                   ? heading
                     ? Math.max(15, (headingStyle?.fontSize ?? 25) - 10)
                     : 15
-                  : (headingStyle?.fontSize ?? 18),
+                  : (headingStyle?.fontSize ?? NOTE_BODY_TYPOGRAPHY.fontSize),
                 lineHeight: compact
                   ? heading
                     ? Math.max(20, (headingStyle?.lineHeight ?? 32) - 10)
                     : 26
-                  : (headingStyle?.lineHeight ?? 32),
-                fontFamily: headingStyle?.fontFamily ?? 'InstrumentSans_400Regular',
-                color: quote ? themeColors.secondary : (headingStyle?.color ?? themeColors.body),
+                  : (headingStyle?.lineHeight ?? NOTE_BODY_TYPOGRAPHY.lineHeight),
+                fontFamily: headingStyle?.fontFamily ?? NOTE_BODY_TYPOGRAPHY.fontFamily,
+                color: quote ? themeColors.secondary : (headingStyle?.color ?? themeColors.heading),
               };
               if (taskList) {
                 const checkbox = (
