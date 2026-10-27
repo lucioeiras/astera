@@ -65,7 +65,7 @@ export function EntertainmentTabs({
       horizontal
       testID="entertainment-type-picker"
       showsHorizontalScrollIndicator={false}
-      contentContainerStyle={{ paddingHorizontal: 20, gap: 8 }}
+      contentContainerStyle={{ paddingHorizontal: 32, gap: 8 }}
       keyboardShouldPersistTaps="handled"
     >
       {tabs(themeColors).map((tab) => (
@@ -90,6 +90,7 @@ export function EntertainmentTabs({
 export function NewEntertainmentModal({ visible, onClose, onDismiss }: Props) {
   const [selectedType, setSelectedType] = useState<EntertainmentType>('book');
   const insets = useSafeAreaInsets();
+  const typePicker = <EntertainmentTabs selectedType={selectedType} onSelect={setSelectedType} />;
 
   return (
     <Modal
@@ -108,35 +109,36 @@ export function NewEntertainmentModal({ visible, onClose, onDismiss }: Props) {
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
           <View className="flex-1" style={{ paddingTop: Math.max(insets.top, 16) }}>
-            <View className="flex-row items-center pt-4">
-              <EntertainmentTabs selectedType={selectedType} onSelect={setSelectedType} />
-            </View>
-
             <View className="flex-1">
               <NewBookModal
                 visible={visible && selectedType === 'book'}
                 embedded
+                typePicker={typePicker}
                 onClose={onClose}
               />
               <NewMusicModal
                 visible={visible && selectedType === 'music'}
                 embedded
+                typePicker={typePicker}
                 onClose={onClose}
               />
               <NewMovieModal
                 visible={visible && selectedType === 'movie'}
                 embedded
+                typePicker={typePicker}
                 onClose={onClose}
               />
               <NewTvShowModal
                 visible={visible && selectedType === 'tvshow'}
                 embedded
+                typePicker={typePicker}
                 onClose={onClose}
                 onDismiss={onDismiss}
               />
               <NewGameModal
                 visible={visible && selectedType === 'game'}
                 embedded
+                typePicker={typePicker}
                 onClose={onClose}
               />
             </View>

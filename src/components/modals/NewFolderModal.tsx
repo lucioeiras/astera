@@ -17,6 +17,8 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ActionFooter } from '@/components/ActionFooter';
+import { ModalCloseButton } from '@/components/ModalCloseButton';
+import { ModalSaveButton } from '@/components/ModalSaveButton';
 import { Button } from '@/components/Button';
 import { LocalizedText } from '@/components/LocalizedText';
 import { translate, useLocalization } from '@/lib/i18n';
@@ -70,13 +72,34 @@ export function NewFolderModal({ visible, onClose, onCreate }: NewFolderModalPro
         style={styles.container}
       >
         <View style={{ paddingTop: Math.max(insets.top, 16) }} className="flex-1 w-full relative">
+          <ModalCloseButton onPress={handleClose} disabled={saving} />
+          <ModalSaveButton>
+            <Button
+              size="small"
+              accessibilityLabel={translate('Create folder')}
+              variant="primary"
+              onPress={handleCreate}
+              disabled={!canSave}
+              icon={
+                saving ? (
+                  <ActivityIndicator size={20} color={themeColors.inverse} />
+                ) : (
+                  <Check
+                    size={20}
+                    color={canSave ? themeColors.inverse : themeColors.muted}
+                    strokeWidth={2}
+                  />
+                )
+              }
+            />
+          </ModalSaveButton>
           <ScrollView
             className="flex-1 w-full"
             contentContainerStyle={styles.scrollContent}
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
           >
-            <View className="gap-3 p-8 pt-0">
+            <View className="gap-3 px-8 py-8 pt-0">
               <Text className="font-sans-semibold text-2xl text-theme-foreground">
                 <LocalizedText>Create a new folder</LocalizedText>
               </Text>
@@ -117,34 +140,7 @@ export function NewFolderModal({ visible, onClose, onCreate }: NewFolderModalPro
             </View>
           </ScrollView>
 
-          <ActionFooter bottomInset={insets.bottom}>
-            <Button
-              accessibilityLabel={translate('Cancel')}
-              onPress={handleClose}
-              disabled={saving}
-              icon={<X size={20} color={themeColors.foreground} strokeWidth={2} />}
-              text={translate('Cancel')}
-            />
-
-            <Button
-              accessibilityLabel={translate('Create folder')}
-              variant="primary"
-              onPress={handleCreate}
-              disabled={!canSave}
-              icon={
-                saving ? (
-                  <ActivityIndicator size={20} color={themeColors.inverse} />
-                ) : (
-                  <Check
-                    size={20}
-                    color={canSave ? themeColors.inverse : themeColors.muted}
-                    strokeWidth={2}
-                  />
-                )
-              }
-              text={translate('Create folder')}
-            />
-          </ActionFooter>
+          <ActionFooter buttonSize="small" bottomInset={insets.bottom} />
         </View>
       </KeyboardAvoidingView>
     </Modal>
@@ -160,7 +156,7 @@ const createStyles = (themeColors: ThemeColors) =>
     },
     scrollContent: {
       flexGrow: 1,
-      paddingVertical: 20,
+      paddingTop: 56,
       paddingBottom: 40,
     },
     borderlessInput: {

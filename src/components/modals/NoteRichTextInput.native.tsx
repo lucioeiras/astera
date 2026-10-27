@@ -4,24 +4,24 @@ import {
   type EnrichedMarkdownTextInputInstance,
   type StyleState,
 } from 'react-native-enriched-markdown';
-import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
-import { TextInput } from 'react-native';
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import { TextInput, View } from 'react-native';
+import { NoteCaretProbe } from './NoteCaretProbe';
 import type { TextStyle } from 'react-native';
 
 import { formatInline, formatLine } from '@/lib/noteFormatting';
 import type { NoteRichTextInputHandle, NoteRichTextInputProps } from './NoteRichTextInput.types';
 import { translate } from '@/lib/i18n';
+import { NOTE_BODY_TYPOGRAPHY } from '@/lib/noteTypography';
 
 const INPUT_STYLE = (themeColors: ThemeColors): TextStyle => ({
   flex: 1,
   width: '100%',
-  fontSize: 30,
-  lineHeight: 40,
-  fontFamily: 'InstrumentSans_400Regular',
-  color: themeColors.foreground,
+  ...NOTE_BODY_TYPOGRAPHY,
+  color: themeColors.heading,
   paddingHorizontal: 32,
-  paddingTop: 32,
-  paddingBottom: 128,
+  paddingTop: 0,
+  paddingBottom: 0,
   backgroundColor: 'transparent',
 });
 
@@ -31,7 +31,14 @@ function containsUnsupportedBlocks(markdown: string) {
 
 export const NoteRichTextInput = forwardRef<NoteRichTextInputHandle, NoteRichTextInputProps>(
   function NoteRichTextInput(
-    { value, onChangeMarkdown, onSelectionChange, placeholder, placeholderTextColor },
+    {
+      value,
+      onChangeMarkdown,
+      onSelectionChange,
+      onCaretRectChange,
+      placeholder,
+      placeholderTextColor,
+    },
     ref
   ) {
     const { colors: themeColors } = useAppTheme();
@@ -40,10 +47,42 @@ export const NoteRichTextInput = forwardRef<NoteRichTextInputHandle, NoteRichTex
     const currentMarkdownRef = useRef(value);
     const selectionRef = useRef({ start: 0, end: 0 });
     const [textSelection, setTextSelection] = useState({ start: 0, end: 0 });
+    const [plainContentHeight, setPlainContentHeight] = useState(0);
     const styleStateRef = useRef<StyleState | null>(null);
     const [plainMarkdownMode, setPlainMarkdownMode] = useState(() =>
       containsUnsupportedBlocks(value)
     );
+    const caretFrame = useRef<number | null>(null);
+    const caretRequest = useRef(0);
+    const refreshNativeCaret = useCallback(() => {
+      if (!onCaretRectChange) return;
+      if (caretFrame.current !== null) cancelAnimationFrame(caretFrame.current);
+      caretFrame.current = requestAnimationFrame(() => {
+        caretFrame.current = null;
+        const editor = inputRef.current;
+        const request = ++caretRequest.current;
+        // Paste can update the text and its layout without a separate cursor event.
+        const result = editor?.getCaretRect?.();
+        void result
+          ?.then((rect) => {
+            if (request === caretRequest.current && editor === inputRef.current) {
+              onCaretRectChange(rect);
+            }
+          })
+          .catch(() => undefined);
+      });
+    }, [onCaretRectChange]);
+
+    useEffect(() => {
+      if (!plainMarkdownMode) refreshNativeCaret();
+      return () => {
+        caretRequest.current += 1;
+        if (caretFrame.current !== null) {
+          cancelAnimationFrame(caretFrame.current);
+          caretFrame.current = null;
+        }
+      };
+    }, [value, plainMarkdownMode, refreshNativeCaret]);
 
     useEffect(() => {
       if (value !== currentMarkdownRef.current) {
@@ -63,6 +102,11 @@ export const NoteRichTextInput = forwardRef<NoteRichTextInputHandle, NoteRichTex
           plainMarkdownMode
             ? currentMarkdownRef.current
             : ((await inputRef.current?.getMarkdown()) ?? currentMarkdownRef.current),
+        setSelection: (start, end) => {
+          selectionRef.current = { start, end };
+          setTextSelection({ start, end });
+          if (!plainMarkdownMode) inputRef.current?.setSelection(start, end);
+        },
         setMarkdown: (markdown) => {
           currentMarkdownRef.current = markdown;
           const unsupported = containsUnsupportedBlocks(markdown);
@@ -123,31 +167,42 @@ export const NoteRichTextInput = forwardRef<NoteRichTextInputHandle, NoteRichTex
 
     if (plainMarkdownMode) {
       return (
-        <TextInput
-          ref={plainInputRef}
-          value={value}
-          onChangeText={(markdown) => {
-            currentMarkdownRef.current = markdown;
-            setPlainMarkdownMode(containsUnsupportedBlocks(markdown));
-            onChangeMarkdown(markdown);
-          }}
-          onSelectionChange={(event) => {
-            selectionRef.current = event.nativeEvent.selection;
-            setTextSelection(event.nativeEvent.selection);
-            onSelectionChange?.(event.nativeEvent.selection);
-          }}
-          selection={textSelection}
-          placeholder={placeholder}
-          placeholderTextColor={placeholderTextColor}
-          multiline
-          autoFocus
-          textAlignVertical="top"
-          className="flex-1 w-full font-sans text-3xl text-theme-foreground leading-10 px-8 pt-8 pb-32"
-          style={{ borderWidth: 0, backgroundColor: 'transparent' }}
-          underlineColorAndroid="transparent"
-          accessibilityLabel={translate('Note text')}
-          testID="note-rich-text-input"
-        />
+        <View style={{ flexGrow: 1, width: '100%' }}>
+          <TextInput
+            ref={plainInputRef}
+            value={value}
+            onChangeText={(markdown) => {
+              currentMarkdownRef.current = markdown;
+              setPlainMarkdownMode(containsUnsupportedBlocks(markdown));
+              onChangeMarkdown(markdown);
+            }}
+            onSelectionChange={(event) => {
+              selectionRef.current = event.nativeEvent.selection;
+              setTextSelection(event.nativeEvent.selection);
+              onSelectionChange?.(event.nativeEvent.selection);
+            }}
+            selection={textSelection}
+            placeholder={placeholder}
+            placeholderTextColor={placeholderTextColor}
+            multiline
+            scrollEnabled={false}
+            onContentSizeChange={({ nativeEvent }) => {
+              setPlainContentHeight(Math.ceil(nativeEvent.contentSize.height));
+            }}
+            autoFocus={false}
+            textAlignVertical="top"
+            className="flex-1 w-full font-sans text-lg text-theme-foreground leading-8 px-8"
+            style={{ ...INPUT_STYLE(themeColors), minHeight: plainContentHeight, borderWidth: 0 }}
+            underlineColorAndroid="transparent"
+            accessibilityLabel={translate('Note text')}
+            testID="note-rich-text-input"
+          />
+          <NoteCaretProbe
+            value={value}
+            selectionEnd={textSelection.end}
+            onCaretRectChange={onCaretRectChange}
+          />
+        </View>
       );
     }
 
@@ -171,7 +226,13 @@ export const NoteRichTextInput = forwardRef<NoteRichTextInputHandle, NoteRichTex
         placeholder={placeholder}
         placeholderTextColor={placeholderTextColor}
         multiline
-        autoFocus
+        scrollEnabled={false}
+        onCaretRectChange={(rect) => {
+          caretRequest.current += 1;
+          onCaretRectChange?.(rect);
+        }}
+        onLayout={refreshNativeCaret}
+        autoFocus={false}
         markdownShortcuts
         style={INPUT_STYLE(themeColors)}
         markdownStyle={{

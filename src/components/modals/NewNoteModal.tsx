@@ -20,9 +20,8 @@ import {
   Italic,
   Type,
   User,
-  X,
 } from 'lucide-react-native';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -39,10 +38,13 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ActionFooter } from '@/components/ActionFooter';
+import { ModalCloseButton } from '@/components/ModalCloseButton';
+import { ModalSaveButton } from '@/components/ModalSaveButton';
 import { Button } from '@/components/Button';
 import { MarkdownNote } from '@/components/card/MarkdownNote';
 import { MusicLyricsPicker } from '@/components/modals/MusicLyricsPicker';
 import { NoteRichTextInput } from '@/components/modals/NoteRichTextInput';
+import { getNoteEditorScrollY } from '@/lib/noteEditorScroll';
 import type {
   NoteFormattingAction,
   NoteRichTextInputHandle,
@@ -85,6 +87,34 @@ export function NewNoteModal({
   const insets = useSafeAreaInsets();
 
   const inputRef = useRef<NoteRichTextInputHandle>(null);
+  const editorScrollRef = useRef<ScrollView>(null);
+  const editorScrollMetrics = useRef({
+    scrollY: 0,
+    viewportHeight: 0,
+    contentHeight: 0,
+    caretY: 56,
+    caretHeight: 32,
+  });
+  const followCaretFrame = useRef<number | null>(null);
+  const followCaret = useCallback(() => {
+    if (followCaretFrame.current !== null) cancelAnimationFrame(followCaretFrame.current);
+    followCaretFrame.current = requestAnimationFrame(() => {
+      followCaretFrame.current = null;
+      const metrics = editorScrollMetrics.current;
+      const nextY = getNoteEditorScrollY(metrics);
+      if (nextY !== metrics.scrollY) {
+        metrics.scrollY = nextY;
+        editorScrollRef.current?.scrollTo({ y: nextY, animated: false });
+      }
+    });
+  }, []);
+  useEffect(
+    () => () => {
+      if (followCaretFrame.current !== null) cancelAnimationFrame(followCaretFrame.current);
+    },
+    []
+  );
+  const editingItemId = editingItem?.id;
   const titleInputRef = useRef<TextInput>(null);
   const authorInputRef = useRef<TextInput>(null);
   const tagsInputRef = useRef<TextInput>(null);
@@ -120,11 +150,15 @@ export function NewNoteModal({
   useEffect(() => {
     if (visible) {
       const timer = setTimeout(() => {
+        if (editingItemId) {
+          editorScrollRef.current?.scrollTo({ y: 0, animated: false });
+          inputRef.current?.setSelection(0, 0);
+        }
         inputRef.current?.focus();
       }, 100);
       return () => clearTimeout(timer);
     }
-  }, [visible]);
+  }, [visible, editingItemId]);
 
   const handleClose = () => {
     if (saving) return;
@@ -392,13 +426,35 @@ export function NewNoteModal({
           }}
           className="flex-1 w-full relative"
         >
+          <ModalCloseButton onPress={handleClose} disabled={saving} />
+          <ModalSaveButton>
+            <Button
+              size="small"
+              accessibilityLabel={translate('Save note')}
+              variant="primary"
+              onPress={handleSave}
+              disabled={!canSave}
+              icon={
+                saving ? (
+                  <ActivityIndicator size={20} color={themeColors.inverse} />
+                ) : (
+                  <Check
+                    size={20}
+                    color={canSave ? themeColors.inverse : themeColors.muted}
+                    strokeWidth={2}
+                  />
+                )
+              }
+            />
+          </ModalSaveButton>
           {view === 'editor' ? (
             isPreviewingMarkdown ? (
               <ScrollView
+                ref={editorScrollRef}
                 className="flex-1 w-full"
                 contentContainerStyle={{
                   paddingHorizontal: 32,
-                  paddingTop: 32,
+                  paddingTop: 56,
                   paddingBottom: 128,
                 }}
                 keyboardShouldPersistTaps="handled"
@@ -420,16 +476,41 @@ export function NewNoteModal({
                 )}
               </ScrollView>
             ) : (
-              <View className="flex-1 w-full">
+              <ScrollView
+                ref={editorScrollRef}
+                testID="note-editor-scroll"
+                className="flex-1 w-full"
+                contentContainerStyle={{ flexGrow: 1, paddingTop: 56, paddingBottom: 160 }}
+                keyboardShouldPersistTaps="handled"
+                nestedScrollEnabled
+                showsVerticalScrollIndicator={false}
+                onLayout={({ nativeEvent }) => {
+                  editorScrollMetrics.current.viewportHeight = nativeEvent.layout.height;
+                  followCaret();
+                }}
+                onContentSizeChange={(_, height) => {
+                  editorScrollMetrics.current.contentHeight = height;
+                  followCaret();
+                }}
+                onScroll={({ nativeEvent }) => {
+                  editorScrollMetrics.current.scrollY = nativeEvent.contentOffset.y;
+                }}
+                scrollEventThrottle={16}
+              >
                 <NoteRichTextInput
                   ref={inputRef}
                   value={text}
                   onChangeMarkdown={setText}
                   onSelectionChange={setSelection}
+                  onCaretRectChange={({ y, height }) => {
+                    editorScrollMetrics.current.caretY = 56 + y;
+                    editorScrollMetrics.current.caretHeight = height;
+                    followCaret();
+                  }}
                   placeholder={translate('Type here...')}
                   placeholderTextColor={themeColors.muted}
                 />
-              </View>
+              </ScrollView>
             )
           ) : (
             /* Note Info Mode: Title and Tags sections */
@@ -440,7 +521,7 @@ export function NewNoteModal({
               showsVerticalScrollIndicator={false}
             >
               {/* Header */}
-              <View className="gap-3 p-8">
+              <View className="gap-3 px-8 py-8">
                 <Text className="font-sans-semibold text-2xl text-theme-foreground">
                   {isQuote ? 'Quote info' : 'Note info'}
                 </Text>
@@ -491,6 +572,7 @@ export function NewNoteModal({
 
               {/* Tags Section */}
               <TagsBox
+                containerClassName="py-6 px-8 border-b border-theme-raised gap-4"
                 tags={tags}
                 autoTags={autoTags}
                 onTagsChange={setTags}
@@ -536,6 +618,7 @@ export function NewNoteModal({
 
           {/* Action buttons at the bottom */}
           <ActionFooter
+            buttonSize="small"
             bottomInset={insets.bottom}
             overlay
             horizontalScroll={view === 'editor' && !isPreviewingMarkdown && isFormattingOpen}
@@ -572,12 +655,6 @@ export function NewNoteModal({
               </>
             ) : (
               <>
-                <Button
-                  accessibilityLabel={translate('Cancel')}
-                  onPress={handleClose}
-                  disabled={saving}
-                  icon={<X size={20} color={themeColors.foreground} strokeWidth={2} />}
-                />
                 {view === 'editor' && !isPreviewingMarkdown && (
                   <Button
                     accessibilityLabel={translate('Open text formatting')}
@@ -637,24 +714,6 @@ export function NewNoteModal({
                     text={translate('Note')}
                   />
                 )}
-
-                <Button
-                  accessibilityLabel={translate('Save note')}
-                  variant="primary"
-                  onPress={handleSave}
-                  disabled={!canSave}
-                  icon={
-                    saving ? (
-                      <ActivityIndicator size={20} color={themeColors.inverse} />
-                    ) : (
-                      <Check
-                        size={20}
-                        color={canSave ? themeColors.inverse : themeColors.muted}
-                        strokeWidth={2}
-                      />
-                    )
-                  }
-                />
               </>
             )}
           </ActionFooter>
@@ -685,7 +744,7 @@ const createStyles = (themeColors: ThemeColors) =>
     },
     scrollContent: {
       flexGrow: 1,
-      paddingVertical: 20,
+      paddingTop: 56,
       paddingBottom: 128,
     },
     borderlessInput: {

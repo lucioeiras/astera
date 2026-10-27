@@ -1,7 +1,16 @@
 import { useAppTheme } from '@/lib/theme';
 import { BlurView } from 'expo-blur';
-import { ReactElement, ReactNode, cloneElement, isValidElement } from 'react';
+import {
+  ReactElement,
+  ReactNode,
+  cloneElement,
+  createContext,
+  isValidElement,
+  useContext,
+} from 'react';
 import { Pressable, Text, View } from 'react-native';
+
+export const ButtonSizeContext = createContext<'default' | 'small'>('default');
 
 type ButtonProps = {
   accessibilityLabel: string;
@@ -26,7 +35,7 @@ export function Button({
   text,
   onPress,
   disabled = false,
-  size = 'default',
+  size,
   variant = 'secondary',
   backgroundColor,
   contentColor,
@@ -36,9 +45,10 @@ export function Button({
   selected,
 }: ButtonProps) {
   const { colors: themeColors, isDark } = useAppTheme();
+  const inheritedSize = useContext(ButtonSizeContext);
   const foreground =
     contentColor ?? (variant === 'primary' ? themeColors.canvas : themeColors.foreground);
-  const isSmall = size === 'small';
+  const isSmall = (size ?? inheritedSize) === 'small';
   const iconElement = isValidElement<{ size?: number; color?: string }>(icon) ? icon : undefined;
   const normalizedIcon =
     iconElement && 'size' in iconElement.props

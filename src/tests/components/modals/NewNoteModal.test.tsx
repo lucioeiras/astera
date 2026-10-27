@@ -1,4 +1,5 @@
 import { fireEvent, render } from '@testing-library/react-native';
+import { ScrollView } from 'react-native';
 
 import { NewNoteModal } from '@/components/modals/NewNoteModal';
 
@@ -27,6 +28,36 @@ jest.mock('@/lib/tags/autoTags', () => ({
 }));
 
 describe('NewNoteModal', () => {
+  it('scrolls the active insertion line above the footer while typing', async () => {
+    const scrollTo = jest.spyOn(ScrollView.prototype, 'scrollTo').mockImplementation(() => {});
+    const animationFrame = jest
+      .spyOn(globalThis, 'requestAnimationFrame')
+      .mockImplementation((callback) => {
+        callback(0);
+        return 0;
+      });
+    try {
+      const view = await render(
+        <NewNoteModal visible initialText="A long note" onClose={jest.fn()} />
+      );
+      const scroll = view.getByTestId('note-editor-scroll');
+      await fireEvent(scroll, 'layout', {
+        nativeEvent: { layout: { height: 400, width: 390, x: 0, y: 0 } },
+      });
+      await fireEvent(scroll, 'contentSizeChange', 390, 1200);
+      await fireEvent(view.getByTestId('note-rich-text-input'), 'caretRectChange', {
+        x: 0,
+        y: 700,
+        width: 1,
+        height: 32,
+      });
+      expect(scrollTo).toHaveBeenLastCalledWith({ y: 508, animated: false });
+    } finally {
+      scrollTo.mockRestore();
+      animationFrame.mockRestore();
+    }
+  });
+
   it('switches the footer to formatting controls and back', async () => {
     const { getByLabelText, queryByLabelText } = await render(
       <NewNoteModal visible initialText="A note" onClose={jest.fn()} />
