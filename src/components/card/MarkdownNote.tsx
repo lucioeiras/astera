@@ -147,7 +147,7 @@ export function MarkdownNote({
                     }`}
                   >
                     {isTaskChecked && (
-                      <Check size={16} color={themeColors.inverse} strokeWidth={2.5} />
+                      <Check size={16} color={themeColors.inverse} strokeWidth={2} />
                     )}
                   </View>
                 );

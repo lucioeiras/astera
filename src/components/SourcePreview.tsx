@@ -194,7 +194,7 @@ export function SourcePreview({
           accessibilityRole="button"
           accessibilityLabel={translate('Remove source')}
         >
-          <X size={16} color={themeColors.heading} strokeWidth={2.5} />
+          <X size={16} color={themeColors.heading} strokeWidth={2} />
         </Pressable>
       )}
     </View>

@@ -49,14 +49,14 @@ export function CardSelectionBar({
           <Button
             accessibilityLabel={translate('Cancel selection')}
             variant="secondary"
-            icon={<X size={24} color={themeColors.foreground} strokeWidth={2.5} />}
+            icon={<X size={24} color={themeColors.foreground} strokeWidth={2} />}
             onPress={onCancel}
           />
           <Button
             accessibilityLabel={translate('Add selected cards to folder')}
             variant="secondary"
             contentColor={themeColors.foreground}
-            icon={<FolderPlus size={24} color={themeColors.foreground} strokeWidth={2.5} />}
+            icon={<FolderPlus size={24} color={themeColors.foreground} strokeWidth={2} />}
             disabled={!hasSelection}
             onPress={onAddToFolder}
           />
@@ -65,7 +65,7 @@ export function CardSelectionBar({
               accessibilityLabel={pinActionLabel}
               variant="secondary"
               contentColor={themeColors.foreground}
-              icon={<Pin size={24} color={themeColors.foreground} strokeWidth={2.5} />}
+              icon={<Pin size={24} color={themeColors.foreground} strokeWidth={2} />}
               disabled={!hasSelection}
               onPress={onTogglePin}
             />
@@ -79,7 +79,7 @@ export function CardSelectionBar({
               <Trash2
                 size={24}
                 color={hasSelection ? '#EF4444' : themeColors.secondary}
-                strokeWidth={2.5}
+                strokeWidth={2}
               />
             }
             disabled={!hasSelection}

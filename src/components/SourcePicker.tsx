@@ -99,7 +99,7 @@ export function SourcePicker({ visible, items, selectedId, onSelect, onClose }: 
               className="p-1.5 rounded-full bg-theme-raised items-center justify-center active:opacity-70"
               accessibilityLabel={translate('Clear search')}
             >
-              <X size={12} color={themeColors.heading} strokeWidth={2.5} />
+              <X size={12} color={themeColors.heading} strokeWidth={2} />
             </Pressable>
           )}
         </View>
@@ -136,7 +136,7 @@ export function SourcePicker({ visible, items, selectedId, onSelect, onClose }: 
             <View className="flex-row items-center gap-2">
               <Button
                 accessibilityLabel={translate('Cancel related cards')}
-                icon={<X size={24} color={themeColors.foreground} strokeWidth={2.5} />}
+                icon={<X size={24} color={themeColors.foreground} strokeWidth={2} />}
                 onPress={onClose}
                 text={translate('Cancel')}
               />

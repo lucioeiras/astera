@@ -207,7 +207,7 @@ export function AddToFolderModal({ visible, items, onClose, onAdded }: Props) {
               saving ? (
                 <ActivityIndicator size={20} color={themeColors.secondary} />
               ) : (
-                <X size={20} color={themeColors.foreground} strokeWidth={2.5} />
+                <X size={20} color={themeColors.foreground} strokeWidth={2} />
               )
             }
             text={translate('Cancel')}
@@ -217,7 +217,7 @@ export function AddToFolderModal({ visible, items, onClose, onAdded }: Props) {
             variant="secondary"
             onPress={() => setIsCreateOpen(true)}
             disabled={saving}
-            icon={<Plus size={20} color={themeColors.foreground} strokeWidth={2.5} />}
+            icon={<Plus size={20} color={themeColors.foreground} strokeWidth={2} />}
             text={translate('New Folder')}
           />
         </ActionFooter>

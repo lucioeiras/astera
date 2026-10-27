@@ -235,7 +235,7 @@ export default function SettingsScreen() {
                 ) : isDownloaded ? (
                   <Trash2 size={20} color={themeColors.red} />
                 ) : (
-                  <Download size={20} color={themeColors.blue} strokeWidth={2.5} />
+                  <Download size={20} color={themeColors.blue} strokeWidth={2} />
                 )
               }
               onPress={
@@ -320,7 +320,7 @@ export default function SettingsScreen() {
                 ) : whisper.isDownloaded ? (
                   <Trash2 size={20} color={themeColors.red} />
                 ) : (
-                  <Download size={20} color={themeColors.blue} strokeWidth={2.5} />
+                  <Download size={20} color={themeColors.blue} strokeWidth={2} />
                 )
               }
               onPress={

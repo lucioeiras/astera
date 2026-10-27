@@ -54,7 +54,7 @@ export function BookLogs({
       {/* Header */}
       {readOnly ? (
         <View className="flex-row items-center gap-2 px-6 mt-7">
-          <Hourglass size={14} color={themeColors.foreground} strokeWidth={2.5} />
+          <Hourglass size={14} color={themeColors.foreground} strokeWidth={2} />
           <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
             <LocalizedText>Progress</LocalizedText>
           </Text>
@@ -62,7 +62,7 @@ export function BookLogs({
       ) : (
         <View className="flex-row items-center justify-between">
           <View className="flex-row items-center gap-2 px-6">
-            <Hourglass size={14} color={themeColors.foreground} strokeWidth={2.5} />
+            <Hourglass size={14} color={themeColors.foreground} strokeWidth={2} />
             <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
               <LocalizedText>Progress</LocalizedText>
             </Text>

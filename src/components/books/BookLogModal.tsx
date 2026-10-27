@@ -167,7 +167,7 @@ export function BookLogModal({
 
             <View className="border-t border-b border-theme-raised px-8 py-6 gap-5">
               <View className="flex-row items-center gap-2">
-                <Calendar size={14} color={themeColors.heading} strokeWidth={2.5} />
+                <Calendar size={14} color={themeColors.heading} strokeWidth={2} />
                 <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
                   <LocalizedText>Reading date</LocalizedText>
                 </Text>
@@ -205,7 +205,7 @@ export function BookLogModal({
 
             <View className="px-8 py-6 gap-4">
               <View className="flex-row items-center gap-2">
-                <SquarePen size={14} color={themeColors.heading} strokeWidth={2.5} />
+                <SquarePen size={14} color={themeColors.heading} strokeWidth={2} />
                 <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
                   <LocalizedText>Note</LocalizedText>
                 </Text>
@@ -238,7 +238,7 @@ export function BookLogModal({
               className="flex-1 flex-row items-center justify-center gap-3 border-r border-theme-raised pt-6 active:bg-theme-surface"
               style={{ paddingBottom: Math.max(insets.bottom, 24) }}
             >
-              <X size={20} color={themeColors.foreground} strokeWidth={2.5} />
+              <X size={20} color={themeColors.foreground} strokeWidth={2} />
               <Text className="font-sans-bold text-lg text-theme-foreground">
                 <LocalizedText>Cancel</LocalizedText>
               </Text>
@@ -269,7 +269,7 @@ export function BookLogModal({
               {saving ? (
                 <ActivityIndicator size={20} color="#F59E0B" />
               ) : (
-                <Check size={20} color="#F59E0B" strokeWidth={2.5} />
+                <Check size={20} color="#F59E0B" strokeWidth={2} />
               )}
               <Text className="font-sans-semibold text-lg text-theme-amber">
                 <LocalizedText>Save log</LocalizedText>

@@ -41,12 +41,13 @@ it.each(['light', 'dark'] as const)(
     expect(view.getByTestId('book-icon').props.color).toBe(palettes[theme].inverse);
     expect(view.getByLabelText('Books').props.accessibilityState.selected).toBe(true);
     expect(view.getByTestId('book-icon').props.weight).toBeUndefined();
+    expect(view.getByTestId('book-icon').props.strokeWidth).toBe(2);
   }
 );
 
-it('keeps the platform logo and its existing weight', async () => {
+it('keeps the platform logo at regular weight', async () => {
   const view = await render(
     <TypeFilterButton label="YouTube" icon={YoutubeLogoIcon} selected onPress={jest.fn()} />
   );
-  expect(view.getByTestId('youtube-icon').props.weight).toBe('bold');
+  expect(view.getByTestId('youtube-icon').props.weight).toBe('regular');
 });

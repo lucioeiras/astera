@@ -279,7 +279,7 @@ export function MusicLyricsPicker({ visible, onClose, onSelect }: Props) {
                   <ListMusic
                     size={20}
                     color={selectedCount ? themeColors.foreground : themeColors.muted}
-                    strokeWidth={2.5}
+                    strokeWidth={2}
                   />
                 }
                 text={translate('Add to note')}
@@ -387,7 +387,7 @@ export function MusicLyricsPicker({ visible, onClose, onSelect }: Props) {
                   accessibilityLabel={translate('Cancel loading lyrics')}
                   className="mt-4 flex-row items-center justify-center gap-2 rounded-xl border border-theme-border px-8 py-3 active:bg-theme-surface"
                 >
-                  <X size={18} color={themeColors.foreground} strokeWidth={2.5} />
+                  <X size={18} color={themeColors.foreground} strokeWidth={2} />
                   <Text className="font-sans-semibold text-base text-theme-foreground">
                     <LocalizedText>Cancel</LocalizedText>
                   </Text>

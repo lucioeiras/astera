@@ -289,7 +289,7 @@ export const ItemCard = memo(function ItemCard({
                 : 'bg-theme-surface border-2 border-theme-foreground'
             }`}
           >
-            {isSelected && <Check size={12} color="#FFFFFF" strokeWidth={2.5} />}
+            {isSelected && <Check size={12} color="#FFFFFF" strokeWidth={2} />}
           </View>
         </View>
       )}

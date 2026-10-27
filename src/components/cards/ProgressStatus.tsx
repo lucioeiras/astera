@@ -83,7 +83,7 @@ export function ProgressStatus({
 
   return (
     <View className={`flex-row items-center gap-1.5 ${align === 'center' ? 'justify-center' : ''}`}>
-      <Icon size={13} color={color} strokeWidth={2.5} />
+      <Icon size={13} color={color} strokeWidth={2} />
       <Text className="font-sans-medium text-xs text-center" style={{ color }} numberOfLines={1}>
         {getProgressLabel(type, currentStatus)}
       </Text>

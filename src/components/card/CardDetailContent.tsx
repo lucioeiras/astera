@@ -1228,7 +1228,7 @@ export function CardDetailContent({
               className="py-6 px-6 border-b border-theme-raised gap-4"
             >
               <View className="flex-row items-center gap-2">
-                <SquarePen size={14} color={themeColors.heading} strokeWidth={2.5} />
+                <SquarePen size={14} color={themeColors.heading} strokeWidth={2} />
                 <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
                   <LocalizedText>Notes</LocalizedText>
                 </Text>

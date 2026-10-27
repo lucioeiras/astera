@@ -73,7 +73,7 @@ export function TvShowSeasons({
   return (
     <View className="gap-6 border-b border-theme-raised px-6 py-6">
       <View className="flex-row items-center gap-2">
-        <Tv size={15} color={themeColors.heading} strokeWidth={2.5} />
+        <Tv size={15} color={themeColors.heading} strokeWidth={2} />
         <Text className="font-sans-semibold text-sm uppercase tracking-wider text-theme-heading">
           <LocalizedText>Seasons</LocalizedText>
         </Text>
@@ -137,7 +137,7 @@ export function TvShowSeasons({
                       className={`flex-row items-center gap-1 rounded-full px-2.5 py-1 active:opacity-70 ${statusTag.container}`}
                       hitSlop={4}
                     >
-                      <StatusIcon size={12} color={statusTag.color} strokeWidth={2.5} />
+                      <StatusIcon size={12} color={statusTag.color} strokeWidth={2} />
                       <Text
                         className={`font-sans-medium text-xs ${statusTag.text}`}
                         numberOfLines={1}

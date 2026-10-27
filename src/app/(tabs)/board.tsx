@@ -1009,7 +1009,7 @@ export default function BoardScreen() {
                 variant="primary"
                 shadowColor={themeColors.foreground}
                 shadowOpacity={0.24}
-                icon={<Plus size={24} color={themeColors.canvas} strokeWidth={2.5} />}
+                icon={<Plus size={24} color={themeColors.canvas} strokeWidth={2} />}
                 onPress={() => router.push('/add')}
               />
             }

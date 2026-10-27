@@ -73,7 +73,7 @@ export function CardInfo({ item }: { item: LibraryItem }) {
   return (
     <View className="py-6 px-6 gap-4">
       <View className="flex-row items-center gap-2">
-        <Info size={14} color={themeColors.heading} strokeWidth={2.5} />
+        <Info size={14} color={themeColors.heading} strokeWidth={2} />
         <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
           <LocalizedText>Info</LocalizedText>
         </Text>

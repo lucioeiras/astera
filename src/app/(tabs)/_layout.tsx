@@ -39,8 +39,8 @@ export default function TabLayout() {
           name="board"
           options={{
             title: translate('Board'),
-            tabBarIcon: ({ color, focused }) => (
-              <LayoutGrid size={iconSize} color={color as string} strokeWidth={focused ? 2.5 : 2} />
+            tabBarIcon: ({ color }) => (
+              <LayoutGrid size={iconSize} color={color as string} strokeWidth={2} />
             ),
           }}
         />
@@ -48,8 +48,8 @@ export default function TabLayout() {
           name="folders"
           options={{
             title: translate('Folders'),
-            tabBarIcon: ({ color, focused }) => (
-              <Folder size={iconSize} color={color as string} strokeWidth={focused ? 2.5 : 2} />
+            tabBarIcon: ({ color }) => (
+              <Folder size={iconSize} color={color as string} strokeWidth={2} />
             ),
           }}
         />
@@ -57,8 +57,8 @@ export default function TabLayout() {
           name="review"
           options={{
             title: translate('Review'),
-            tabBarIcon: ({ color, focused }) => (
-              <RotateCcw size={iconSize} color={color as string} strokeWidth={focused ? 2.5 : 2} />
+            tabBarIcon: ({ color }) => (
+              <RotateCcw size={iconSize} color={color as string} strokeWidth={2} />
             ),
           }}
         />
@@ -67,8 +67,8 @@ export default function TabLayout() {
           name="profile"
           options={{
             title: translate('Profile'),
-            tabBarIcon: ({ color, focused }) => (
-              <CircleUser size={iconSize} color={color as string} strokeWidth={focused ? 2.5 : 2} />
+            tabBarIcon: ({ color }) => (
+              <CircleUser size={iconSize} color={color as string} strokeWidth={2} />
             ),
           }}
         />

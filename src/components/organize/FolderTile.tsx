@@ -89,7 +89,7 @@ export function FolderTile({
         </View>
 
         <View className="max-w-full flex-row items-center justify-center gap-1.5 px-2">
-          {StatusIcon && <StatusIcon size={15} color={titleColor} strokeWidth={2.5} />}
+          {StatusIcon && <StatusIcon size={15} color={titleColor} strokeWidth={2} />}
           <Text
             className="flex-shrink text-center font-sans-semibold text-sm text-theme-foreground"
             style={titleColor ? { color: titleColor } : undefined}

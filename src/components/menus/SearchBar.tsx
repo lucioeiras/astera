@@ -109,7 +109,7 @@ export function SearchBar({
               style={StyleSheet.absoluteFill}
             />
 
-            <Search size={18} color={themeColors.foreground} strokeWidth={2.5} />
+            <Search size={18} color={themeColors.foreground} strokeWidth={2} />
 
             <View className="flex-1 flex-row flex-nowrap items-center gap-2">
               {filters.map((filter) => {
@@ -147,7 +147,7 @@ export function SearchBar({
                     className={`max-w-full flex-row items-center gap-1.5 rounded-full px-3 py-1.5 active:opacity-70 ${status ? '' : isTag ? 'bg-blue-500/15' : isDate ? 'bg-amber-500/15' : 'bg-violet-500/15'}`}
                     style={status ? { backgroundColor: `${status.color}26` } : undefined}
                   >
-                    <Icon size={16} color={iconColor} strokeWidth={2.5} />
+                    <Icon size={16} color={iconColor} strokeWidth={2} />
                     <Text
                       numberOfLines={1}
                       className={`max-w-[180px] font-sans-medium text-base ${isTag ? 'text-theme-blue' : isDate ? 'text-theme-amber' : 'text-theme-purple'}`}
@@ -155,7 +155,7 @@ export function SearchBar({
                     >
                       {filter.label}
                     </Text>
-                    <X size={14} color={iconColor} strokeWidth={2.5} />
+                    <X size={14} color={iconColor} strokeWidth={2} />
                   </Pressable>
                 );
               })}
@@ -181,7 +181,7 @@ export function SearchBar({
                 className="p-1.5 rounded-full bg-theme-border items-center justify-center active:opacity-70"
                 accessibilityLabel={translate('Clear search')}
               >
-                <X size={12} color={themeColors.heading} strokeWidth={2.5} />
+                <X size={12} color={themeColors.heading} strokeWidth={2} />
               </Pressable>
             )}
           </View>

@@ -53,7 +53,7 @@ export default function OrganizeScreen() {
           <Button
             accessibilityLabel={translate('Create folder')}
             variant="secondary"
-            icon={<Plus size={20} color={themeColors.foreground} strokeWidth={2.5} />}
+            icon={<Plus size={20} color={themeColors.foreground} strokeWidth={2} />}
             text={translate('New Folder')}
             disabled={saved?.source !== sourceId}
             onPress={() => setIsCreateOpen(true)}

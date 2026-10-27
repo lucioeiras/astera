@@ -334,42 +334,42 @@ export function NewNoteModal({
     {
       label: 'H1',
       type: 'heading-1',
-      icon: <Heading1 size={20} color={themeColors.foreground} strokeWidth={2.5} />,
+      icon: <Heading1 size={20} color={themeColors.foreground} strokeWidth={2} />,
     },
     {
       label: 'H2',
       type: 'heading-2',
-      icon: <Heading2 size={20} color={themeColors.foreground} strokeWidth={2.5} />,
+      icon: <Heading2 size={20} color={themeColors.foreground} strokeWidth={2} />,
     },
     {
       label: 'H3',
       type: 'heading-3',
-      icon: <Heading3 size={20} color={themeColors.foreground} strokeWidth={2.5} />,
+      icon: <Heading3 size={20} color={themeColors.foreground} strokeWidth={2} />,
     },
     {
       label: 'Text',
       type: 'paragraph',
-      icon: <Pilcrow size={20} color={themeColors.foreground} strokeWidth={2.5} />,
+      icon: <Pilcrow size={20} color={themeColors.foreground} strokeWidth={2} />,
     },
     {
       label: 'Bullet list',
       type: 'bullet',
-      icon: <List size={20} color={themeColors.foreground} strokeWidth={2.5} />,
+      icon: <List size={20} color={themeColors.foreground} strokeWidth={2} />,
     },
     {
       label: 'Numbered list',
       type: 'numbered',
-      icon: <ListOrdered size={20} color={themeColors.foreground} strokeWidth={2.5} />,
+      icon: <ListOrdered size={20} color={themeColors.foreground} strokeWidth={2} />,
     },
     {
       label: 'To-do list',
       type: 'todo',
-      icon: <ListChecks size={20} color={themeColors.foreground} strokeWidth={2.5} />,
+      icon: <ListChecks size={20} color={themeColors.foreground} strokeWidth={2} />,
     },
     {
       label: 'Quote',
       type: 'quote',
-      icon: <Quote size={20} color={themeColors.foreground} strokeWidth={2.5} />,
+      icon: <Quote size={20} color={themeColors.foreground} strokeWidth={2} />,
     },
   ];
 
@@ -546,19 +546,19 @@ export function NewNoteModal({
                   accessibilityLabel={translate('Cancel formatting')}
                   onPress={() => setIsFormattingOpen(false)}
                   disabled={saving}
-                  icon={<ArrowLeft size={20} color={themeColors.foreground} strokeWidth={2.5} />}
+                  icon={<ArrowLeft size={20} color={themeColors.foreground} strokeWidth={2} />}
                 />
                 <Button
                   accessibilityLabel={translate('Bold')}
                   onPress={() => applyFormatting('bold')}
                   disabled={saving}
-                  icon={<Bold size={20} color={themeColors.foreground} strokeWidth={2.5} />}
+                  icon={<Bold size={20} color={themeColors.foreground} strokeWidth={2} />}
                 />
                 <Button
                   accessibilityLabel={translate('Italic')}
                   onPress={() => applyFormatting('italic')}
                   disabled={saving}
-                  icon={<Italic size={20} color={themeColors.foreground} strokeWidth={2.5} />}
+                  icon={<Italic size={20} color={themeColors.foreground} strokeWidth={2} />}
                 />
                 {formattingControls.map(({ label, type, icon }) => (
                   <Button
@@ -576,14 +576,14 @@ export function NewNoteModal({
                   accessibilityLabel={translate('Cancel')}
                   onPress={handleClose}
                   disabled={saving}
-                  icon={<X size={20} color={themeColors.foreground} strokeWidth={2.5} />}
+                  icon={<X size={20} color={themeColors.foreground} strokeWidth={2} />}
                 />
                 {view === 'editor' && !isPreviewingMarkdown && (
                   <Button
                     accessibilityLabel={translate('Open text formatting')}
                     onPress={() => setIsFormattingOpen(true)}
                     disabled={saving}
-                    icon={<Type size={20} color={themeColors.foreground} strokeWidth={2.5} />}
+                    icon={<Type size={20} color={themeColors.foreground} strokeWidth={2} />}
                   />
                 )}
                 {view === 'editor' && (
@@ -595,7 +595,7 @@ export function NewNoteModal({
                       <Music2
                         size={20}
                         color={lyricsSong ? '#3B82F6' : themeColors.foreground}
-                        strokeWidth={2.5}
+                        strokeWidth={2}
                       />
                     }
                   />
@@ -610,9 +610,9 @@ export function NewNoteModal({
                     disabled={saving}
                     icon={
                       isPreviewingMarkdown ? (
-                        <SquarePen size={20} color={themeColors.foreground} strokeWidth={2.5} />
+                        <SquarePen size={20} color={themeColors.foreground} strokeWidth={2} />
                       ) : (
-                        <Eye size={20} color={themeColors.foreground} strokeWidth={2.5} />
+                        <Eye size={20} color={themeColors.foreground} strokeWidth={2} />
                       )
                     }
                   />
@@ -625,7 +625,7 @@ export function NewNoteModal({
                       <Info
                         size={20}
                         color={hasInfo ? '#3B82F6' : themeColors.foreground}
-                        strokeWidth={2.5}
+                        strokeWidth={2}
                       />
                     }
                   />
@@ -633,7 +633,7 @@ export function NewNoteModal({
                   <Button
                     accessibilityLabel={translate('Back to note editor')}
                     onPress={handleSwitchToEditor}
-                    icon={<SquarePen size={20} color={themeColors.foreground} strokeWidth={2.5} />}
+                    icon={<SquarePen size={20} color={themeColors.foreground} strokeWidth={2} />}
                     text={translate('Note')}
                   />
                 )}
@@ -650,7 +650,7 @@ export function NewNoteModal({
                       <Check
                         size={20}
                         color={canSave ? themeColors.inverse : themeColors.muted}
-                        strokeWidth={2.5}
+                        strokeWidth={2}
                       />
                     )
                   }

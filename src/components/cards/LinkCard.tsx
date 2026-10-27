@@ -51,7 +51,7 @@ export const LinkCard = ({ favicon, siteTitle, description, url, title }: LinkCa
       </View>
 
       <View className="flex-row items-center gap-2 mt-2">
-        <LinkIcon size={14} color={themeColors.body} strokeWidth={2.5} />
+        <LinkIcon size={14} color={themeColors.body} strokeWidth={2} />
         <Text className="font-sans-semibold text-sm text-theme-body" numberOfLines={1}>
           {getShortUrl(url)}
         </Text>

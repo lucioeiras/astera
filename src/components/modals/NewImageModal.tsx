@@ -297,7 +297,7 @@ export function NewImageModal({
             {/* Notes section */}
             <View className="flex-1 py-6 px-8 gap-4">
               <View className="flex-row items-center gap-2">
-                <SquarePen size={14} color={themeColors.heading} strokeWidth={2.5} />
+                <SquarePen size={14} color={themeColors.heading} strokeWidth={2} />
                 <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
                   <LocalizedText>Note</LocalizedText>
                 </Text>
@@ -326,7 +326,7 @@ export function NewImageModal({
               accessibilityLabel={translate('Cancel')}
               onPress={handleClose}
               disabled={saving}
-              icon={<X size={20} color={themeColors.foreground} strokeWidth={2.5} />}
+              icon={<X size={20} color={themeColors.foreground} strokeWidth={2} />}
               text={translate('Cancel')}
             />
             <Button
@@ -341,7 +341,7 @@ export function NewImageModal({
                   <Check
                     size={20}
                     color={canSave ? themeColors.inverse : themeColors.muted}
-                    strokeWidth={2.5}
+                    strokeWidth={2}
                   />
                 )
               }

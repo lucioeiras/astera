@@ -18,7 +18,7 @@ export function CardMediaDetails({ item }: { item: LibraryItem }) {
       {item.type === 'movie' && Boolean(item.overview) && (
         <View className="py-6 px-6 border-b border-theme-raised gap-3">
           <View className="flex-row items-center gap-2">
-            <Clapperboard size={14} color={themeColors.heading} strokeWidth={2.5} />
+            <Clapperboard size={14} color={themeColors.heading} strokeWidth={2} />
             <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
               <LocalizedText>Overview</LocalizedText>
             </Text>
@@ -32,7 +32,7 @@ export function CardMediaDetails({ item }: { item: LibraryItem }) {
       {item.type === 'tvshow' && Boolean(item.overview) && (
         <View className="py-6 px-6 border-b border-theme-raised gap-3">
           <View className="flex-row items-center gap-2">
-            <Clapperboard size={14} color={themeColors.heading} strokeWidth={2.5} />
+            <Clapperboard size={14} color={themeColors.heading} strokeWidth={2} />
             <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
               <LocalizedText>Overview</LocalizedText>
             </Text>
@@ -48,7 +48,7 @@ export function CardMediaDetails({ item }: { item: LibraryItem }) {
         <View className="py-6 px-6 border-b border-theme-raised gap-3">
           <View className="flex-row items-center justify-between">
             <View className="flex-row items-center gap-2">
-              <Users size={14} color={themeColors.heading} strokeWidth={2.5} />
+              <Users size={14} color={themeColors.heading} strokeWidth={2} />
               <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
                 <LocalizedText>Cast</LocalizedText>
               </Text>
@@ -112,7 +112,7 @@ export function CardMediaDetails({ item }: { item: LibraryItem }) {
       {item.type === 'game' && (
         <View className="py-6 px-6 border-b border-theme-raised gap-3">
           <View className="flex-row items-center gap-2">
-            <Gamepad2 size={14} color={themeColors.heading} strokeWidth={2.5} />
+            <Gamepad2 size={14} color={themeColors.heading} strokeWidth={2} />
             <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
               <LocalizedText>About</LocalizedText>
             </Text>

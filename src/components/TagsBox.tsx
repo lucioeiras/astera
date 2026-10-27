@@ -282,7 +282,7 @@ export function TagsBox({
     <View onLayout={onLayout} className={baseContainerClass}>
       {/* Header */}
       <View className="flex-row items-center gap-2">
-        <Tag size={14} color={themeColors.heading} strokeWidth={2.5} />
+        <Tag size={14} color={themeColors.heading} strokeWidth={2} />
         <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
           {title ?? `Tags${tags.length > 0 ? ` (${tags.length})` : ''}`}
         </Text>
@@ -309,7 +309,7 @@ export function TagsBox({
             <PriorityTagIcon
               size={14}
               color={priorityTagStyles[priorityTag.tone].icon}
-              strokeWidth={2.5}
+              strokeWidth={2}
             />
             <Text
               className={`font-sans-medium text-base ${priorityTagStyles[priorityTag.tone].text}`}
@@ -333,8 +333,8 @@ export function TagsBox({
               size={12}
               color={themeColors.secondary}
               {...(['youtube', 'tiktok', 'tweet', 'reddit'].includes(cardType)
-                ? { weight: 'bold' as const }
-                : { strokeWidth: 2.5 })}
+                ? { weight: 'regular' as const }
+                : { strokeWidth: 2 })}
             />
             <Text className="font-sans-medium text-base text-theme-body">{cardTypeTag.label}</Text>
           </Pressable>
@@ -368,7 +368,7 @@ export function TagsBox({
                 isFolder ? 'bg-violet-500/15' : isAuto ? 'bg-theme-muted/15' : 'bg-blue-500/15'
               }`}
             >
-              <TagPillIcon size={12} color={tagColor} strokeWidth={2.5} />
+              <TagPillIcon size={12} color={tagColor} strokeWidth={2} />
               <Text
                 className={`font-sans-medium text-base ${isFolder ? 'text-theme-purple' : isAuto ? 'text-theme-body' : 'text-theme-blue'}`}
               >

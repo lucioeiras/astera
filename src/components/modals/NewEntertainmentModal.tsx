@@ -27,27 +27,27 @@ const tabs = (
   {
     id: 'book',
     label: 'Book',
-    icon: <Book size={20} color={themeColors.foreground} strokeWidth={2.5} />,
+    icon: <Book size={20} color={themeColors.foreground} strokeWidth={2} />,
   },
   {
     id: 'music',
     label: 'Music',
-    icon: <Music size={20} color={themeColors.foreground} strokeWidth={2.5} />,
+    icon: <Music size={20} color={themeColors.foreground} strokeWidth={2} />,
   },
   {
     id: 'movie',
     label: 'Film',
-    icon: <Clapperboard size={20} color={themeColors.foreground} strokeWidth={2.5} />,
+    icon: <Clapperboard size={20} color={themeColors.foreground} strokeWidth={2} />,
   },
   {
     id: 'tvshow',
     label: 'TV',
-    icon: <Tv size={20} color={themeColors.foreground} strokeWidth={2.5} />,
+    icon: <Tv size={20} color={themeColors.foreground} strokeWidth={2} />,
   },
   {
     id: 'game',
     label: 'Game',
-    icon: <Gamepad2 size={20} color={themeColors.foreground} strokeWidth={2.5} />,
+    icon: <Gamepad2 size={20} color={themeColors.foreground} strokeWidth={2} />,
   },
 ];
 

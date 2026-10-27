@@ -147,13 +147,13 @@ export function RelatedCardsPicker({
             <View className="flex-row items-center gap-2">
               <Button
                 accessibilityLabel={translate('Cancel related cards')}
-                icon={<X size={24} color={themeColors.foreground} strokeWidth={2.5} />}
+                icon={<X size={24} color={themeColors.foreground} strokeWidth={2} />}
                 disabled={saving}
                 onPress={close}
               />
               <Button
                 accessibilityLabel={translate('Save related cards')}
-                icon={<Check size={24} color={themeColors.foreground} strokeWidth={2.5} />}
+                icon={<Check size={24} color={themeColors.foreground} strokeWidth={2} />}
                 variant="primary"
                 disabled={saving}
                 onPress={() => {

@@ -111,7 +111,7 @@ export function NewFolderModal({ visible, onClose, onCreate }: NewFolderModalPro
                   accessibilityRole="button"
                   accessibilityLabel={translate('Clear folder name')}
                 >
-                  <X size={12} color={themeColors.heading} strokeWidth={2.5} />
+                  <X size={12} color={themeColors.heading} strokeWidth={2} />
                 </Pressable>
               )}
             </View>
@@ -122,7 +122,7 @@ export function NewFolderModal({ visible, onClose, onCreate }: NewFolderModalPro
               accessibilityLabel={translate('Cancel')}
               onPress={handleClose}
               disabled={saving}
-              icon={<X size={20} color={themeColors.foreground} strokeWidth={2.5} />}
+              icon={<X size={20} color={themeColors.foreground} strokeWidth={2} />}
               text={translate('Cancel')}
             />
 
@@ -138,7 +138,7 @@ export function NewFolderModal({ visible, onClose, onCreate }: NewFolderModalPro
                   <Check
                     size={20}
                     color={canSave ? themeColors.inverse : themeColors.muted}
-                    strokeWidth={2.5}
+                    strokeWidth={2}
                   />
                 )
               }

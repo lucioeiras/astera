@@ -47,7 +47,7 @@ it.each([false, true])('renders Lucide tab icons with focused=%s', async (focuse
     const icon = view.getByTestId(name);
     expect(icon.props.size).toBe(28);
     expect(icon.props.color).toBe(mockColor);
-    expect(icon.props.strokeWidth).toBe(focused ? 2.5 : 2);
+    expect(icon.props.strokeWidth).toBe(2);
     expect(icon.props.weight).toBeUndefined();
   }
 });

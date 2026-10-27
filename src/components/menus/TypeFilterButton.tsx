@@ -26,7 +26,7 @@ export function TypeFilterButton({
       <Icon
         size={16}
         color={selected ? themeColors.inverse : themeColors.secondary}
-        {...(Icon === YoutubeLogoIcon ? { weight: 'bold' as const } : { strokeWidth: 2.5 })}
+        {...(Icon === YoutubeLogoIcon ? { weight: 'regular' as const } : { strokeWidth: 2 })}
       />
       <Text
         className={`font-sans-medium text-sm ${selected ? 'text-theme-inverse' : 'text-theme-body'}`}

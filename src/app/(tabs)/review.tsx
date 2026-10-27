@@ -301,7 +301,7 @@ export default function ReviewScreen() {
               <Button
                 accessibilityLabel={translate('Delete card')}
                 variant="secondary"
-                icon={<X size={20} strokeWidth={2.5} />}
+                icon={<X size={20} strokeWidth={2} />}
                 text={translate('Delete')}
                 onPress={() => beginSwipe('delete')}
                 disabled={!currentItem || !!outgoingItem}
@@ -309,7 +309,7 @@ export default function ReviewScreen() {
               <Button
                 accessibilityLabel={translate('Keep card')}
                 variant="secondary"
-                icon={<Check size={20} strokeWidth={2.5} />}
+                icon={<Check size={20} strokeWidth={2} />}
                 text={translate('Keep')}
                 onPress={() => beginSwipe('keep')}
                 disabled={!currentItem || !!outgoingItem}

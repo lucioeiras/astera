@@ -73,8 +73,8 @@ export function BoardTypeFilters({
               <Icon
                 size={20}
                 {...(['youtube', 'tiktok', 'tweet', 'reddit'].includes(type)
-                  ? { weight: 'bold' as const }
-                  : { strokeWidth: 2.5 })}
+                  ? { weight: 'regular' as const }
+                  : { strokeWidth: 2 })}
               />
             }
             size="small"

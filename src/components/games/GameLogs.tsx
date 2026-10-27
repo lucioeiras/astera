@@ -49,7 +49,7 @@ export function GameLogs({
   return (
     <View className="border-b border-theme-raised pt-6 gap-5">
       <View className="flex-row items-center gap-2 px-6">
-        <Gamepad2 size={14} color={themeColors.foreground} strokeWidth={2.5} />
+        <Gamepad2 size={14} color={themeColors.foreground} strokeWidth={2} />
         <Text className="font-sans-semibold text-sm tracking-wider uppercase text-theme-heading">
           <LocalizedText>Play logs</LocalizedText>
         </Text>
