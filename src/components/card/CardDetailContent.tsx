@@ -2,11 +2,10 @@ import { useAppTheme } from '@/lib/theme';
 import { decodeHTML } from 'entities';
 import * as Clipboard from 'expo-clipboard';
 import { File } from 'expo-file-system';
-import * as Linking from 'expo-linking';
 import * as MediaLibrary from 'expo-media-library/legacy';
 import { router } from 'expo-router';
 import * as Sharing from 'expo-sharing';
-import * as WebBrowser from 'expo-web-browser';
+import { openExternalLink } from '@/lib/linkOpening';
 import { Bookmark, SquarePen, Captions, Type, User } from 'lucide-react-native';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
@@ -821,11 +820,9 @@ export function CardDetailContent({
                 : undefined;
     if (!targetUrl) return;
     try {
-      if (await Linking.canOpenURL(targetUrl)) {
-        await WebBrowser.openBrowserAsync(targetUrl);
-      }
+      await openExternalLink(targetUrl);
     } catch {
-      await Linking.openURL(targetUrl);
+      // A failed browser launch is intentionally ignored, as before.
     }
   };
 

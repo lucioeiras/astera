@@ -18,7 +18,7 @@ import {
   View,
 } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
-import * as Linking from 'expo-linking';
+import { openExternalLink } from '@/lib/linkOpening';
 import { File } from 'expo-file-system';
 import NoteEditorDOM, { type NoteEditorDOMHandle } from './NoteEditor.dom';
 import type { NoteRichTextInputHandle, NoteRichTextInputProps } from './NoteRichTextInput.types';
@@ -187,7 +187,7 @@ export const NoteRichTextInput = forwardRef<NoteRichTextInputHandle, NoteRichTex
               : ((await Clipboard.getImageAsync({ format: 'png' }))?.data ?? null)
           }
           onOpenLink={async (url) => {
-            if (externalLink(url)) await Linking.openURL(url).catch(() => undefined);
+            if (externalLink(url)) await openExternalLink(url).catch(() => undefined);
           }}
           onError={async () => {
             if (!readyRef.current) {
@@ -219,7 +219,7 @@ export const NoteRichTextInput = forwardRef<NoteRichTextInputHandle, NoteRichTex
                 return true;
               }
               if (event.url === documentUrl.current) return true;
-              if (externalLink(event.url)) void Linking.openURL(event.url).catch(() => undefined);
+              if (externalLink(event.url)) void openExternalLink(event.url).catch(() => undefined);
               return false;
             },
           }}

@@ -18,6 +18,7 @@ import { ActivityIndicator, Alert, Pressable, ScrollView, Text, View } from 'rea
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AppearanceSettings } from '@/components/AppearanceSettings';
+import { LinkOpeningSettings } from '@/components/LinkOpeningSettings';
 import { Button } from '@/components/Button';
 import { LocalizedText } from '@/components/LocalizedText';
 import { useLibrary } from '@/hooks/useLibrary';
@@ -112,6 +113,7 @@ export default function SettingsScreen() {
         </View>
 
         <AppearanceSettings />
+        <LinkOpeningSettings />
 
         <View className="gap-4 border-b border-theme-raised px-8 pb-6">
           <View className="flex-row items-center gap-2">

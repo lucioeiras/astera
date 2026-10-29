@@ -1,7 +1,7 @@
 import { isNoteImageUri, NOTE_IMAGE_PATTERN } from '@/lib/noteImages';
 import { NOTE_BODY_TYPOGRAPHY, NOTE_HEADING_TYPOGRAPHY } from '@/lib/noteTypography';
 import { useAppTheme, type ThemeColors } from '@/lib/theme';
-import * as Linking from 'expo-linking';
+import { openExternalLink } from '@/lib/linkOpening';
 import { Check } from 'lucide-react-native';
 import { useMemo } from 'react';
 import { Pressable, Text, View } from 'react-native';
@@ -38,7 +38,7 @@ function renderInline(value: string, themeColors: ThemeColors) {
       <Text
         key={index}
         accessibilityRole={link ? 'link' : undefined}
-        onPress={link ? () => void Linking.openURL(link[2]).catch(() => undefined) : undefined}
+        onPress={link ? () => void openExternalLink(link[2]).catch(() => undefined) : undefined}
         style={[
           link
             ? {
