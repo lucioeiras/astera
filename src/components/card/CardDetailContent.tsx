@@ -3,7 +3,7 @@ import { decodeHTML } from 'entities';
 import * as Clipboard from 'expo-clipboard';
 import { File } from 'expo-file-system';
 import * as Linking from 'expo-linking';
-import * as MediaLibrary from 'expo-media-library';
+import * as MediaLibrary from 'expo-media-library/legacy';
 import { router } from 'expo-router';
 import * as Sharing from 'expo-sharing';
 import * as WebBrowser from 'expo-web-browser';

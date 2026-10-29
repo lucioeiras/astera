@@ -1,0 +1,239 @@
+html,
+body,
+#root {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+* {
+  box-sizing: border-box;
+}
+.astera-note-editor {
+  height: 100%;
+  width: 100%;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  background: var(--note-background);
+  color: var(--note-foreground);
+  font:
+    var(--note-body-size)/var(--note-body-height) InstrumentSans,
+    sans-serif;
+  --crepe-base-font-size: var(--note-body-size);
+  --crepe-color-background: var(--note-background);
+  --crepe-color-on-background: var(--note-foreground);
+  --crepe-color-surface: var(--note-background);
+  --crepe-color-on-surface: var(--note-foreground);
+  --crepe-color-outline: var(--note-border);
+  --crepe-color-primary: var(--note-link);
+  --crepe-color-selected: color-mix(in srgb, var(--note-link), transparent 70%);
+  --crepe-color-inline-area: var(--note-border);
+  --crepe-color-inline-code: var(--note-foreground);
+  --crepe-font-code: monospace;
+  --crepe-font-default: InstrumentSans, sans-serif;
+  --crepe-font-title: InstrumentSans, sans-serif;
+  scroll-padding: 64px 0 160px;
+}
+.astera-note-editor .milkdown {
+  background: transparent;
+  color: inherit;
+  font: inherit;
+}
+.astera-note-editor .milkdown .ProseMirror {
+  padding: 56px 32px 160px;
+  min-height: 100dvh;
+  outline: none;
+  font: inherit;
+  color: inherit;
+  overflow-wrap: anywhere;
+}
+.astera-note-editor .milkdown .ProseMirror p {
+  margin: 0 0 16px;
+  padding: 0;
+  font: inherit;
+}
+.astera-note-editor .milkdown .ProseMirror h1 {
+  font-size: var(--note-h1-size);
+  line-height: var(--note-h1-height);
+  font-weight: var(--note-h1-weight);
+}
+.astera-note-editor .milkdown .ProseMirror h2 {
+  font-size: var(--note-h2-size);
+  line-height: var(--note-h2-height);
+  font-weight: var(--note-h2-weight);
+}
+.astera-note-editor .milkdown .ProseMirror h3 {
+  font-size: var(--note-h3-size);
+  line-height: var(--note-h3-height);
+  font-weight: var(--note-h3-weight);
+}
+.astera-note-editor .milkdown .ProseMirror h4 {
+  font-size: var(--note-h4-size);
+  line-height: var(--note-h4-height);
+  font-weight: var(--note-h4-weight);
+}
+.astera-note-editor .milkdown .ProseMirror h5 {
+  font-size: var(--note-h5-size);
+  line-height: var(--note-h5-height);
+  font-weight: var(--note-h5-weight);
+}
+.astera-note-editor .milkdown .ProseMirror h6 {
+  font-size: var(--note-h6-size);
+  line-height: var(--note-h6-height);
+  font-weight: var(--note-h6-weight);
+}
+.astera-note-editor .milkdown .ProseMirror :is(h1, h2, h3, h4, h5, h6) {
+  margin: 0 0 16px;
+  font-family: inherit;
+  padding: 0;
+}
+.astera-note-editor :is(a) {
+  color: var(--note-secondary);
+  text-decoration: underline;
+}
+.astera-note-editor .milkdown .ProseMirror blockquote {
+  border-left: 2px solid var(--note-border);
+  padding: 0 0 0 12px;
+  margin: 0 0 16px;
+  color: var(--note-secondary);
+  box-sizing: border-box;
+}
+.astera-note-editor .milkdown .ProseMirror pre {
+  white-space: pre-wrap;
+  padding: 12px;
+  border: 1px solid var(--note-border);
+  border-radius: 8px;
+}
+.astera-note-editor img {
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+  border-radius: 12px;
+}
+.astera-note-editor .milkdown-image-inline {
+  display: inline-block;
+  max-width: 100%;
+}
+.astera-note-editor .milkdown-image-inline :is(.image-edit, .image-edit-button, .image-confirm) {
+  display: none;
+}
+.astera-note-editor [data-type='html'] {
+  white-space: pre-wrap;
+  color: var(--note-muted);
+  border: 1px solid var(--note-border);
+  border-radius: 4px;
+}
+.astera-note-editor .milkdown .ProseMirror :is(ul, ol) {
+  margin: 0 0 16px;
+  padding: 0;
+  list-style: none;
+}
+/* Crepe already supplies a marker column. Do not add browser list indentation. */
+.astera-note-editor .milkdown .ProseMirror .list-item {
+  gap: 0;
+  padding: 0 0 0 20px;
+}
+.astera-note-editor .milkdown .ProseMirror .milkdown-list-item-block + .milkdown-list-item-block {
+  margin-top: 0;
+}
+.astera-note-editor .milkdown .ProseMirror .list-item > .children > .content-dom > p {
+  margin: 0;
+  padding: 0;
+}
+.astera-note-editor .milkdown .ProseMirror .list-item > .children > .content-dom > p + p {
+  margin-top: 16px;
+}
+.astera-note-editor .milkdown .ProseMirror .list-item :is(ul, ol) {
+  margin: 4px 0 0;
+}
+.astera-note-editor .milkdown .ProseMirror .label-wrapper {
+  flex: 0 0 auto;
+  width: auto;
+  min-width: 16px;
+  height: var(--note-body-height);
+  color: var(--note-foreground);
+  justify-content: flex-start;
+}
+.astera-note-editor .milkdown .ProseMirror .label-wrapper .label {
+  width: auto;
+  height: auto;
+  padding: 0;
+  font: inherit;
+  text-align: left;
+}
+.astera-note-editor .milkdown .ProseMirror .label-wrapper .ordered {
+  padding-right: 4px;
+}
+.astera-note-editor
+  .milkdown
+  .ProseMirror
+  .list-item:has(> .label-wrapper > :is(.checked, .unchecked)) {
+  align-items: flex-start;
+  gap: 12px;
+  padding: 4px 0;
+  color: var(--note-strong);
+}
+.astera-note-editor .milkdown .ProseMirror .label-wrapper:has(> :is(.checked, .unchecked)) {
+  width: 24px;
+  min-width: 24px;
+  align-items: flex-start;
+  margin-top: 4px;
+  color: var(--note-muted);
+}
+.astera-note-editor .milkdown .ProseMirror .label-wrapper:has(> .checked) {
+  color: var(--note-strong);
+}
+.astera-note-editor .milkdown .ProseMirror .label-wrapper svg {
+  display: block;
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: currentColor;
+}
+.astera-note-editor .milkdown .ProseMirror .checked .note-task-box {
+  fill: currentColor;
+}
+.astera-note-editor .milkdown .ProseMirror .note-task-tick {
+  stroke: var(--note-inverse);
+}
+.astera-note-editor
+  .milkdown
+  .ProseMirror
+  .list-item:has(> .label-wrapper > .checked)
+  > .children
+  > p {
+  color: var(--note-secondary);
+  text-decoration: line-through;
+}
+.astera-note-editor .milkdown .ProseMirror :is(h1, h2) {
+  color: var(--note-strong);
+}
+.astera-note-editor .milkdown .ProseMirror :is(h3, h4) {
+  color: var(--note-bright);
+}
+.astera-note-editor .crepe-placeholder::before {
+  color: var(--note-muted) !important;
+}
+.astera-note-editor table {
+  border-collapse: collapse;
+  max-width: 100%;
+}
+.astera-note-editor :is(td, th) {
+  border: 1px solid var(--note-border);
+  padding: 4px 8px;
+}
+.note-editor-status {
+  position: absolute;
+  padding: 56px 32px;
+  color: var(--note-muted);
+}
+
+.astera-note-editor .milkdown .ProseMirror blockquote::before {
+  display: none;
+}
+.astera-note-editor .milkdown .ProseMirror [data-opaque-markdown] {
+  white-space: pre-wrap;
+  color: var(--note-muted);
+}

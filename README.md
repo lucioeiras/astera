@@ -13,6 +13,7 @@ O aplicativo é desenvolvido com Expo, React Native, TypeScript e Expo Router. A
 - **Acompanhamento e avaliações:** progresso de leitura, filmes, temporadas de séries e jogos; avaliações e comentários; registro de páginas lidas em livros e diário de jogos com data e notas opcionais, permitindo várias entradas por dia.
 - **Metadados:** leitura de metadados de links, consulta de livros por ISBN, busca de música no iTunes, letras via LRCLIB, filmes via TMDB e jogos via RAWG.
 - **Conteúdo relacionado:** vincule itens da biblioteca entre si.
+- **Notas visuais:** o editor Milkdown/Crepe mostra formatação e imagens enquanto você escreve, sem alternar entre código e prévia. Inserir imagem fica nas opções de formatação; imagens da área de transferência usam o comando Colar do dispositivo ou Ctrl/Cmd+V no navegador. No iOS e Android, os anexos ficam em `images/`, com referências relativas no Markdown. Na web, os dados são incorporados ao texto. Os cards do board continuam usando renderização nativa. A persistência web mantém as limitações do armazenamento atual do app.
 - **Arquivos:** importe imagens e PDFs, visualize PDFs e compartilhe itens usando as opções do sistema.
 - **Compartilhamento para o app:** receba texto, links, imagens e PDFs de outros apps e transforme-os em cartões.
 - **IA no dispositivo:** baixe modelos locais para gerar tags de notas e links ou transcrever áudios. Após o download, esses recursos podem funcionar offline.
@@ -69,7 +70,13 @@ bun run web
 
 `bun run ios` e `bun run android` usam `expo run:*` e requerem as ferramentas nativas da plataforma. Os diretórios `ios/` e `android/` são gerados pelo Expo e não devem ser editados manualmente.
 
-A biblioteca `react-native-enriched-markdown` tem um patch em `patches/`, aplicado pelo Bun, que encaminha os estilos de texto ao editor nativo e corrige a resolução de fontes Expo e a altura das linhas no iOS, incluindo o placeholder. Mudanças nesse patch exigem recompilar a development build; recarregar o JavaScript não atualiza a implementação nativa.
+As notas usam `@milkdown/crepe` e `@milkdown/kit` na mesma versão. `NoteEditor.dom.tsx` é um componente Expo DOM: WebView nativa no iOS/Android, DOM na web. JavaScript, CSS e fontes locais são empacotados pelo Expo; não há CDN nem projeto web separado. A development build precisa ser recompilada após a remoção do editor nativo antigo para atualizar o autolinking.
+
+Os comandos de `NoteRichTextInput` usam uma ponte com confirmação assíncrona. Salvar consulta o documento atual e aguarda importações; erros mantêm o formulário aberto. A seleção do ProseMirror acompanha edições durante a importação de imagens. `proxyDomURL` resolve anexos locais apenas para exibição, preservando seus caminhos no Markdown. A área de transferência só é consultada após um evento explícito de colagem. O último texto sincronizado restaura a sessão se a WebView recarregar; isso não salva o card automaticamente nem recupera o formulário após encerrar o app.
+
+Abrir uma nota não altera sua sintaxe. Depois de editar, CommonMark/GFM pode normalizar marcadores e espaçamento, preservando a estrutura. HTML e fragmentos de AST não suportados são mantidos como conteúdo literal, sem executar HTML. Títulos, tags, vínculos, citações e letras continuam usando o esquema existente.
+
+`bun run test:note-editor` exercita o motor real com ProseMirror e fixtures de compatibilidade; os testes Jest cobrem a ponte, o modal, armazenamento e os cards. O fluxo `.maestro/flows/note-visual-editor.yaml` cobre criação, formatação, salvamento e reabertura. A colagem pelo menu nativo foi verificada no simulador iOS; Android e inicialização offline em Release ainda exigem validação. Mocks e jsdom não substituem essa etapa. Consulte [o registro da migração](docs/note-editor-validation.md) para os resultados e limitações desta implementação.
 
 ### Assinatura para iPhone físico
 

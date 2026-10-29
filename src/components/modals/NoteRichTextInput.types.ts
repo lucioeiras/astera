@@ -1,22 +1,24 @@
-import type { NoteLineType, TextSelection } from '@/lib/noteFormatting';
+import type { NoteLineType } from '@/lib/noteFormatting';
+import type { PickedImageAsset } from '@/lib/library/storage';
 
 export type NoteFormattingAction = 'bold' | 'italic' | NoteLineType;
 
-export type NoteCaretRect = { y: number; height: number };
-
 export type NoteRichTextInputHandle = {
-  focus: () => void;
+  focus: (start?: boolean) => Promise<void>;
+  blur: () => Promise<void>;
   getMarkdown: () => Promise<string>;
-  setSelection: (start: number, end: number) => void;
-  setMarkdown: (markdown: string) => void;
-  format: (action: NoteFormattingAction, selection?: TextSelection) => void;
+  setMarkdown: (markdown: string) => Promise<void>;
+  captureSelection: () => Promise<void>;
+  insertImage: (uri: string) => Promise<void>;
+  format: (action: NoteFormattingAction) => Promise<void>;
 };
 
 export type NoteRichTextInputProps = {
   value: string;
   onChangeMarkdown: (markdown: string) => void;
-  onSelectionChange?: (selection: TextSelection) => void;
-  onCaretRectChange?: (rect: NoteCaretRect) => void;
+  onImportImage: (asset: PickedImageAsset) => Promise<string>;
   placeholder: string;
   placeholderTextColor: string;
+  onReady?: () => void;
+  onError?: () => void;
 };

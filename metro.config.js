@@ -10,7 +10,8 @@ config.transformer = {
 };
 config.resolver = {
   ...resolver,
-  assetExts: resolver.assetExts.filter((ext) => ext !== 'svg'),
+  // SQLite's web worker imports a bundled WASM asset.
+  assetExts: [...resolver.assetExts.filter((ext) => ext !== 'svg'), 'wasm'],
   sourceExts: [...resolver.sourceExts, 'svg'],
 };
 

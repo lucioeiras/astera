@@ -8,12 +8,15 @@
     "@config-plugins/react-native-pdf": "^14.0.2",
     "@expo-google-fonts/instrument-sans": "^0.4.2",
     "@expo-google-fonts/instrument-serif": "^0.4.1",
+    "@milkdown/crepe": "7.23.0",
+    "@milkdown/kit": "7.23.0",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-native-masked-view/masked-view": "0.3.2",
     "@shopify/flash-list": "2.0.2",
     "buffer": "^6.0.3",
     "entities": "^4.5.0",
     "expo": "~57.0.27",
+    "expo-asset": "~57.0.19",
     "expo-audio": "~57.0.5",
     "expo-blur": "~57.0.3",
     "expo-build-properties": "~57.0.22",
@@ -42,7 +45,6 @@
     "react-dom": "19.2.3",
     "react-native": "0.86.3",
     "react-native-blob-util": "^0.25.1",
-    "react-native-enriched-markdown": "^1.1.1",
     "react-native-gesture-handler": "~2.32.0",
     "react-native-pdf": "^7.0.5",
     "react-native-reanimated": "4.5.1",
@@ -70,7 +72,8 @@
     "jest-expo": "~57.0.5",
     "prettier": "^3.9.9",
     "react-native-svg-transformer": "^1.5.3",
-    "typescript": "~6.0.3"
+    "typescript": "~6.0.3",
+    "jsdom": "^26.1.0"
   },
   "scripts": {
     "start": "expo start",
@@ -83,7 +86,8 @@
     "test:coverage": "jest --coverage",
     "test:e2e": "maestro test .maestro/flows",
     "format": "prettier --write .",
-    "prepare": "husky"
+    "prepare": "husky",
+    "test:note-editor": "bun src/tests/lib/noteEditor/engine.check.mjs"
   },
   "private": true,
   "jest": {
@@ -111,15 +115,6 @@
     ]
   },
   "trustedDependencies": [
-    "llama.rn",
-    "react-native-enriched-markdown"
-  ],
-  "enriched-markdown": {
-    "enableCodeHighlight": false,
-    "enableMath": false,
-    "enableVideo": false
-  },
-  "patchedDependencies": {
-    "react-native-enriched-markdown@1.1.1": "patches/react-native-enriched-markdown@1.1.1.patch"
-  }
+    "llama.rn"
+  ]
 }

@@ -1,8 +1,10 @@
+import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 
 import { getDistinctTags, searchCachedItems, type ItemIndexFilter } from '@/lib/library/cache';
 import { getPinnedItems, MAX_PINNED_ITEMS } from '@/lib/library/pinned';
+import { LibraryAssetContext } from '@/lib/library/assetContext';
 import {
   addBookItemToLibrary,
   addGameItemToLibrary,
@@ -795,7 +797,15 @@ export function LibraryProvider({ children }: { children: React.ReactNode }) {
     consumeAutoOpen,
   };
 
-  return <LibraryContext.Provider value={value}>{children}</LibraryContext.Provider>;
+  return (
+    <LibraryContext.Provider value={value}>
+      <LibraryAssetContext.Provider
+        value={Platform.OS === 'web' ? null : getLibraryDirectory(activeSource).uri}
+      >
+        {children}
+      </LibraryAssetContext.Provider>
+    </LibraryContext.Provider>
+  );
 }
 
 export function useLibrary(): LibraryContextValue {

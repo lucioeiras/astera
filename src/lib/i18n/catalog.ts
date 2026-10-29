@@ -1,4 +1,12 @@
 const portugueseCatalog = {
+  'Retry editor': 'Tentar carregar o editor novamente',
+  'Editor operation failed. Please try again.':
+    'Não foi possível concluir a operação no editor. Tente novamente.',
+  'Could not save note. Please try again.': 'Não foi possível salvar a nota. Tente novamente.',
+  'Insert image': 'Inserir imagem',
+  'Image unavailable': 'Imagem indisponível',
+  'Could not insert image. Please try again.':
+    'Não foi possível inserir a imagem. Tente novamente.',
   All: 'Todos',
   'Log play': 'Registrar sessão de jogo',
   'Play logs': 'Registros de sessão de jogo',

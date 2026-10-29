@@ -1,0 +1,28 @@
+appId: ${APP_ID}
+name: Visual note formatting and reopening
+---
+- launchApp:
+    clearState: true
+- tapOn: 'Add new item'
+- tapOn: 'A thought to remember'
+# The keyboard must open without touching the document.
+- extendedWaitUntil:
+    visible: 'Hide keyboard'
+    timeout: 30000
+- inputText: 'E2E visual note'
+- tapOn: 'Open text formatting'
+- tapOn: 'Change line to H1'
+- assertVisible: 'E2E visual note'
+- tapOn: 'Cancel formatting'
+- tapOn: 'Save note'
+- assertVisible: 'E2E visual note'
+- tapOn: 'E2E visual note'
+- tapOn: 'Edit note'
+- extendedWaitUntil:
+    visible: 'Hide keyboard'
+    timeout: 30000
+- assertVisible: 'E2E visual note'
+- tapOn: 'Save note'
+- stopApp
+- launchApp
+- assertVisible: 'E2E visual note'

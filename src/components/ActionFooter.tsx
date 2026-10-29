@@ -11,6 +11,7 @@ type ActionFooterProps = {
   overlay?: boolean;
   horizontalScroll?: boolean;
   buttonSize?: 'default' | 'small';
+  onDismissKeyboard?: () => void;
 };
 
 /** Floating, transparent action row shared by card details and modal forms. */
@@ -20,6 +21,7 @@ export function ActionFooter({
   overlay = false,
   horizontalScroll = false,
   buttonSize = 'default',
+  onDismissKeyboard,
 }: ActionFooterProps) {
   const [keyboardVisible, setKeyboardVisible] = useState(false);
 
@@ -41,7 +43,7 @@ export function ActionFooter({
   const dismissKeyboardButton = keyboardVisible ? (
     <Button
       accessibilityLabel={translate('Hide keyboard')}
-      onPress={() => Keyboard.dismiss()}
+      onPress={onDismissKeyboard ?? (() => Keyboard.dismiss())}
       icon={<KeyboardOff size={24} />}
     />
   ) : null;
