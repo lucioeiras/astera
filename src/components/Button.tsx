@@ -111,7 +111,7 @@ export function Button({
                 bottom: 0,
                 left: 0,
                 borderRadius: 999,
-                backgroundColor: themeColors.canvas + '1a',
+                backgroundColor: themeColors.canvas + '33',
               }}
             />
           </>

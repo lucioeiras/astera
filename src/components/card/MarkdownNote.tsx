@@ -159,8 +159,12 @@ export function MarkdownNote({
                 lineHeight: compact
                   ? heading
                     ? Math.max(20, (headingStyle?.lineHeight ?? 32) - 10)
-                    : 26
-                  : (headingStyle?.lineHeight ?? NOTE_BODY_TYPOGRAPHY.lineHeight),
+                    : list
+                      ? 24
+                      : 26
+                  : list
+                    ? (headingStyle?.lineHeight ?? NOTE_BODY_TYPOGRAPHY.lineHeight) - 4
+                    : (headingStyle?.lineHeight ?? NOTE_BODY_TYPOGRAPHY.lineHeight),
                 fontFamily: headingStyle?.fontFamily ?? NOTE_BODY_TYPOGRAPHY.fontFamily,
                 color: quote ? themeColors.secondary : (headingStyle?.color ?? themeColors.heading),
               };
@@ -216,7 +220,7 @@ export function MarkdownNote({
                         style={{
                           width: compact ? 20 : 24,
                           height: compact ? 20 : 24,
-                          marginTop: compact ? 3 : 4,
+                          marginTop: 2,
                         }}
                       >
                         {checkbox}
@@ -227,7 +231,7 @@ export function MarkdownNote({
                         style={{
                           width: compact ? 20 : 24,
                           height: compact ? 20 : 24,
-                          marginTop: compact ? 3 : 4,
+                          marginTop: 2,
                         }}
                       >
                         {checkbox}

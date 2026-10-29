@@ -46,7 +46,17 @@ export default function ReviewScreen() {
   const insets = useSafeAreaInsets();
   const { width: windowWidth } = useWindowDimensions();
   const sourceId = getSourceId(source);
-  const items = useMemo(() => (state.status === 'ready' ? state.result.items : []), [state]);
+  const items = useMemo(
+    () =>
+      state.status === 'ready'
+        ? state.result.items.filter(
+            (item) =>
+              !('progressStatus' in item) ||
+              (item.progressStatus !== 'in-progress' && item.progressStatus !== 'completed')
+          )
+        : [],
+    [state]
+  );
   const availableIds = useMemo(() => new Set(items.map((item) => item.id)), [items]);
   const [reviewQueue, setReviewQueue] = useState<ReviewQueueState | null>(null);
   const [restoreBackup, setRestoreBackup] = useState<DeletedItemBackup[] | null>(null);
@@ -59,7 +69,7 @@ export default function ReviewScreen() {
 
   if (state.status === 'ready') {
     if (!reviewQueue || reviewQueue.sourceId !== sourceId) {
-      setReviewQueue({ sourceId, ids: createReviewQueue(state.result.items) });
+      setReviewQueue({ sourceId, ids: createReviewQueue(items) });
     } else if (reviewQueue.ids.some((id) => !availableIds.has(id))) {
       setReviewQueue({
         ...reviewQueue,
@@ -531,9 +541,5 @@ const BoardBackdrop = memo(
       </View>
     );
   },
-  (previous, next) =>
-    previous.sourceId === next.sourceId &&
-    previous.items.length > 0 &&
-    next.items.length > 0 &&
-    next.items.length <= previous.items.length
+  (previous, next) => previous.sourceId === next.sourceId && previous.items === next.items
 );

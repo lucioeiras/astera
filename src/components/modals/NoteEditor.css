@@ -141,6 +141,7 @@ body,
 .astera-note-editor .milkdown .ProseMirror .list-item > .children > .content-dom > p {
   margin: 0;
   padding: 0;
+  line-height: calc(var(--note-body-height) - 4px);
 }
 .astera-note-editor .milkdown .ProseMirror .list-item > .children > .content-dom > p + p {
   margin-top: 16px;
@@ -179,7 +180,7 @@ body,
   width: 24px;
   min-width: 24px;
   align-items: flex-start;
-  margin-top: 4px;
+  margin-top: 2px;
   color: var(--note-muted);
 }
 .astera-note-editor .milkdown .ProseMirror .label-wrapper:has(> .checked) {
