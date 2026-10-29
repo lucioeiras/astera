@@ -48,4 +48,19 @@ describe('CardSelectionBar', () => {
     expect(handlers.onTogglePin).toHaveBeenCalledTimes(1);
     expect(handlers.onDelete).toHaveBeenCalledTimes(1);
   });
+
+  it('offers archive and restore actions when supplied', async () => {
+    const onToggleArchive = jest.fn();
+    const { getByLabelText } = await render(
+      <CardSelectionBar
+        visible
+        selectedCount={2}
+        archiveActionLabel="Archive selected cards"
+        onToggleArchive={onToggleArchive}
+        {...callbacks()}
+      />
+    );
+    await fireEvent.press(getByLabelText('Archive selected cards'));
+    expect(onToggleArchive).toHaveBeenCalledTimes(1);
+  });
 });

@@ -1,6 +1,7 @@
 import { openDatabaseSync, type SQLiteDatabase } from 'expo-sqlite';
 import { parseItem } from './parse';
 import type { LibraryItem, LibraryItemType } from './types';
+import { ARCHIVED_TAG } from './archive';
 
 /**
  * Metadata stored in SQLite cache for fast retrieval, tag aggregation,
@@ -310,14 +311,16 @@ export function clearSourceCache(sourceId: string): void {
  */
 export function getDistinctTags(sourceId: string): { tag: string; count: number }[] {
   const db = getCacheDatabase();
-  return db.getAllSync<{ tag: string; count: number }>(
-    `SELECT tag, COUNT(*) as count 
+  return db
+    .getAllSync<{ tag: string; count: number }>(
+      `SELECT tag, COUNT(*) as count
      FROM item_tags 
      WHERE source_id = ? 
      GROUP BY tag 
      ORDER BY count DESC, tag ASC`,
-    [sourceId]
-  );
+      [sourceId]
+    )
+    .filter((row) => row.tag !== ARCHIVED_TAG);
 }
 
 /**

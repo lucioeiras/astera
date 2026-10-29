@@ -47,6 +47,26 @@ const portugueseCatalog = {
   'Open activity card %{title}': 'Abrir cartão de atividade %{title}',
 
   Appearance: 'Aparência',
+  Archived: 'Arquivados',
+  'Archived cards': 'Cartões arquivados',
+  'Archived card retention': 'Prazo de retenção dos cartões arquivados',
+  'Choose when archived cards are automatically deleted.':
+    'Escolha quando os cartões arquivados serão excluídos automaticamente.',
+  Never: 'Nunca',
+  'Show archived cards': 'Mostrar cartões arquivados',
+  'Archive selected cards': 'Arquivar cartões selecionados',
+  'Unarchive selected cards': 'Desarquivar cartões selecionados',
+  'Archived cards are not deleted automatically.':
+    'Os cartões arquivados não são excluídos automaticamente.',
+  'Archived cards are deleted after %{count} days.':
+    'Os cartões arquivados serão excluídos após %{count} dias.',
+  Done: 'Concluído',
+  'Would you like to archive this card?': 'Deseja mover este cartão para os arquivados?',
+  'Keep on board': 'Manter no board',
+  'Archive card': 'Arquivar cartão',
+  'No cards with status %{status}': 'Nenhum cartão com status %{status}',
+  'Could not save archived card retention':
+    'Não foi possível salvar o prazo de retenção dos cartões arquivados.',
   Light: 'Claro',
   Dark: 'Escuro',
   'Select app appearance': 'Selecionar aparência do aplicativo',

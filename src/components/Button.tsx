@@ -26,6 +26,9 @@ type ButtonProps = {
   shadowOpacity?: number;
   accessibilityRole?: 'button' | 'tab';
   selected?: boolean;
+  iconSize?: number;
+  textWeight?: 'medium' | 'semibold';
+  compact?: boolean;
 };
 
 /** Rounded floating action with optional icon and text. */
@@ -43,6 +46,9 @@ export function Button({
   shadowOpacity = 0,
   accessibilityRole = 'button',
   selected,
+  iconSize,
+  textWeight = 'semibold',
+  compact = false,
 }: ButtonProps) {
   const { colors: themeColors, isDark } = useAppTheme();
   const inheritedSize = useContext(ButtonSizeContext);
@@ -53,7 +59,7 @@ export function Button({
   const normalizedIcon =
     iconElement && 'size' in iconElement.props
       ? cloneElement(iconElement as ReactElement<{ size?: number; color?: string }>, {
-          size: isSmall ? 20 : 24,
+          size: iconSize ?? (isSmall ? 20 : 24),
           color: foreground,
         })
       : icon;
@@ -75,7 +81,7 @@ export function Button({
       <Pressable
         onPress={onPress}
         disabled={disabled}
-        className={`flex-row items-center justify-center overflow-hidden rounded-full active:opacity-80 disabled:opacity-50 ${isSmall ? 'gap-2' : 'gap-3'} ${text ? (isSmall ? 'px-4 py-2' : 'px-6 py-3') : isSmall ? 'p-3' : 'p-4'} ${variant === 'secondary' && 'border border-theme-raised'}`}
+        className={`flex-row items-center justify-center overflow-hidden rounded-full active:opacity-80 disabled:opacity-50 ${isSmall ? (compact ? 'gap-1.5' : 'gap-2') : 'gap-3'} ${text ? (isSmall ? (compact ? 'px-3 py-2' : 'px-4 py-3') : 'px-6 py-4') : isSmall ? 'p-3' : 'p-4'} ${variant === 'secondary' && 'border border-theme-raised'}`}
         style={
           variant === 'primary'
             ? { backgroundColor: backgroundColor ?? themeColors.foreground }
@@ -121,7 +127,7 @@ export function Button({
           <Text
             numberOfLines={1}
             style={{ color: foreground }}
-            className={`font-sans-semibold ${isSmall ? 'text-sm' : 'text-lg'}`}
+            className={`font-sans-${textWeight} ${isSmall ? 'text-sm' : 'text-lg'}`}
           >
             {text}
           </Text>

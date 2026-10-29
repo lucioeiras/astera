@@ -36,6 +36,8 @@ type BaseItem = {
   relatedItemIds?: string[];
   /** ISO-8601 timestamp set when this card is pinned to the board. */
   pinnedAt?: string;
+  /** ISO timestamp set when the card was archived. */
+  archivedAt?: string;
   note?: string;
 };
 

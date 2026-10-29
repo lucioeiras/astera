@@ -37,6 +37,7 @@ import { TagsBox } from '@/components/TagsBox';
 import { useLibrary } from '@/hooks/useLibrary';
 import { transcribeAudio } from '@/lib/ai/transcribeAudio';
 import { isLinkableItem } from '@/lib/library/links';
+import { archiveUpdates, shouldAskToArchiveAfterCompletion } from '@/lib/library/archive';
 import { getRelatedItems } from '@/lib/library/related';
 import { getLibraryFolders, getSourceId } from '@/lib/library/storage';
 import {
@@ -493,17 +494,37 @@ export function CardDetailContent({
     }
   };
 
-  const handleProgressStatusPress = async () => {
-    if (!isTrackableItem(item)) return;
-
-    const nextStatus = getNextProgressStatus(item.type, progressStatus);
+  const saveProgressStatus = async (nextStatus: MediaProgressStatus, archive: boolean) => {
     setProgressStatus(nextStatus);
     try {
-      await updateItem(item.id, { progressStatus: nextStatus });
+      await updateItem(item.id, {
+        progressStatus: nextStatus,
+        ...(archive ? archiveUpdates(item, new Date().toISOString()) : {}),
+      });
     } catch (e) {
       setProgressStatus(progressStatus);
       console.warn('Failed to update progress status', e);
     }
+  };
+
+  const handleProgressStatusPress = () => {
+    if (!isTrackableItem(item)) return;
+
+    const nextStatus = getNextProgressStatus(item.type, progressStatus);
+    if (shouldAskToArchiveAfterCompletion(nextStatus, Boolean(item.archivedAt))) {
+      Alert.alert(translate('Completed'), translate('Would you like to archive this card?'), [
+        {
+          text: translate('Keep on board'),
+          onPress: () => void saveProgressStatus(nextStatus, false),
+        },
+        {
+          text: translate('Archive card'),
+          onPress: () => void saveProgressStatus(nextStatus, true),
+        },
+      ]);
+      return;
+    }
+    void saveProgressStatus(nextStatus, false);
   };
 
   const handleSaveGameLog = async (date: string, note: string, existingLog?: GamePlayLog) => {

@@ -8,6 +8,7 @@ import {
 } from './types';
 import { parseAudioWaveform } from './audioWaveform';
 import { normalizeRelatedIds } from './related';
+import { ARCHIVED_TAG } from './archive';
 
 /**
  * Lightweight runtime validation for item JSON. Files on disk can be edited by
@@ -71,6 +72,17 @@ export function parseItem(raw: unknown): LibraryItem {
   }
   if (typeof item.pinnedAt !== 'string' || !validDate(item.pinnedAt)) {
     delete item.pinnedAt;
+  }
+  if (typeof item.archivedAt !== 'string' || !validDate(item.archivedAt)) {
+    delete item.archivedAt;
+    if (Array.isArray(item.tags)) {
+      const tags = item.tags.filter((tag) => tag !== ARCHIVED_TAG);
+      if (tags.length) item.tags = tags;
+      else delete item.tags;
+    }
+  } else {
+    const tags = Array.isArray(item.tags) ? item.tags.filter((tag) => tag !== ARCHIVED_TAG) : [];
+    item.tags = [...tags, ARCHIVED_TAG];
   }
   if (item.type === 'note' || item.type === 'quote') {
     if (typeof item.linkedItemId !== 'string' || !item.linkedItemId) {

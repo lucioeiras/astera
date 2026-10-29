@@ -1,4 +1,5 @@
 import { useAppTheme } from '@/lib/theme';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FlashList, type FlashListRef, type ListRenderItemInfo } from '@shopify/flash-list';
 import { BlurTargetView } from 'expo-blur';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
@@ -43,6 +44,13 @@ import { parseAudioWaveform } from '@/lib/library/audioWaveform';
 import { isLinkableItem, type LinkableItem } from '@/lib/library/links';
 import { matchesStatus, STATUS_FOLDERS } from '@/lib/library/organize';
 import { getPinnedItems, MAX_PINNED_ITEMS, movePinnedItem } from '@/lib/library/pinned';
+import {
+  ARCHIVE_RETENTION_STORAGE_KEY,
+  archiveUpdates,
+  filterArchivedItems,
+  isArchived,
+} from '@/lib/library/archive';
+import type { ArchiveRetentionDays } from '@/lib/library/archive';
 import type {
   DeletedItemBackup,
   PickedAudioAsset,
@@ -190,6 +198,9 @@ export default function BoardScreen() {
   const [isAudioModalOpen, setIsAudioModalOpen] = useState(false);
   const [pendingAudio, setPendingAudio] = useState<PickedAudioAsset | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [showArchived, setShowArchived] = useState(false);
+  const [archiveRetentionDays, setArchiveRetentionDays] = useState<ArchiveRetentionDays>(0);
+  const typeFilterScrollOffsetRef = useRef(0);
   const [isFolderPickerOpen, setIsFolderPickerOpen] = useState(false);
   const [selectedCardIds, setSelectedCardIds] = useState<Set<string>>(new Set());
   const [optimisticPinnedOrder, setOptimisticPinnedOrder] = useState<string[] | null>(null);
@@ -199,7 +210,19 @@ export default function BoardScreen() {
     type: LibraryItemType;
     folderId: string;
   } | null>(null);
+  const [selectedStatus, setSelectedStatus] = useState<{
+    status: MediaProgressStatus;
+    folderId: string;
+  } | null>(null);
   const addedDate = parseDayKey(addedOn);
+  useEffect(() => {
+    AsyncStorage.getItem(ARCHIVE_RETENTION_STORAGE_KEY)
+      .then((stored) => {
+        const days = Number(stored);
+        if ([7, 30, 90].includes(days)) setArchiveRetentionDays(days as ArchiveRetentionDays);
+      })
+      .catch(() => {});
+  }, []);
   const activeDay = addedDate ? addedOn : null;
   const clearDateFilter = useCallback(() => router.setParams({ addedOn: '' }), []);
   const activeFolderKind =
@@ -622,12 +645,20 @@ export default function BoardScreen() {
   const isSearching = searchQuery.trim().length > 0;
   const folderId = `${activeFolderKind ? `${activeFolderKind}:${activeFolderKey}` : ''}:${activityToken ?? ''}`;
   const activeType = searchType ?? (selectedType?.folderId === folderId ? selectedType.type : null);
+  const activeStatus =
+    activeFolderKind === 'status'
+      ? (activeFolderKey as MediaProgressStatus)
+      : selectedStatus?.folderId === folderId
+        ? selectedStatus.status
+        : null;
   const hasActiveFilter =
     isSearching ||
     activeType !== null ||
     activeFolderKind !== null ||
     searchTag !== null ||
-    activeDay !== null;
+    activeDay !== null ||
+    activeStatus !== null ||
+    showArchived;
 
   const handleTypeFilter = useCallback(
     (type: LibraryItemType) => {
@@ -637,9 +668,20 @@ export default function BoardScreen() {
     [activeType, folderId, searchType, setSearchQuery]
   );
 
+  const handleStatusFilter = useCallback(
+    (status: MediaProgressStatus) => {
+      const targetFolderId = activeFolderKind === 'status' ? `:${activityToken ?? ''}` : folderId;
+      if (activeFolderKind === 'status') {
+        router.setParams({ folderKind: '', folderKey: '' });
+      }
+      setSelectedStatus(activeStatus === status ? null : { status, folderId: targetFolderId });
+    },
+    [activeFolderKind, activeStatus, activityToken, folderId]
+  );
+
   const displayedItems = useMemo(() => {
     if (state.status !== 'ready') return [];
-    if (!hasActiveFilter) return state.result.items;
+    if (!hasActiveFilter) return filterArchivedItems(state.result.items, showArchived);
     const matches =
       activeType || (isSearching && !searchType)
         ? searchItems({
@@ -649,8 +691,10 @@ export default function BoardScreen() {
         : state.result.items;
     return matches.filter(
       (item) =>
+        (showArchived ? isArchived(item) : !isArchived(item)) &&
+        (!activeStatus || matchesStatus(item, activeStatus)) &&
         (!activeDay || matchesAddedDay(item, activeDay)) &&
-        (!searchTag || item.tags?.some((tag) => tag.trim() === searchTag)) &&
+        (!searchTag || item.tags?.some((tag) => tag.trim() === searchTag && tag !== 'Archived')) &&
         (activeFolderKind !== 'status' ||
           matchesStatus(item, activeFolderKey as MediaProgressStatus)) &&
         (activeFolderKind !== 'tag' || item.tags?.some((tag) => tag.trim() === activeFolderKey))
@@ -660,6 +704,7 @@ export default function BoardScreen() {
     hasActiveFilter,
     activeDay,
     activeType,
+    activeStatus,
     isSearching,
     searchQuery,
     searchType,
@@ -667,6 +712,7 @@ export default function BoardScreen() {
     searchItems,
     activeFolderKind,
     activeFolderKey,
+    showArchived,
   ]);
 
   const selectedItems = useMemo(
@@ -678,7 +724,10 @@ export default function BoardScreen() {
   );
 
   const persistedPinnedItems = useMemo(
-    () => (state.status === 'ready' ? getPinnedItems(state.result.items) : []),
+    () =>
+      state.status === 'ready'
+        ? filterArchivedItems(getPinnedItems(state.result.items), false)
+        : [],
     [state]
   );
   const pinnedItems = useMemo(() => {
@@ -720,6 +769,31 @@ export default function BoardScreen() {
       );
     }
   }, [handleCancelEdition, pinActionLabel, selectedCardIds, setItemsPinned]);
+
+  const selectedArchivedCount = selectedItems.filter(isArchived).length;
+  const archiveActionLabel =
+    selectedItems.length > 0 && selectedArchivedCount === selectedItems.length
+      ? 'Unarchive selected cards'
+      : 'Archive selected cards';
+  const handleToggleSelectedArchive = useCallback(async () => {
+    if (!selectedItems.length) return;
+    const shouldUnarchive = selectedItems.every(isArchived);
+    const archivedAt = new Date().toISOString();
+    try {
+      await updateItems(
+        selectedItems.map((item) => ({
+          itemId: item.id,
+          updates: archiveUpdates(item, shouldUnarchive ? null : archivedAt),
+        }))
+      );
+      handleCancelEdition();
+    } catch (error) {
+      Alert.alert(
+        translate('Error'),
+        error instanceof Error ? error.message : 'Could not archive cards'
+      );
+    }
+  }, [selectedItems, updateItems, handleCancelEdition]);
 
   const handleReorderPinnedItem = useCallback(
     async (itemId: string, targetIndex: number) => {
@@ -854,8 +928,29 @@ export default function BoardScreen() {
     const hasDownloads = state.result.pendingDownloads > 0;
 
     return (
-      <View className="pb-2" style={{ zIndex: 100, elevation: 100 }}>
-        <BoardTypeFilters selectedType={activeType} onSelect={handleTypeFilter} />
+      <View
+        testID="board-list-header"
+        className={hasActiveFilter ? 'mb-3 pb-2' : 'pb-2'}
+        style={{ zIndex: 100, elevation: 100 }}
+      >
+        <BoardTypeFilters
+          selectedType={activeType}
+          onSelect={handleTypeFilter}
+          selectedStatus={activeStatus}
+          onSelectStatus={handleStatusFilter}
+          showArchived={showArchived}
+          onToggleArchived={() => setShowArchived((value) => !value)}
+          scrollOffsetRef={typeFilterScrollOffsetRef}
+        />
+        {showArchived && (
+          <Text className="mx-4 mt-5 text-center font-sans text-sm text-theme-secondary">
+            {archiveRetentionDays === 0
+              ? translate('Archived cards are not deleted automatically.')
+              : translate('Archived cards are deleted after %{count} days.', {
+                  count: archiveRetentionDays,
+                })}
+          </Text>
+        )}
 
         {!hasActiveFilter && pinnedItems.length > 0 && (
           <BoardPinnedItems
@@ -889,6 +984,10 @@ export default function BoardScreen() {
     state,
     activeType,
     handleTypeFilter,
+    activeStatus,
+    handleStatusFilter,
+    showArchived,
+    archiveRetentionDays,
     hasActiveFilter,
     pinnedItems,
     isEditing,
@@ -915,31 +1014,43 @@ export default function BoardScreen() {
                     type: typeLabel,
                     query: queryLabel ?? '',
                   })
-                : activeFolderKind
-                  ? translate(
-                      searchTag && queryLabel
-                        ? 'No cards in %{folder} with tag #%{tag} matching "%{query}"'
-                        : searchTag
-                          ? 'No cards in %{folder} with tag #%{tag}'
-                          : queryLabel
-                            ? 'No cards in %{folder} matching "%{query}"'
-                            : 'No cards in %{folder}',
-                      {
-                        folder: folderLabel ?? translate('this folder'),
-                        tag: searchTag ?? '',
-                        query: queryLabel ?? '',
-                      }
-                    )
-                  : searchTag
+                : activeStatus
+                  ? translate('No cards with status %{status}', {
+                      status: translate(
+                        activeStatus === 'want'
+                          ? 'Want to'
+                          : activeStatus === 'in-progress'
+                            ? 'In progress'
+                            : activeStatus === 'completed'
+                              ? 'Done'
+                              : 'Abandoned'
+                      ),
+                    })
+                  : activeFolderKind
                     ? translate(
-                        queryLabel
-                          ? 'No cards with tag #%{tag} matching "%{query}"'
-                          : 'No cards with tag #%{tag}',
-                        { tag: searchTag, query: queryLabel ?? '' }
+                        searchTag && queryLabel
+                          ? 'No cards in %{folder} with tag #%{tag} matching "%{query}"'
+                          : searchTag
+                            ? 'No cards in %{folder} with tag #%{tag}'
+                            : queryLabel
+                              ? 'No cards in %{folder} matching "%{query}"'
+                              : 'No cards in %{folder}',
+                        {
+                          folder: folderLabel ?? translate('this folder'),
+                          tag: searchTag ?? '',
+                          query: queryLabel ?? '',
+                        }
                       )
-                    : translate('No cards matching "%{query}"', {
-                        query: queryLabel ?? '',
-                      })
+                    : searchTag
+                      ? translate(
+                          queryLabel
+                            ? 'No cards with tag #%{tag} matching "%{query}"'
+                            : 'No cards with tag #%{tag}',
+                          { tag: searchTag, query: queryLabel ?? '' }
+                        )
+                      : translate('No cards matching "%{query}"', {
+                          query: queryLabel ?? '',
+                        })
           }
         >
           <Pressable
@@ -947,6 +1058,7 @@ export default function BoardScreen() {
               setSearchQuery('');
               clearSearchTag();
               setSelectedType(null);
+              setSelectedStatus(null);
               clearFolderFilter();
               clearDateFilter();
             }}
@@ -980,6 +1092,7 @@ export default function BoardScreen() {
     hasActiveFilter,
     activeDay,
     activeType,
+    activeStatus,
     isSearching,
     searchType,
     searchQuery,
@@ -1059,6 +1172,8 @@ export default function BoardScreen() {
             onAddToFolder={() => setIsFolderPickerOpen(true)}
             pinActionLabel={pinActionLabel}
             onTogglePin={handleToggleSelectedPins}
+            archiveActionLabel={archiveActionLabel}
+            onToggleArchive={handleToggleSelectedArchive}
             onCancel={handleCancelEdition}
           />
           <RestoreToast
@@ -1085,6 +1200,8 @@ export default function BoardScreen() {
       clearFolderFilter,
       clearDateFilter,
       activeDay,
+      archiveActionLabel,
+      handleToggleSelectedArchive,
       searchTag,
       clearSearchTag,
       state.status,
