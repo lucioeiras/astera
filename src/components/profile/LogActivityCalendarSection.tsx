@@ -10,7 +10,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '@/components/Button';
 import { localDayKey, parseDayKey } from '@/lib/library/activity';
 import { getLogActivity, type LoggedItem, type LogActivityFilter } from '@/lib/library/logActivity';
-import { TypeFilterButton } from '@/components/menus/TypeFilterButton';
 import type { LibraryItem } from '@/lib/library/types';
 import { LocalizedText } from '@/components/LocalizedText';
 import { translate, useLocalization } from '@/lib/i18n';
@@ -53,12 +52,9 @@ export function LogActivityCalendarSection({ items }: { items: LibraryItem[] }) 
       <Text className="font-sans-semibold text-sm uppercase tracking-wider text-theme-heading">
         <LocalizedText>Activity</LocalizedText>
       </Text>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
+      <View
         accessibilityLabel={translate('Filter activity by type')}
-        className="mt-4"
-        contentContainerClassName="items-center gap-2 py-1"
+        className="mt-4 flex-row flex-wrap items-center gap-2"
       >
         {(
           [
@@ -66,19 +62,28 @@ export function LogActivityCalendarSection({ items }: { items: LibraryItem[] }) 
             { type: 'book', label: 'Books', icon: BookOpen },
             { type: 'game', label: 'Games', icon: Gamepad2 },
           ] as const
-        ).map(({ type, label, icon }) => (
-          <TypeFilterButton
-            key={label}
-            label={translate(label)}
-            icon={icon}
-            selected={filter === type}
-            onPress={() => {
-              setSelectedDay(null);
-              setFilter(type);
-            }}
-          />
-        ))}
-      </ScrollView>
+        ).map(({ type, label, icon: Icon }) => {
+          const selected = filter === type;
+          return (
+            <Button
+              key={label}
+              accessibilityLabel={translate(label)}
+              text={translate(label)}
+              icon={<Icon size={20} strokeWidth={2} />}
+              size="small"
+              compact
+              iconSize={16}
+              textWeight={selected ? 'semibold' : 'medium'}
+              variant={selected ? 'primary' : 'secondary'}
+              selected={selected}
+              onPress={() => {
+                setSelectedDay(null);
+                setFilter(type);
+              }}
+            />
+          );
+        })}
+      </View>
       <View className="my-4 gap-1">
         <Text className="font-sans text-sm text-theme-secondary">
           {translate('Best activity streak in %{year}', { year })}

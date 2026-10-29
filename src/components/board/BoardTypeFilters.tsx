@@ -10,6 +10,7 @@ import {
   BookOpen,
   FileText,
   Clapperboard,
+  Tv,
   Gamepad2,
   ImageIcon,
   LinkIcon,
@@ -47,7 +48,7 @@ const CARD_TYPE_ICONS = {
   book: BookOpen,
   music: Music2,
   movie: Clapperboard,
-  tvshow: Clapperboard,
+  tvshow: Tv,
   game: Gamepad2,
 } satisfies Record<LibraryItemType, ComponentType<{ size?: number; color?: string }>>;
 

@@ -54,6 +54,9 @@ it('shows the annual best streak and stacked covers on days with multiple books'
   const a = book('a', ['2026-10-01', '2026-10-02', '2026-10-03', '2026-10-13']);
   const b = book('b', ['2026-10-13', '2026-10-13']);
   await render(<LogActivityCalendarSection items={[a, b]} />);
+  expect(screen.getByLabelText('All').props.variant).toBe('primary');
+  expect(screen.getByLabelText('Books').props.variant).toBe('secondary');
+  expect(screen.getByLabelText('Games').props.variant).toBe('secondary');
   expect(screen.getByLabelText('Best activity streak in 2026: 3 days')).toBeTruthy();
   expect(
     screen.getByLabelText(/October 2, 2026, 1 cards logged, best activity streak, Book a/)

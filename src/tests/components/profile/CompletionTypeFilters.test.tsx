@@ -7,6 +7,7 @@ it('shows inline filters in a horizontal scroll with no type selected initially'
   expect(screen.queryByLabelText('All types')).toBeNull();
   for (const label of ['Books', 'Movies', 'Games', 'Articles', 'YouTube']) {
     expect(screen.getByLabelText(label).props.accessibilityState.selected).toBe(false);
+    expect(screen.getByLabelText(label).props.variant).toBe('secondary');
   }
 });
 it('selects a type and clears it by tapping the selected type again', async () => {
@@ -16,6 +17,7 @@ it('selects a type and clears it by tapping the selected type again', async () =
   expect(onSelect).toHaveBeenLastCalledWith('book');
   await view.rerender(<CompletionTypeFilters selectedType="book" onSelect={onSelect} />);
   expect(screen.getByLabelText('Books').props.accessibilityState.selected).toBe(true);
+  expect(screen.getByLabelText('Books').props.variant).toBe('primary');
   await fireEvent.press(screen.getByLabelText('Books'));
   expect(onSelect).toHaveBeenLastCalledWith(null);
   await fireEvent.press(screen.getByLabelText('YouTube'));

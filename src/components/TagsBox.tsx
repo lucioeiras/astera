@@ -15,6 +15,7 @@ import {
   Clock,
   FileText,
   Clapperboard,
+  Tv,
   Folder,
   Gamepad2,
   Hash,
@@ -59,7 +60,7 @@ const cardTypeTags = {
   book: { label: 'Book', icon: BookOpen },
   music: { label: 'Music', icon: Music2 },
   movie: { label: 'Movie', icon: Clapperboard },
-  tvshow: { label: 'TV show', icon: Clapperboard },
+  tvshow: { label: 'TV show', icon: Tv },
   game: { label: 'Game', icon: Gamepad2 },
 } satisfies Record<
   LibraryItemType,
