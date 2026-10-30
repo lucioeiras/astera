@@ -1,4 +1,5 @@
 import { useAppTheme } from '@/lib/theme';
+import { colorWithAlpha } from '@/lib/theme/palette';
 import { BlurView } from 'expo-blur';
 import { router, useFocusEffect } from 'expo-router';
 import { Check, X } from 'lucide-react-native';
@@ -354,7 +355,10 @@ export default function ReviewScreen() {
       />
       <View
         pointerEvents="none"
-        style={[StyleSheet.absoluteFill, { backgroundColor: themeColors.canvas + '8c' }]}
+        style={[
+          StyleSheet.absoluteFill,
+          { backgroundColor: colorWithAlpha(themeColors.canvas, '8c') },
+        ]}
       />
 
       <SafeAreaView className="flex-1 bg-transparent" edges={['top', 'left', 'right']}>

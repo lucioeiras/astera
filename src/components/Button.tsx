@@ -1,4 +1,5 @@
 import { useAppTheme } from '@/lib/theme';
+import { colorWithAlpha } from '@/lib/theme/palette';
 import { BlurView } from 'expo-blur';
 import {
   ReactElement,
@@ -117,7 +118,7 @@ export function Button({
                 bottom: 0,
                 left: 0,
                 borderRadius: 999,
-                backgroundColor: themeColors.canvas + '33',
+                backgroundColor: colorWithAlpha(themeColors.canvas, '33'),
               }}
             />
           </>

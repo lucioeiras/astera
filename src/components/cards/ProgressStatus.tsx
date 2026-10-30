@@ -55,10 +55,10 @@ const icons = {
 
 const colors = (themeColors: ThemeColors) =>
   ({
-    want: themeColors.blueSoft,
-    'in-progress': themeColors.yellow,
-    completed: themeColors.green,
-    abandoned: themeColors.secondary,
+    want: themeColors.statusWant,
+    'in-progress': themeColors.statusInProgress,
+    completed: themeColors.statusCompleted,
+    abandoned: themeColors.statusAbandoned,
   }) as const;
 
 export function getProgressLabel(type: TrackableItemType, status: MediaProgressStatus): string {

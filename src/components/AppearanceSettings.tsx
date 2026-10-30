@@ -13,7 +13,7 @@ export function AppearanceSettings() {
   const { preference, setPreference, colors } = useAppTheme();
   const { t } = useLocalization();
   return (
-    <View className="gap-4 border-b border-theme-raised px-8 pb-6 mb-6">
+    <View className="gap-4 border-b border-theme-raised px-8 pt-0 pb-6">
       <View className="flex-row items-center gap-2">
         <Sun size={16} color={colors.heading} />
         <Text className="font-sans-semibold text-sm uppercase tracking-wider text-theme-heading">

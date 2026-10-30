@@ -1,4 +1,5 @@
 import { useAppTheme } from '@/lib/theme';
+import { colorWithAlpha } from '@/lib/theme/palette';
 import { BlurView } from 'expo-blur';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
@@ -167,7 +168,12 @@ export default function CardDetailScreen() {
       <View
         style={[
           StyleSheet.absoluteFill,
-          { backgroundColor: themeColors.canvas + (item?.type === 'note' ? 'E6' : '66') },
+          {
+            backgroundColor: colorWithAlpha(
+              themeColors.canvas,
+              item?.type === 'note' ? 'E6' : '66'
+            ),
+          },
         ]}
       />
 

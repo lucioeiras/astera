@@ -97,9 +97,9 @@ export function BoardTypeFilters({
     >
       {(
         [
-          ['want', 'Want to', Bookmark, themeColors.blueSoft],
-          ['in-progress', 'In progress', Clock, themeColors.yellow],
-          ['completed', 'Done', CircleCheck, themeColors.green],
+          ['want', 'Want to', Bookmark, themeColors.statusWant],
+          ['in-progress', 'In progress', Clock, themeColors.statusInProgress],
+          ['completed', 'Done', CircleCheck, themeColors.statusCompleted],
         ] as const
       ).map(([status, label, Icon, statusColor]) => {
         const selected = selectedStatus === status;

@@ -182,7 +182,7 @@ export default function SettingsScreen() {
           </View>
         </View>
 
-        <View className="gap-4 border-b border-theme-raised px-8 pb-6">
+        <View className="gap-4 border-b border-theme-raised px-8 py-6">
           <View className="flex-row items-center gap-2">
             <Languages size={16} color={themeColors.heading} />
             <Text className="font-sans-semibold text-sm uppercase tracking-wider text-theme-heading">
@@ -219,7 +219,7 @@ export default function SettingsScreen() {
           </View>
         </View>
 
-        <View className="gap-4 border-t border-b border-theme-raised px-8 py-6">
+        <View className="gap-4 border-b border-theme-raised px-8 py-6">
           <View className="flex-row items-center gap-2">
             <Circle size={16} color={themeColors.heading} />
             <Text className="font-sans-semibold text-sm uppercase tracking-wider text-theme-heading">

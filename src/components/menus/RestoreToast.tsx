@@ -1,4 +1,5 @@
 import { useAppTheme } from '@/lib/theme';
+import { colorWithAlpha } from '@/lib/theme/palette';
 import { useEffect, useRef, useState } from 'react';
 import { Text, View } from 'react-native';
 
@@ -76,7 +77,7 @@ export function RestoreToast({
     >
       <View
         className="relative flex-row items-center gap-32 overflow-hidden rounded-full border border-theme-foreground/10 px-2 py-2"
-        style={{ backgroundColor: themeColors.surface + 'e0' }}
+        style={{ backgroundColor: colorWithAlpha(themeColors.surface, 'e0') }}
       >
         <Text className="pl-2 font-sans-medium text-base text-theme-body ml-2">
           <LocalizedText>You deleted </LocalizedText>
