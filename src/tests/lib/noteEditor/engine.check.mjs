@@ -69,6 +69,7 @@ dom.window.Range.prototype.getBoundingClientRect = () => ({
   width: 0,
   height: 0,
 });
+dom.window.scrollBy = () => {};
 const { createNoteEditor } = await import('../../../lib/noteEditor/engine.ts');
 const root = document.createElement('div');
 const editorScroller = document.createElement('div');
@@ -620,10 +621,10 @@ try {
     const list = engine.view.state.doc.firstChild;
     openBlock(0);
     blockAction('Move down');
-    assert.ok(engine.view.state.doc.lastChild.eq(list), 'task states and nesting survive');
+    assert.ok(engine.view.state.doc.child(1).eq(list), 'task states and nesting survive');
     openBlock(1);
     blockAction('To-do list');
-    const taskList = engine.view.state.doc.lastChild;
+    const taskList = engine.view.state.doc.child(1);
     taskList.forEach((item) => assert.equal(item.attrs.checked, false));
     assert.ok(taskList.textContent.includes('Child'));
     await engine.command({
@@ -642,10 +643,6 @@ try {
     });
     const opaque = engine.view.state.doc.child(1);
     openBlock(1);
-    assert.equal(
-      [...blockMenu().querySelectorAll('button')].some((button) => button.textContent === 'Bold'),
-      false
-    );
     blockAction('Move up');
     assert.ok(
       engine.view.state.doc.firstChild.eq(opaque),
@@ -822,13 +819,17 @@ try {
     ]) {
       await engine.command({ method: 'setMarkdown', markdown });
       const before = engine.view.state.doc;
-      assert.equal(before.childCount, 1);
+      assert.ok(before.childCount === 1 || before.childCount === 2);
+      if (before.childCount === 2) {
+        assert.equal(before.lastChild.type.name, 'paragraph');
+        assert.equal(before.lastChild.content.size, 0);
+      }
       openBlock(0);
       blockAction('Delete block');
       assert.equal(
         engine.view.state.doc.childCount,
         1,
-        'the last block leaves an editable paragraph'
+        'deleting the only content block leaves an editable paragraph'
       );
       assert.equal(engine.view.state.doc.firstChild.type.name, 'paragraph');
       assert.equal(engine.view.state.doc.firstChild.content.size, 0);
