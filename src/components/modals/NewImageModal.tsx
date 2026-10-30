@@ -1,7 +1,7 @@
 import { ThemedModal as Modal } from '@/components/ThemedModal';
 import { useAppTheme, type ThemeColors } from '@/lib/theme';
 import { Image as ExpoImage } from 'expo-image';
-import { Check, SquarePen, Type, X } from 'lucide-react-native';
+import { Check, SquarePen, Type } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -18,6 +18,8 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ActionFooter } from '@/components/ActionFooter';
+import { ModalCloseButton } from '@/components/ModalCloseButton';
+import { ModalSaveButton } from '@/components/ModalSaveButton';
 import { Button } from '@/components/Button';
 import { TagsBox } from '@/components/TagsBox';
 
@@ -216,6 +218,27 @@ export function NewImageModal({
           }}
           className="flex-1 w-full relative"
         >
+          <ModalCloseButton onPress={handleClose} disabled={saving} />
+          <ModalSaveButton>
+            <Button
+              size="small"
+              accessibilityLabel={translate('Save image')}
+              variant="primary"
+              onPress={handleSave}
+              disabled={!canSave}
+              icon={
+                saving ? (
+                  <ActivityIndicator size={20} color={themeColors.inverse} />
+                ) : (
+                  <Check
+                    size={20}
+                    color={canSave ? themeColors.inverse : themeColors.muted}
+                    strokeWidth={2}
+                  />
+                )
+              }
+            />
+          </ModalSaveButton>
           <ScrollView
             className="flex-1 w-full"
             contentContainerStyle={styles.scrollContent}
@@ -223,7 +246,7 @@ export function NewImageModal({
             showsVerticalScrollIndicator={false}
           >
             {/* Header */}
-            <View className="flex-row p-8 pt-0 gap-8 items-center max-h-48 border-b border-theme-raised">
+            <View className="flex-row px-8 py-8 pt-0 gap-8 items-center max-h-48 border-b border-theme-raised">
               {imageAsset && (
                 <View
                   className="h-full overflow-hidden bg-theme-surface border border-theme-raised"
@@ -279,6 +302,7 @@ export function NewImageModal({
 
             {/* Tags section */}
             <TagsBox
+              containerClassName="py-6 px-8 border-b border-theme-raised gap-4"
               tags={tags}
               autoTags={autoTags}
               onTagsChange={setTags}
@@ -321,33 +345,7 @@ export function NewImageModal({
           </ScrollView>
 
           {/* Action buttons at the bottom */}
-          <ActionFooter bottomInset={insets.bottom} overlay>
-            <Button
-              accessibilityLabel={translate('Cancel')}
-              onPress={handleClose}
-              disabled={saving}
-              icon={<X size={20} color={themeColors.foreground} strokeWidth={2} />}
-              text={translate('Cancel')}
-            />
-            <Button
-              accessibilityLabel={translate('Save image')}
-              variant="primary"
-              onPress={handleSave}
-              disabled={!canSave}
-              icon={
-                saving ? (
-                  <ActivityIndicator size={20} color={themeColors.inverse} />
-                ) : (
-                  <Check
-                    size={20}
-                    color={canSave ? themeColors.inverse : themeColors.muted}
-                    strokeWidth={2}
-                  />
-                )
-              }
-              text={translate('Save image')}
-            />
-          </ActionFooter>
+          <ActionFooter buttonSize="small" bottomInset={insets.bottom} overlay />
         </View>
       </KeyboardAvoidingView>
     </Modal>
@@ -363,7 +361,7 @@ const createStyles = (themeColors: ThemeColors) =>
     },
     scrollContent: {
       flexGrow: 1,
-      paddingVertical: 20,
+      paddingTop: 56,
       paddingBottom: 160,
     },
     borderlessInput: {

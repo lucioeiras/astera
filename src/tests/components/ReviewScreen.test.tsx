@@ -220,6 +220,68 @@ it('keeps a card, advances, and opens its detail page when tapped', async () => 
   expect(mockDeleteItems).not.toHaveBeenCalled();
 });
 
+const book = (
+  progressStatus?: 'want' | 'in-progress' | 'completed' | 'abandoned'
+): LibraryItem => ({
+  ...first,
+  id: 'book',
+  type: 'book',
+  title: 'Book',
+  isbn: '',
+  authors: [],
+  progressStatus,
+});
+
+it.each(['in-progress', 'completed'] as const)(
+  'excludes %s cards from review and subsequent rounds',
+  async (status) => {
+    ready([first, book(status)]);
+    await renderReview();
+
+    expect(screen.queryByText('book')).toBeNull();
+    expect(screen.queryByTestId('review-background-card-book')).toBeNull();
+    await fireEvent.press(screen.getByLabelText('Keep card'));
+    expect(within(screen.getByTestId('review-current-card')).getByText('first')).toBeTruthy();
+    expect(screen.queryByText('book')).toBeNull();
+  }
+);
+
+it.each(['want', 'abandoned', undefined] as const)(
+  'keeps cards with status %s eligible for review',
+  async (status) => {
+    ready([book(status)]);
+    await renderReview();
+
+    expect(within(screen.getByTestId('review-current-card')).getByText('book')).toBeTruthy();
+  }
+);
+
+it.each(['in-progress', 'completed'] as const)(
+  'shows the empty state when every card is %s',
+  async (status) => {
+    ready([book(status)]);
+    await renderReview();
+
+    expect(screen.getByText('No cards to review yet')).toBeTruthy();
+    expect(screen.queryByTestId('review-current-card')).toBeNull();
+    expect(screen.queryByText('book')).toBeNull();
+  }
+);
+
+it.each(['in-progress', 'completed'] as const)(
+  'removes a queued card when its status changes to %s',
+  async (status) => {
+    ready([book('want'), first]);
+    const view = await renderReview();
+
+    ready([book(status), first]);
+    await view.rerender(<ReviewScreen />);
+
+    expect(screen.queryByText('book')).toBeNull();
+    expect(within(screen.getByTestId('review-current-card')).getByText('first')).toBeTruthy();
+  }
+);
+
 it('shows the next card underneath the outgoing card immediately after keeping', async () => {
   mockDeferSpringCompletion = true;
   await renderReview();

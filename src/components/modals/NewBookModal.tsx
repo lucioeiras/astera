@@ -1,6 +1,6 @@
 import { useAppTheme, type ThemeColors } from '@/lib/theme';
 import { Book, Check, Search, SquarePen, X } from 'lucide-react-native';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -18,6 +18,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AddItemModalShell } from '@/components/modals/AddItemModalShell';
 
 import { ActionFooter } from '@/components/ActionFooter';
+import { ModalCloseButton } from '@/components/ModalCloseButton';
+import { ModalSaveButton } from '@/components/ModalSaveButton';
 import { Button } from '@/components/Button';
 import { BookCover } from '@/components/effects/BookCover';
 import { TagsBox } from '@/components/TagsBox';
@@ -31,6 +33,7 @@ import { translate, useLocalization } from '@/lib/i18n';
 type NewBookModalProps = {
   visible: boolean;
   embedded?: boolean;
+  typePicker?: ReactNode;
   onClose: () => void;
   onDismiss?: () => void;
   onSaved?: (item: BookItem) => void;
@@ -39,6 +42,7 @@ type NewBookModalProps = {
 export function NewBookModal({
   visible,
   embedded = false,
+  typePicker,
   onClose,
   onDismiss,
   onSaved,
@@ -260,14 +264,36 @@ export function NewBookModal({
           }}
           className="flex-1 w-full relative"
         >
+          <ModalCloseButton onPress={handleClose} disabled={saving} embedded={embedded} />
+          <ModalSaveButton embedded={embedded}>
+            <Button
+              size="small"
+              accessibilityLabel={translate('Save book')}
+              variant="primary"
+              onPress={handleSave}
+              disabled={!canSave}
+              icon={
+                saving ? (
+                  <ActivityIndicator size={20} color={themeColors.foreground} />
+                ) : (
+                  <Check
+                    size={20}
+                    color={canSave ? themeColors.inverse : themeColors.muted}
+                    strokeWidth={2}
+                  />
+                )
+              }
+            />
+          </ModalSaveButton>
           <ScrollView
             className="flex-1 w-full"
             contentContainerStyle={styles.scrollContent}
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
           >
+            {typePicker && <View style={{ marginBottom: 20 }}>{typePicker}</View>}
             {/* Header */}
-            <View className="gap-3 p-8 pt-0">
+            <View className="gap-3 px-8 py-8 pt-0">
               <Text className="font-sans-semibold text-2xl text-theme-foreground">
                 <LocalizedText>Add a new book</LocalizedText>
               </Text>
@@ -338,7 +364,7 @@ export function NewBookModal({
 
             {/* Book Preview Section */}
             {book && (
-              <View className="px-8 py-5 p-5 bg-theme-canvas border-b border-theme-raised">
+              <View className="px-8 py-5 bg-theme-canvas border-b border-theme-raised">
                 <View className="flex-row gap-8">
                   <BookCover
                     cover={book.cover}
@@ -401,6 +427,7 @@ export function NewBookModal({
 
             {/* Tags section */}
             <TagsBox
+              containerClassName="py-6 px-8 border-b border-theme-raised gap-4"
               tags={tags}
               autoTags={autoTags}
               onTagsChange={setTags}
@@ -443,33 +470,7 @@ export function NewBookModal({
           </ScrollView>
 
           {/* Action buttons at the bottom */}
-          <ActionFooter bottomInset={insets.bottom} overlay>
-            <Button
-              accessibilityLabel={translate('Cancel')}
-              onPress={handleClose}
-              disabled={saving}
-              icon={<X size={20} color={themeColors.foreground} strokeWidth={2} />}
-              text={translate('Cancel')}
-            />
-            <Button
-              accessibilityLabel={translate('Save book')}
-              variant="primary"
-              onPress={handleSave}
-              disabled={!canSave}
-              icon={
-                saving ? (
-                  <ActivityIndicator size={20} color={themeColors.foreground} />
-                ) : (
-                  <Check
-                    size={20}
-                    color={canSave ? themeColors.inverse : themeColors.muted}
-                    strokeWidth={2}
-                  />
-                )
-              }
-              text={translate('Save book')}
-            />
-          </ActionFooter>
+          <ActionFooter buttonSize="small" bottomInset={insets.bottom} overlay />
         </View>
       </KeyboardAvoidingView>
     </AddItemModalShell>
@@ -485,7 +486,7 @@ const createStyles = (themeColors: ThemeColors) =>
     },
     scrollContent: {
       flexGrow: 1,
-      paddingVertical: 20,
+      paddingTop: 56,
       paddingBottom: 120,
     },
     borderlessInput: {

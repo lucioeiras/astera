@@ -1,36 +1,63 @@
 import { useAppTheme } from '@/lib/theme';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import {
   ArrowLeft,
   ArrowLeftRight,
   Circle,
+  CircleX,
   Cpu,
   Download,
   FolderOpen,
-  Mic,
-  Type,
   Languages,
+  Mic,
   Trash2,
-  CircleX,
+  Type,
 } from 'lucide-react-native';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AppearanceSettings } from '@/components/AppearanceSettings';
 import { Button } from '@/components/Button';
+import { LinkOpeningSettings } from '@/components/LinkOpeningSettings';
 import { LocalizedText } from '@/components/LocalizedText';
 import { useLibrary } from '@/hooks/useLibrary';
 import { useLocalAI } from '@/lib/ai/useLocalAI';
 import { useWhisperModel } from '@/lib/ai/useWhisperModel';
 import { useLocalization } from '@/lib/i18n';
 import { languageOptions } from '@/lib/i18n/catalog';
+import type { ArchiveRetentionDays } from '@/lib/library/archive';
+import { ARCHIVE_RETENTION_OPTIONS, ARCHIVE_RETENTION_STORAGE_KEY } from '@/lib/library/archive';
 
 export default function SettingsScreen() {
   const { colors: themeColors } = useAppTheme();
   const { preference, setPreference, t } = useLocalization();
-  const { currentFolderName, pickAndOpenFolder } = useLibrary();
+  const { currentFolderName, pickAndOpenFolder, refresh } = useLibrary();
   const [openingFolder, setOpeningFolder] = useState(false);
+  const [archiveRetention, setArchiveRetention] = useState<ArchiveRetentionDays>(0);
+  useEffect(() => {
+    AsyncStorage.getItem(ARCHIVE_RETENTION_STORAGE_KEY)
+      .then((value) => {
+        const days = Number(value);
+        if (ARCHIVE_RETENTION_OPTIONS.includes(days as ArchiveRetentionDays)) {
+          setArchiveRetention(days as ArchiveRetentionDays);
+        }
+      })
+      .catch(() => {});
+  }, []);
+  const changeArchiveRetention = async (days: ArchiveRetentionDays) => {
+    try {
+      await AsyncStorage.setItem(ARCHIVE_RETENTION_STORAGE_KEY, String(days));
+      setArchiveRetention(days);
+      await refresh();
+    } catch (error) {
+      Alert.alert(
+        t('Error'),
+        error instanceof Error ? error.message : t('Could not save archived card retention')
+      );
+    }
+  };
   const {
     modelConfig,
     isDownloaded,
@@ -111,46 +138,7 @@ export default function SettingsScreen() {
           </Text>
         </View>
 
-        <AppearanceSettings />
-
-        <View className="gap-4 border-b border-theme-raised px-8 pb-6">
-          <View className="flex-row items-center gap-2">
-            <Languages size={16} color={themeColors.heading} />
-            <Text className="font-sans-semibold text-sm uppercase tracking-wider text-theme-heading">
-              <LocalizedText>Language</LocalizedText>
-            </Text>
-          </View>
-          <Text className="font-sans text-base leading-relaxed text-theme-secondary">
-            <LocalizedText>Choose the language used by Astera.</LocalizedText>
-          </Text>
-          <View
-            accessibilityRole="radiogroup"
-            accessibilityLabel={t('Select app language')}
-            className="gap-1"
-          >
-            {languageOptions.map((option) => (
-              <Pressable
-                key={option.value}
-                onPress={() => void setPreference(option.value)}
-                accessibilityRole="radio"
-                accessibilityLabel={t(option.label)}
-                accessibilityState={{ checked: preference === option.value }}
-                className="min-h-12 flex-row items-center gap-3 py-2 active:opacity-70"
-              >
-                <View
-                  className={`h-5 w-5 items-center justify-center rounded-full border ${preference === option.value ? 'border-blue-400' : 'border-theme-strongBorder'}`}
-                >
-                  {preference === option.value && (
-                    <View className="h-2.5 w-2.5 rounded-full bg-blue-400" />
-                  )}
-                </View>
-                <Text className="font-sans text-base text-theme-foreground">{t(option.label)}</Text>
-              </Pressable>
-            ))}
-          </View>
-        </View>
-
-        <View className="gap-4 border-t border-b border-theme-raised px-8 py-6">
+        <View className="gap-4 border-b border-theme-raised px-8 pt-0 pb-6">
           <View className="flex-row items-center gap-2">
             <Circle size={16} color={themeColors.heading} />
             <Text className="font-sans-semibold text-sm uppercase tracking-wider text-theme-heading">
@@ -193,6 +181,87 @@ export default function SettingsScreen() {
               <ArrowLeftRight size={20} color={themeColors.secondary} />
             )}
           </Pressable>
+        </View>
+
+        <AppearanceSettings />
+        <LinkOpeningSettings />
+
+        <View className="gap-4 border-b border-theme-raised px-8 py-6">
+          <View className="flex-row items-center gap-2">
+            <Trash2 size={16} color={themeColors.heading} />
+            <Text className="font-sans-semibold text-sm uppercase tracking-wider text-theme-heading">
+              <LocalizedText>Archived cards</LocalizedText>
+            </Text>
+          </View>
+          <Text className="font-sans text-base leading-relaxed text-theme-secondary">
+            <LocalizedText>Choose when archived cards are automatically deleted.</LocalizedText>
+          </Text>
+          <View
+            accessibilityRole="radiogroup"
+            accessibilityLabel={t('Archived card retention')}
+            className="gap-1"
+          >
+            {ARCHIVE_RETENTION_OPTIONS.map((days) => {
+              const label = days === 0 ? 'Never' : '%{count} days';
+              const translated = days === 0 ? t(label) : t(label, { count: days });
+              return (
+                <Pressable
+                  key={days}
+                  onPress={() => void changeArchiveRetention(days)}
+                  accessibilityRole="radio"
+                  accessibilityLabel={translated}
+                  accessibilityState={{ checked: archiveRetention === days }}
+                  className="min-h-12 flex-row items-center gap-3 py-2 active:opacity-70"
+                >
+                  <View
+                    className={`h-5 w-5 items-center justify-center rounded-full border ${archiveRetention === days ? 'border-blue-400' : 'border-theme-strongBorder'}`}
+                  >
+                    {archiveRetention === days && (
+                      <View className="h-2.5 w-2.5 rounded-full bg-blue-400" />
+                    )}
+                  </View>
+                  <Text className="font-sans text-base text-theme-foreground">{translated}</Text>
+                </Pressable>
+              );
+            })}
+          </View>
+        </View>
+
+        <View className="gap-4 border-b border-theme-raised px-8 py-6">
+          <View className="flex-row items-center gap-2">
+            <Languages size={16} color={themeColors.heading} />
+            <Text className="font-sans-semibold text-sm uppercase tracking-wider text-theme-heading">
+              <LocalizedText>Language</LocalizedText>
+            </Text>
+          </View>
+          <Text className="font-sans text-base leading-relaxed text-theme-secondary">
+            <LocalizedText>Choose the language used by Astera.</LocalizedText>
+          </Text>
+          <View
+            accessibilityRole="radiogroup"
+            accessibilityLabel={t('Select app language')}
+            className="gap-1"
+          >
+            {languageOptions.map((option) => (
+              <Pressable
+                key={option.value}
+                onPress={() => void setPreference(option.value)}
+                accessibilityRole="radio"
+                accessibilityLabel={t(option.label)}
+                accessibilityState={{ checked: preference === option.value }}
+                className="min-h-12 flex-row items-center gap-3 py-2 active:opacity-70"
+              >
+                <View
+                  className={`h-5 w-5 items-center justify-center rounded-full border ${preference === option.value ? 'border-blue-400' : 'border-theme-strongBorder'}`}
+                >
+                  {preference === option.value && (
+                    <View className="h-2.5 w-2.5 rounded-full bg-blue-400" />
+                  )}
+                </View>
+                <Text className="font-sans text-base text-theme-foreground">{t(option.label)}</Text>
+              </Pressable>
+            ))}
+          </View>
         </View>
 
         <View className="gap-4 px-8 pt-6">

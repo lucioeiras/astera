@@ -1,7 +1,17 @@
 import { useAppTheme } from '@/lib/theme';
+import { colorWithAlpha } from '@/lib/theme/palette';
 import { BlurView } from 'expo-blur';
-import { ReactElement, ReactNode, cloneElement, isValidElement } from 'react';
+import {
+  ReactElement,
+  ReactNode,
+  cloneElement,
+  createContext,
+  isValidElement,
+  useContext,
+} from 'react';
 import { Pressable, Text, View } from 'react-native';
+
+export const ButtonSizeContext = createContext<'default' | 'small'>('default');
 
 type ButtonProps = {
   accessibilityLabel: string;
@@ -17,6 +27,9 @@ type ButtonProps = {
   shadowOpacity?: number;
   accessibilityRole?: 'button' | 'tab';
   selected?: boolean;
+  iconSize?: number;
+  textWeight?: 'medium' | 'semibold';
+  compact?: boolean;
 };
 
 /** Rounded floating action with optional icon and text. */
@@ -26,7 +39,7 @@ export function Button({
   text,
   onPress,
   disabled = false,
-  size = 'default',
+  size,
   variant = 'secondary',
   backgroundColor,
   contentColor,
@@ -34,16 +47,20 @@ export function Button({
   shadowOpacity = 0,
   accessibilityRole = 'button',
   selected,
+  iconSize,
+  textWeight = 'semibold',
+  compact = false,
 }: ButtonProps) {
   const { colors: themeColors, isDark } = useAppTheme();
+  const inheritedSize = useContext(ButtonSizeContext);
   const foreground =
     contentColor ?? (variant === 'primary' ? themeColors.canvas : themeColors.foreground);
-  const isSmall = size === 'small';
+  const isSmall = (size ?? inheritedSize) === 'small';
   const iconElement = isValidElement<{ size?: number; color?: string }>(icon) ? icon : undefined;
   const normalizedIcon =
     iconElement && 'size' in iconElement.props
       ? cloneElement(iconElement as ReactElement<{ size?: number; color?: string }>, {
-          size: isSmall ? 20 : 24,
+          size: iconSize ?? (isSmall ? 20 : 24),
           color: foreground,
         })
       : icon;
@@ -65,7 +82,7 @@ export function Button({
       <Pressable
         onPress={onPress}
         disabled={disabled}
-        className={`flex-row items-center justify-center overflow-hidden rounded-full active:opacity-80 disabled:opacity-50 ${isSmall ? 'gap-2' : 'gap-3'} ${text ? (isSmall ? 'px-4 py-2' : 'px-6 py-3') : isSmall ? 'p-3' : 'p-4'} ${variant === 'secondary' && 'border border-theme-raised'}`}
+        className={`flex-row items-center justify-center overflow-hidden rounded-full active:opacity-80 disabled:opacity-50 ${isSmall ? (compact ? 'gap-1.5' : 'gap-2') : 'gap-3'} ${text ? (isSmall ? (compact ? 'px-3 py-2' : 'px-4 py-3') : 'px-6 py-4') : isSmall ? 'p-3' : 'p-4'} ${variant === 'secondary' && 'border border-theme-raised'}`}
         style={
           variant === 'primary'
             ? { backgroundColor: backgroundColor ?? themeColors.foreground }
@@ -101,7 +118,7 @@ export function Button({
                 bottom: 0,
                 left: 0,
                 borderRadius: 999,
-                backgroundColor: themeColors.canvas + '1a',
+                backgroundColor: colorWithAlpha(themeColors.canvas, '33'),
               }}
             />
           </>
@@ -111,7 +128,7 @@ export function Button({
           <Text
             numberOfLines={1}
             style={{ color: foreground }}
-            className={`font-sans-semibold ${isSmall ? 'text-sm' : 'text-lg'}`}
+            className={`font-sans-${textWeight} ${isSmall ? 'text-sm' : 'text-lg'}`}
           >
             {text}
           </Text>

@@ -1,5 +1,5 @@
 import { useAppTheme } from '@/lib/theme';
-import { FolderPlus, Pin, Trash2, X } from 'lucide-react-native';
+import { Archive, ArchiveRestore, FolderPlus, Pin, Trash2, X } from 'lucide-react-native';
 import { Text, View } from 'react-native';
 
 import { Button } from '@/components/Button';
@@ -14,6 +14,8 @@ type CardSelectionBarProps = {
   onAddToFolder: () => void;
   pinActionLabel?: string;
   onTogglePin?: () => void;
+  archiveActionLabel?: string;
+  onToggleArchive?: () => void;
   onCancel: () => void;
 };
 
@@ -25,6 +27,8 @@ export function CardSelectionBar({
   onAddToFolder,
   pinActionLabel,
   onTogglePin,
+  archiveActionLabel,
+  onToggleArchive,
   onCancel,
 }: CardSelectionBarProps) {
   const { colors: themeColors } = useAppTheme();
@@ -68,6 +72,22 @@ export function CardSelectionBar({
               icon={<Pin size={24} color={themeColors.foreground} strokeWidth={2} />}
               disabled={!hasSelection}
               onPress={onTogglePin}
+            />
+          )}
+          {archiveActionLabel && onToggleArchive && (
+            <Button
+              accessibilityLabel={translate(archiveActionLabel)}
+              variant="secondary"
+              contentColor={themeColors.foreground}
+              icon={
+                archiveActionLabel === 'Unarchive selected cards' ? (
+                  <ArchiveRestore size={24} color={themeColors.foreground} strokeWidth={2} />
+                ) : (
+                  <Archive size={24} color={themeColors.foreground} strokeWidth={2} />
+                )
+              }
+              disabled={!hasSelection}
+              onPress={onToggleArchive}
             />
           )}
           <Button

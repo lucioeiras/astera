@@ -1,3 +1,5 @@
+import { AdditionHeatmap } from '@/components/profile/AdditionHeatmap';
+import { CompletionTimeline } from '@/components/profile/CompletionTimeline';
 import { Button } from '@/components/Button';
 import { LocalizedText } from '@/components/LocalizedText';
 import { ActivityCalendar } from '@/components/profile/ActivityCalendar';
@@ -21,9 +23,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function ProfileScreen() {
   const { colors: themeColors } = useAppTheme();
-  const { language } = useLocalization();
-  const locale = language === 'pt' ? 'pt-BR' : 'en-US';
-  const { state, currentFolderName, setSearchQuery, clearSearchTag, refresh } = useLibrary();
+  useLocalization();
+  const { state, source, currentFolderName, setSearchQuery, clearSearchTag, refresh } =
+    useLibrary();
   const currentYear = new Date().getFullYear();
   const [month, setMonth] = useState(() => new Date(currentYear, new Date().getMonth(), 1));
   const [selectedYear, setYear] = useState(currentYear);
@@ -85,23 +87,13 @@ export default function ProfileScreen() {
 
         {state.status === 'ready' && (
           <>
-            <View className="flex-row flex-wrap border-y border-theme-raised px-8 py-6">
-              <Stat label={translate('Saved cards')} value={String(activity.total)} />
-              <Stat label={translate('Completed')} value={String(activity.completed)} />
-              <Stat
-                label={translate('First card saved')}
-                value={activity.firstSaved?.toLocaleDateString(locale) ?? '—'}
-              />
-              <Stat label={translate('Days with additions')} value={String(activity.activeDays)} />
-            </View>
-
             {activity.total === 0 && (
               <Text className="px-8 pt-6 font-sans text-base text-theme-secondary">
                 <LocalizedText>Save your first card to start your library activity.</LocalizedText>
               </Text>
             )}
 
-            <View className="px-8 py-6">
+            <View className="border-t border-theme-raised px-8 py-6">
               <Text className="mb-2 font-sans-semibold text-sm uppercase tracking-wider text-theme-heading">
                 <LocalizedText>Added cards</LocalizedText>
               </Text>
@@ -115,6 +107,14 @@ export default function ProfileScreen() {
                 onPressDate={openDay}
               />
             </View>
+
+            <AdditionHeatmap
+              key={`additions:${JSON.stringify(source)}`}
+              byDay={activity.byDay}
+              onPressDate={openDay}
+            />
+
+            <LogActivityCalendarSection items={items} />
 
             <View className="border-t border-theme-raised py-6" style={{ zIndex: 1 }}>
               <Text className="mb-4 px-8 font-sans-semibold text-sm uppercase tracking-wider text-theme-heading">
@@ -130,7 +130,7 @@ export default function ProfileScreen() {
                   }))}
                   onSelect={(value) => setYear(Number(value))}
                 />
-                <CompletionTypeFilters selectedType={type} onSelect={setType} />
+                <CompletionTypeFilters selectedType={type} onSelect={setType} iconOnly />
               </View>
               <View className="px-8">
                 <CompletionChart months={completions.months} year={year} />
@@ -144,18 +144,10 @@ export default function ProfileScreen() {
                 )}
               </View>
             </View>
-            <LogActivityCalendarSection items={items} />
+            <CompletionTimeline key={`timeline:${JSON.stringify(source)}`} items={items} />
           </>
         )}
       </ScrollView>
     </SafeAreaView>
-  );
-}
-function Stat({ label, value }: { label: string; value: string }) {
-  return (
-    <View className="w-1/2 gap-2 py-3 pr-3">
-      <Text className="font-sans text-xs text-theme-muted">{label}</Text>
-      <Text className="font-sans-semibold text-xl text-theme-foreground">{value}</Text>
-    </View>
   );
 }

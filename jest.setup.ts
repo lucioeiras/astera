@@ -3,6 +3,10 @@ jest.mock('nativewind', () => ({
   vars: (values: Record<string, string>) => values,
 }));
 
+jest.mock('@react-native-async-storage/async-storage', () =>
+  require('@react-native-async-storage/async-storage/jest/async-storage-mock'),
+);
+
 jest.mock('expo-image', () => ({
   Image: require('react-native').Image,
 }));

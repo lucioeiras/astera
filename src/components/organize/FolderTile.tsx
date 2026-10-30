@@ -47,10 +47,10 @@ export function FolderTile({
   const StatusIcon = status ? statusIcons[status] : null;
   const titleColor = status
     ? {
-        want: colors.blueSoft,
-        'in-progress': colors.yellow,
-        completed: colors.green,
-        abandoned: colors.secondary,
+        want: colors.statusWant,
+        'in-progress': colors.statusInProgress,
+        completed: colors.statusCompleted,
+        abandoned: colors.statusAbandoned,
       }[status]
     : undefined;
 

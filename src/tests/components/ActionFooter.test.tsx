@@ -1,5 +1,5 @@
-import { fireEvent, render } from '@testing-library/react-native';
-import { Text } from 'react-native';
+import { act, fireEvent, render } from '@testing-library/react-native';
+import { Keyboard, Platform, Text } from 'react-native';
 
 import { ActionFooter } from '@/components/ActionFooter';
 import { Button } from '@/components/Button';
@@ -42,3 +42,36 @@ describe('ActionFooter', () => {
     expect(toJSON()?.props.style).toMatchObject({ position: 'absolute', bottom: 0 });
   });
 });
+
+it.each([false, true])(
+  'dismisses the active input with horizontalScroll=%s',
+  async (horizontalScroll) => {
+    const listeners = new Map<string, () => void>();
+    const subscribe = Keyboard.addListener.bind(Keyboard);
+    const addListener = jest
+      .spyOn(Keyboard, 'addListener')
+      .mockImplementation((event, listener) => {
+        listeners.set(event, () => listener({} as Parameters<typeof listener>[0]));
+        return subscribe(event, listener);
+      });
+    const dismiss = jest.spyOn(Keyboard, 'dismiss').mockImplementation(() => {});
+    const onDismissKeyboard = jest.fn();
+    try {
+      const view = await render(
+        <ActionFooter horizontalScroll={horizontalScroll} onDismissKeyboard={onDismissKeyboard} />
+      );
+      await act(async () => {
+        listeners.get(Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow')?.();
+      });
+      await fireEvent.press(view.getByLabelText('Hide keyboard'));
+      expect(onDismissKeyboard).toHaveBeenCalledTimes(1);
+      expect(dismiss).not.toHaveBeenCalled();
+      await view.rerender(<ActionFooter horizontalScroll={horizontalScroll} />);
+      await fireEvent.press(view.getByLabelText('Hide keyboard'));
+      expect(dismiss).toHaveBeenCalledTimes(1);
+    } finally {
+      addListener.mockRestore();
+      dismiss.mockRestore();
+    }
+  }
+);

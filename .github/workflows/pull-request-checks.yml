@@ -29,6 +29,9 @@ jobs:
       - name: Run tests
         run: bun run test -- --ci --runInBand
 
+      - name: Test real note editor
+        run: bun run test:note-editor
+
       - name: Run lint
         run: bun run lint
 

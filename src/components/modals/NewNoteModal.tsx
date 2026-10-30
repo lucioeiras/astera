@@ -4,7 +4,6 @@ import {
   ArrowLeft,
   Bookmark,
   Check,
-  Eye,
   Info,
   List,
   ListChecks,
@@ -20,13 +19,12 @@ import {
   Italic,
   Type,
   User,
-  X,
+  ImagePlus,
 } from 'lucide-react-native';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
-  Keyboard,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -39,8 +37,9 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ActionFooter } from '@/components/ActionFooter';
+import { ModalCloseButton } from '@/components/ModalCloseButton';
+import { ModalSaveButton } from '@/components/ModalSaveButton';
 import { Button } from '@/components/Button';
-import { MarkdownNote } from '@/components/card/MarkdownNote';
 import { MusicLyricsPicker } from '@/components/modals/MusicLyricsPicker';
 import { NoteRichTextInput } from '@/components/modals/NoteRichTextInput';
 import type {
@@ -56,10 +55,13 @@ import { isLinkableItem } from '@/lib/library/links';
 import { isQuoteText } from '@/lib/library/quotes';
 import type { NoteItem, QuoteItem } from '@/lib/library/types';
 import type { MusicMetadata } from '@/lib/music/itunes';
-import type { NoteLineType, TextSelection } from '@/lib/noteFormatting';
+import type { NoteLineType } from '@/lib/noteFormatting';
 import { generateAutoTags, generateAutoTagsAsync } from '@/lib/tags/autoTags';
 import { LocalizedText } from '@/components/LocalizedText';
 import { translate, useLocalization } from '@/lib/i18n';
+import * as ImagePicker from 'expo-image-picker';
+import { saveNoteImage } from '@/lib/library/noteImages';
+import type { PickedImageAsset } from '@/lib/library/storage';
 
 type NewNoteModalProps = {
   visible: boolean;
@@ -81,27 +83,27 @@ export function NewNoteModal({
   const { colors: themeColors } = useAppTheme();
   const styles = useMemo(() => createStyles(themeColors), [themeColors]);
   useLocalization();
-  const { addMusicItem, addTextItem, updateItem, getTags, state } = useLibrary();
+  const { addMusicItem, addTextItem, updateItem, getTags, state, source } = useLibrary();
   const insets = useSafeAreaInsets();
 
   const inputRef = useRef<NoteRichTextInputHandle>(null);
+  const editingItemId = editingItem?.id;
   const titleInputRef = useRef<TextInput>(null);
   const authorInputRef = useRef<TextInput>(null);
   const tagsInputRef = useRef<TextInput>(null);
 
   const [view, setView] = useState<'editor' | 'info'>('editor');
   const [isFormattingOpen, setIsFormattingOpen] = useState(false);
-  const [isPreviewingMarkdown, setIsPreviewingMarkdown] = useState(false);
   const [text, setText] = useState(editingItem?.text ?? initialText ?? '');
-  const [selection, setSelection] = useState<TextSelection>({
-    start: 0,
-    end: 0,
-  });
   const [title, setTitle] = useState(editingItem?.title ?? '');
   const [author, setAuthor] = useState('');
   const [tags, setTags] = useState<string[]>(editingItem?.tags ?? []);
   const [tagInput, setTagInput] = useState('');
   const [saving, setSaving] = useState(false);
+  const [insertingImage, setInsertingImage] = useState(false);
+  const imageImportCount = useRef(0);
+  const [pickingImage, setPickingImage] = useState(false);
+  const busy = saving || insertingImage || pickingImage;
   const [linkedItemId, setLinkedItemId] = useState<string | undefined>(editingItem?.linkedItemId);
   const [isLinkPickerOpen, setIsLinkPickerOpen] = useState(false);
   const [isLyricsPickerOpen, setIsLyricsPickerOpen] = useState(false);
@@ -113,21 +115,20 @@ export function NewNoteModal({
   const autoTagsRef = useRef<string[]>(editingItem?.autoTags ?? []);
 
   const existingTags = useMemo(
-    () => (visible ? getTags().map((t) => t.tag) : []),
-    [getTags, visible]
+    () => (visible && state.status === 'ready' ? getTags().map((t) => t.tag) : []),
+    [getTags, visible, state.status]
   );
 
-  useEffect(() => {
-    if (visible) {
-      const timer = setTimeout(() => {
-        inputRef.current?.focus();
-      }, 100);
-      return () => clearTimeout(timer);
+  // The DOM may initialize after presentation; a warm editor may be ready
+  // before it. Both lifecycle events must be able to request focus.
+  const focusEditorOnOpen = () => {
+    if (visible && view === 'editor') {
+      void inputRef.current?.focus(Boolean(editingItemId)).catch(() => undefined);
     }
-  }, [visible]);
+  };
 
   const handleClose = () => {
-    if (saving) return;
+    if (busy) return;
     setText('');
     setTitle('');
     setAuthor('');
@@ -141,13 +142,12 @@ export function NewNoteModal({
     setLyricsSong(null);
     setLyricsSnippet('');
     setView('editor');
-    setIsPreviewingMarkdown(false);
     setIsFormattingOpen(false);
     onClose();
   };
 
   const handleSave = async () => {
-    if (saving) return;
+    if (saving || pickingImage) return;
 
     setSaving(true);
     try {
@@ -219,23 +219,28 @@ export function NewNoteModal({
       setLyricsSnippet('');
       setIsLyricsPickerOpen(false);
       setView('editor');
-      setIsPreviewingMarkdown(false);
       setIsFormattingOpen(false);
       onSaved?.(item);
       onClose();
-    } catch (e) {
-      console.error('Failed to save note:', e);
-      Alert.alert(translate('Error'), e instanceof Error ? e.message : 'Failed to save note');
+    } catch {
+      Alert.alert(translate('Error'), translate('Could not save note. Please try again.'));
     } finally {
       setSaving(false);
     }
   };
 
-  const handleSwitchToInfo = () => {
+  const handleSwitchToInfo = async () => {
+    let latestText: string;
+    try {
+      latestText = await inputRef.current!.getMarkdown();
+    } catch {
+      Alert.alert(translate('Error'), translate('Editor operation failed. Please try again.'));
+      return;
+    }
     // 1. Instant baseline tags
     const auto = generateAutoTags({
       title: title.trim(),
-      text: text.trim(),
+      text: latestText.trim(),
       existingTags,
     });
     if (auto.length > 0) {
@@ -256,7 +261,7 @@ export function NewNoteModal({
     // 2. On-device LLM semantic enrichment in background
     generateAutoTagsAsync({
       title: title.trim(),
-      text: text.trim(),
+      text: latestText.trim(),
       existingTags,
     })
       .then((aiTags) => {
@@ -278,20 +283,49 @@ export function NewNoteModal({
       .catch(() => {});
 
     setView('info');
-    setTimeout(() => {
-      titleInputRef.current?.focus();
-    }, 100);
   };
 
   const handleSwitchToEditor = () => {
     setView('editor');
     setIsFormattingOpen(false);
-    setTimeout(() => {
-      inputRef.current?.focus();
-    }, 100);
+    titleInputRef.current?.blur();
+    authorInputRef.current?.blur();
+    tagsInputRef.current?.blur();
+    void inputRef.current?.focus().catch(() => undefined);
   };
 
-  const canSave = text.trim().length > 0 && !saving;
+  const canSave = text.trim().length > 0 && !busy;
+
+  const importImage = async (asset: PickedImageAsset): Promise<string> => {
+    imageImportCount.current += 1;
+    setInsertingImage(true);
+    try {
+      return await saveNoteImage(source, asset);
+    } finally {
+      imageImportCount.current -= 1;
+      setInsertingImage(imageImportCount.current > 0);
+    }
+  };
+
+  const handleImage = async () => {
+    if (busy) return;
+    setPickingImage(true);
+    try {
+      await inputRef.current!.captureSelection();
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ['images'],
+        quality: 1,
+      });
+      if (result.canceled || !result.assets[0]) return;
+      const uri = await importImage(result.assets[0]);
+      await inputRef.current!.insertImage(uri);
+      await inputRef.current!.focus();
+    } catch {
+      Alert.alert(translate('Error'), translate('Could not insert image. Please try again.'));
+    } finally {
+      setPickingImage(false);
+    }
+  };
   const isQuote = !lyricsSong && isQuoteText(text);
   const hasInfo = Boolean(
     title.trim() ||
@@ -315,15 +349,24 @@ export function NewNoteModal({
     setLyricsSnippet(snippet);
     setLinkedItemId(undefined);
     setIsLyricsPickerOpen(false);
-    setIsPreviewingMarkdown(false);
     setView('editor');
   };
 
-  const applyFormatting = (action: NoteFormattingAction) => {
-    inputRef.current?.format(action, selection);
-    requestAnimationFrame(() => {
-      inputRef.current?.focus();
-    });
+  const applyFormatting = async (action: NoteFormattingAction) => {
+    try {
+      await inputRef.current!.format(action);
+    } catch {
+      Alert.alert(translate('Error'), translate('Editor operation failed. Please try again.'));
+    }
+  };
+
+  const openLyricsPicker = async () => {
+    try {
+      setText(await inputRef.current!.getMarkdown());
+      setIsLyricsPickerOpen(true);
+    } catch {
+      Alert.alert(translate('Error'), translate('Editor operation failed. Please try again.'));
+    }
   };
 
   const formattingControls: {
@@ -375,11 +418,13 @@ export function NewNoteModal({
 
   return (
     <Modal
+      testID="note-editor-modal"
       visible={visible}
       animationType="fade"
       transparent
       onRequestClose={handleClose}
       onDismiss={onDismiss}
+      onShow={focusEditorOnOpen}
       statusBarTranslucent
     >
       <KeyboardAvoidingView
@@ -392,205 +437,239 @@ export function NewNoteModal({
           }}
           className="flex-1 w-full relative"
         >
-          {view === 'editor' ? (
-            isPreviewingMarkdown ? (
+          <ModalCloseButton onPress={handleClose} disabled={busy} />
+          <ModalSaveButton>
+            <Button
+              size="small"
+              accessibilityLabel={translate('Save note')}
+              variant="primary"
+              onPress={handleSave}
+              disabled={!canSave}
+              icon={
+                saving ? (
+                  <ActivityIndicator size={20} color={themeColors.inverse} />
+                ) : (
+                  <Check
+                    size={20}
+                    color={canSave ? themeColors.inverse : themeColors.muted}
+                    strokeWidth={2}
+                  />
+                )
+              }
+            />
+          </ModalSaveButton>
+          {/* Keep the WebView measured while the information pane covers it. */}
+          <View style={{ flex: 1 }}>
+            <View
+              testID="note-editor-pane"
+              pointerEvents={view === 'editor' ? 'auto' : 'none'}
+              style={{ flex: 1, opacity: view === 'editor' ? 1 : 0 }}
+              accessibilityElementsHidden={view !== 'editor'}
+              importantForAccessibility={view === 'editor' ? 'auto' : 'no-hide-descendants'}
+            >
+              <NoteRichTextInput
+                ref={inputRef}
+                value={text}
+                onReady={focusEditorOnOpen}
+                onChangeMarkdown={setText}
+                onImportImage={importImage}
+                onInsert={async (action) => {
+                  if (action === 'image') await handleImage();
+                  else await openLyricsPicker();
+                }}
+                onError={() =>
+                  Alert.alert(
+                    translate('Error'),
+                    translate('Editor operation failed. Please try again.')
+                  )
+                }
+                placeholder={translate('Type here... Use / to see options.')}
+                placeholderTextColor={themeColors.muted}
+              />
+            </View>
+            {view === 'info' && (
+              /* Note Info Mode: Title and Tags sections */
               <ScrollView
                 className="flex-1 w-full"
-                contentContainerStyle={{
-                  paddingHorizontal: 32,
-                  paddingTop: 32,
-                  paddingBottom: 128,
-                }}
+                style={[StyleSheet.absoluteFill, { backgroundColor: themeColors.canvas }]}
+                contentContainerStyle={styles.scrollContent}
                 keyboardShouldPersistTaps="handled"
                 showsVerticalScrollIndicator={false}
               >
-                {text.trim() ? (
-                  <MarkdownNote
-                    markdown={text}
-                    onMarkdownChange={setText}
-                    onEdit={() => {
-                      setIsPreviewingMarkdown(false);
-                      setTimeout(() => inputRef.current?.focus(), 100);
-                    }}
-                  />
-                ) : (
-                  <Text className="font-sans text-lg text-theme-muted">
-                    <LocalizedText>Your Markdown preview will appear here.</LocalizedText>
+                {/* Header */}
+                <View className="gap-3 px-8 py-8">
+                  <Text className="font-sans-semibold text-2xl text-theme-foreground">
+                    {isQuote ? 'Quote info' : 'Note info'}
                   </Text>
-                )}
-              </ScrollView>
-            ) : (
-              <View className="flex-1 w-full">
-                <NoteRichTextInput
-                  ref={inputRef}
-                  value={text}
-                  onChangeMarkdown={setText}
-                  onSelectionChange={setSelection}
-                  placeholder={translate('Type here...')}
-                  placeholderTextColor={themeColors.muted}
-                />
-              </View>
-            )
-          ) : (
-            /* Note Info Mode: Title and Tags sections */
-            <ScrollView
-              className="flex-1 w-full"
-              contentContainerStyle={styles.scrollContent}
-              keyboardShouldPersistTaps="handled"
-              showsVerticalScrollIndicator={false}
-            >
-              {/* Header */}
-              <View className="gap-3 p-8">
-                <Text className="font-sans-semibold text-2xl text-theme-foreground">
-                  {isQuote ? 'Quote info' : 'Note info'}
-                </Text>
-                <Text className="font-sans text-base text-theme-secondary leading-relaxed">
-                  {isQuote
-                    ? 'Add an author, title and tags to organize this quote on your board.'
-                    : 'Add a title and tags to organize this note on your board.'}
-                </Text>
-              </View>
+                  <Text className="font-sans text-base text-theme-secondary leading-relaxed">
+                    {isQuote
+                      ? 'Add an author, title and tags to organize this quote on your board.'
+                      : 'Add a title and tags to organize this note on your board.'}
+                  </Text>
+                </View>
 
-              {/* Title Section */}
-              <View className="flex-row items-center gap-4 py-5 px-8 border-t border-b border-theme-raised">
-                <Type size={20} color={themeColors.body} />
+                {/* Title Section */}
+                <View className="flex-row items-center gap-4 py-5 px-8 border-t border-b border-theme-raised">
+                  <Type size={20} color={themeColors.body} />
 
-                <TextInput
-                  ref={titleInputRef}
-                  value={title}
-                  onChangeText={setTitle}
-                  placeholder={translate('Add a title to this note')}
-                  placeholderTextColor={themeColors.muted}
-                  returnKeyType="next"
-                  onSubmitEditing={() => {
-                    (isQuote ? authorInputRef : tagsInputRef).current?.focus();
-                  }}
-                  className="w-full font-sans text-xl text-theme-foreground leading-tight"
-                  style={styles.borderlessInput}
-                  underlineColorAndroid="transparent"
-                />
-              </View>
-
-              {isQuote && (
-                <View className="flex-row items-center gap-4 py-5 px-8 border-b border-theme-raised">
-                  <User size={20} color={themeColors.body} />
                   <TextInput
-                    ref={authorInputRef}
-                    value={author}
-                    onChangeText={setAuthor}
-                    placeholder={translate('Add an author to this quote')}
+                    ref={titleInputRef}
+                    autoFocus
+                    value={title}
+                    onChangeText={setTitle}
+                    placeholder={translate('Add a title to this note')}
                     placeholderTextColor={themeColors.muted}
                     returnKeyType="next"
-                    onSubmitEditing={() => tagsInputRef.current?.focus()}
-                    className="flex-1 font-sans text-xl text-theme-foreground leading-tight"
+                    onSubmitEditing={() => {
+                      (isQuote ? authorInputRef : tagsInputRef).current?.focus();
+                    }}
+                    className="w-full font-sans text-xl text-theme-foreground leading-tight"
                     style={styles.borderlessInput}
                     underlineColorAndroid="transparent"
                   />
                 </View>
-              )}
 
-              {/* Tags Section */}
-              <TagsBox
-                tags={tags}
-                autoTags={autoTags}
-                onTagsChange={setTags}
-                onAutoTagsChange={setAutoTags}
-                tagInput={tagInput}
-                onTagInputChange={setTagInput}
-                inputRef={tagsInputRef}
-                onSubmitEditing={handleSave}
-                onRemoveTag={(removed) => {
-                  autoTagsRef.current = autoTagsRef.current.filter((t) => t !== removed);
-                }}
-              />
+                {isQuote && (
+                  <View className="flex-row items-center gap-4 py-5 px-8 border-b border-theme-raised">
+                    <User size={20} color={themeColors.body} />
+                    <TextInput
+                      ref={authorInputRef}
+                      value={author}
+                      onChangeText={setAuthor}
+                      placeholder={translate('Add an author to this quote')}
+                      placeholderTextColor={themeColors.muted}
+                      returnKeyType="next"
+                      onSubmitEditing={() => tagsInputRef.current?.focus()}
+                      className="flex-1 font-sans text-xl text-theme-foreground leading-tight"
+                      style={styles.borderlessInput}
+                      underlineColorAndroid="transparent"
+                    />
+                  </View>
+                )}
 
-              {lyricsSong ? (
-                <SourcePreview
-                  pendingMusic={lyricsSong}
-                  onChange={() => setIsLyricsPickerOpen(true)}
-                  onRemove={() => setLyricsSong(null)}
-                  containerClassName="px-8 py-6 border-b border-theme-raised"
+                {/* Tags Section */}
+                <TagsBox
+                  containerClassName="py-6 px-8 border-b border-theme-raised gap-4"
+                  tags={tags}
+                  autoTags={autoTags}
+                  onTagsChange={setTags}
+                  onAutoTagsChange={setAutoTags}
+                  tagInput={tagInput}
+                  onTagInputChange={setTagInput}
+                  inputRef={tagsInputRef}
+                  onSubmitEditing={handleSave}
+                  onRemoveTag={(removed) => {
+                    autoTagsRef.current = autoTagsRef.current.filter((t) => t !== removed);
+                  }}
                 />
-              ) : linkedItem && isLinkableItem(linkedItem) ? (
-                <SourcePreview
-                  item={linkedItem}
-                  onChange={() => setIsLinkPickerOpen(true)}
-                  onRemove={() => setLinkedItemId(undefined)}
-                  containerClassName="px-8 py-6 border-b border-theme-raised"
-                />
-              ) : (
-                <Pressable
-                  onPress={() => setIsLinkPickerOpen(true)}
-                  accessibilityRole="button"
-                  accessibilityLabel={translate('Add source')}
-                  className="flex-row items-center gap-4 py-5 px-8 border-b border-theme-raised"
-                >
-                  <Bookmark size={20} color={themeColors.foreground} />
-                  <Text className="font-sans-semibold text-lg text-theme-foreground">
-                    <LocalizedText>Add source</LocalizedText>
-                  </Text>
-                </Pressable>
-              )}
-            </ScrollView>
-          )}
+
+                {lyricsSong ? (
+                  <SourcePreview
+                    pendingMusic={lyricsSong}
+                    onChange={() => setIsLyricsPickerOpen(true)}
+                    onRemove={() => setLyricsSong(null)}
+                    containerClassName="px-8 py-6 border-b border-theme-raised"
+                  />
+                ) : linkedItem && isLinkableItem(linkedItem) ? (
+                  <SourcePreview
+                    item={linkedItem}
+                    onChange={() => setIsLinkPickerOpen(true)}
+                    onRemove={() => setLinkedItemId(undefined)}
+                    containerClassName="px-8 py-6 border-b border-theme-raised"
+                  />
+                ) : (
+                  <Pressable
+                    onPress={() => setIsLinkPickerOpen(true)}
+                    accessibilityRole="button"
+                    accessibilityLabel={translate('Add source')}
+                    className="flex-row items-center gap-4 py-5 px-8 border-b border-theme-raised"
+                  >
+                    <Bookmark size={20} color={themeColors.foreground} />
+                    <Text className="font-sans-semibold text-lg text-theme-foreground">
+                      <LocalizedText>Add source</LocalizedText>
+                    </Text>
+                  </Pressable>
+                )}
+              </ScrollView>
+            )}
+          </View>
 
           {/* Action buttons at the bottom */}
           <ActionFooter
+            buttonSize="small"
             bottomInset={insets.bottom}
             overlay
-            horizontalScroll={view === 'editor' && !isPreviewingMarkdown && isFormattingOpen}
+            horizontalScroll={view === 'editor' && isFormattingOpen}
+            onDismissKeyboard={
+              view === 'editor'
+                ? () => {
+                    void inputRef.current?.blur().catch(() => {
+                      Alert.alert(
+                        translate('Error'),
+                        translate('Editor operation failed. Please try again.')
+                      );
+                    });
+                  }
+                : undefined
+            }
           >
-            {view === 'editor' && !isPreviewingMarkdown && isFormattingOpen ? (
+            {view === 'editor' && isFormattingOpen ? (
               <>
                 <Button
                   accessibilityLabel={translate('Cancel formatting')}
                   onPress={() => setIsFormattingOpen(false)}
-                  disabled={saving}
+                  disabled={busy}
                   icon={<ArrowLeft size={20} color={themeColors.foreground} strokeWidth={2} />}
                 />
                 <Button
                   accessibilityLabel={translate('Bold')}
                   onPress={() => applyFormatting('bold')}
-                  disabled={saving}
+                  disabled={busy}
                   icon={<Bold size={20} color={themeColors.foreground} strokeWidth={2} />}
                 />
                 <Button
                   accessibilityLabel={translate('Italic')}
                   onPress={() => applyFormatting('italic')}
-                  disabled={saving}
+                  disabled={busy}
                   icon={<Italic size={20} color={themeColors.foreground} strokeWidth={2} />}
+                />
+                <Button
+                  accessibilityLabel={translate('Insert image')}
+                  onPress={() => void handleImage()}
+                  disabled={busy}
+                  icon={
+                    insertingImage ? (
+                      <ActivityIndicator size={20} color={themeColors.foreground} />
+                    ) : (
+                      <ImagePlus size={20} color={themeColors.foreground} />
+                    )
+                  }
                 />
                 {formattingControls.map(({ label, type, icon }) => (
                   <Button
                     key={type}
                     accessibilityLabel={`Change line to ${label}`}
                     onPress={() => applyFormatting(type)}
-                    disabled={saving}
+                    disabled={busy}
                     icon={icon}
                   />
                 ))}
               </>
             ) : (
               <>
-                <Button
-                  accessibilityLabel={translate('Cancel')}
-                  onPress={handleClose}
-                  disabled={saving}
-                  icon={<X size={20} color={themeColors.foreground} strokeWidth={2} />}
-                />
-                {view === 'editor' && !isPreviewingMarkdown && (
+                {view === 'editor' && (
                   <Button
                     accessibilityLabel={translate('Open text formatting')}
                     onPress={() => setIsFormattingOpen(true)}
-                    disabled={saving}
+                    disabled={busy}
                     icon={<Type size={20} color={themeColors.foreground} strokeWidth={2} />}
                   />
                 )}
                 {view === 'editor' && (
                   <Button
                     accessibilityLabel={translate('Add song lyrics')}
-                    onPress={() => setIsLyricsPickerOpen(true)}
-                    disabled={saving}
+                    onPress={() => void openLyricsPicker()}
+                    disabled={busy}
                     icon={
                       <Music2
                         size={20}
@@ -600,27 +679,11 @@ export function NewNoteModal({
                     }
                   />
                 )}
-                {view === 'editor' && (
-                  <Button
-                    accessibilityLabel={isPreviewingMarkdown ? 'Edit markdown' : 'Preview markdown'}
-                    onPress={() => {
-                      Keyboard.dismiss();
-                      setIsPreviewingMarkdown((current) => !current);
-                    }}
-                    disabled={saving}
-                    icon={
-                      isPreviewingMarkdown ? (
-                        <SquarePen size={20} color={themeColors.foreground} strokeWidth={2} />
-                      ) : (
-                        <Eye size={20} color={themeColors.foreground} strokeWidth={2} />
-                      )
-                    }
-                  />
-                )}
                 {view === 'editor' ? (
                   <Button
                     accessibilityLabel={translate('Note info')}
                     onPress={handleSwitchToInfo}
+                    disabled={busy}
                     icon={
                       <Info
                         size={20}
@@ -637,24 +700,6 @@ export function NewNoteModal({
                     text={translate('Note')}
                   />
                 )}
-
-                <Button
-                  accessibilityLabel={translate('Save note')}
-                  variant="primary"
-                  onPress={handleSave}
-                  disabled={!canSave}
-                  icon={
-                    saving ? (
-                      <ActivityIndicator size={20} color={themeColors.inverse} />
-                    ) : (
-                      <Check
-                        size={20}
-                        color={canSave ? themeColors.inverse : themeColors.muted}
-                        strokeWidth={2}
-                      />
-                    )
-                  }
-                />
               </>
             )}
           </ActionFooter>
@@ -685,7 +730,7 @@ const createStyles = (themeColors: ThemeColors) =>
     },
     scrollContent: {
       flexGrow: 1,
-      paddingVertical: 20,
+      paddingTop: 56,
       paddingBottom: 128,
     },
     borderlessInput: {

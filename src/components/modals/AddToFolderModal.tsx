@@ -10,7 +10,7 @@ import { Button } from '@/components/Button';
 import { NewFolderModal } from '@/components/modals/NewFolderModal';
 import { FolderTile } from '@/components/organize/FolderTile';
 import { useLibrary } from '@/hooks/useLibrary';
-import { getTagGroups, STATUS_FOLDERS } from '@/lib/library/organize';
+import { getTagGroups } from '@/lib/library/organize';
 import { getLibraryFolders, getSourceId, saveLibraryFolders } from '@/lib/library/storage';
 import type { LibraryItem } from '@/lib/library/types';
 import { LocalizedText } from '@/components/LocalizedText';
@@ -84,11 +84,7 @@ export function AddToFolderModal({ visible, items, onClose, onAdded }: Props) {
 
   const createFolder = async (name: string): Promise<boolean> => {
     if (folderNames === null) return false;
-    if (
-      [...folderNames, ...STATUS_FOLDERS.map((folder) => folder.title)].some(
-        (existing) => existing.toLocaleLowerCase() === name.toLocaleLowerCase()
-      )
-    ) {
+    if (folderNames.some((existing) => existing.toLocaleLowerCase() === name.toLocaleLowerCase())) {
       Alert.alert(translate('Folder already exists'), translate('Choose a different name.'));
       return false;
     }

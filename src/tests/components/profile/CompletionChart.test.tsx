@@ -100,3 +100,12 @@ it('keeps every cover in a busy month and retains empty month rows', async () =>
   expect(screen.getByLabelText('December 2026: 30 cards completed')).toBeTruthy();
   expect(screen.getByLabelText('January 2026: 0 cards completed')).toBeTruthy();
 });
+
+it('compacts empty months while keeping completed covers full size', async () => {
+  const months = emptyMonths();
+  months[0] = [book];
+  await render(<CompletionChart months={months} year={2026} />);
+  expect(screen.getByTestId('completion-month-1')).toHaveStyle({ height: 80 });
+  expect(screen.getByTestId('completion-month-2')).toHaveStyle({ height: 24 });
+  expect(screen.getByTestId('completion-month-12')).toHaveStyle({ height: 24 });
+});

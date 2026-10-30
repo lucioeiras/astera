@@ -39,6 +39,9 @@ jest.mock('expo-router', () => ({
   useLocalSearchParams: () => mockParams,
   useFocusEffect: (callback: () => void) => mockUseEffect(callback, [callback]),
 }));
+jest.mock('@react-native-async-storage/async-storage', () => ({
+  getItem: jest.fn().mockResolvedValue(null),
+}));
 jest.mock('@/hooks/useLibrary', () => ({
   useLibrary: () => ({
     state: { status: 'ready', result: { items: mockItems, issues: [], pendingDownloads: 0 } },
@@ -244,6 +247,16 @@ it('shows pinned cards only when the board has no active filters', async () => {
   mockQuery = 'Today';
   await view.rerender(<BoardScreen />);
   expect(screen.queryByTestId('pinned-cards-container')).toBeNull();
+});
+
+it('adds breathing room below the filters when the pinned row is hidden', async () => {
+  mockParams = {};
+  const view = await render(<BoardScreen />);
+  expect(screen.getByTestId('board-list-header').props.className).toBe('pb-2');
+
+  mockQuery = 'Today';
+  await view.rerender(<BoardScreen />);
+  expect(screen.getByTestId('board-list-header').props.className).toBe('mb-3 pb-2');
 });
 
 it('keeps the pinned row visible but excludes it from card selection', async () => {

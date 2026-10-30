@@ -65,20 +65,146 @@ export function decodeHtmlEntities(str: string): string {
 
 function extractMeta(html: string, propertyOrName: string): string | null {
   const regex = new RegExp(
-    `<meta\\s+[^>]*(?:property|name)=["']${propertyOrName}["'][^>]*content=["']([^"']*)["']`,
+    `<meta\\s+[^>]*(?:property|name)=["']${propertyOrName}["'][^>]*content=(["'])([\\s\\S]*?)\\1`,
     'i'
   );
   const match = html.match(regex);
-  if (match) return decodeHtmlEntities(match[1].trim());
+  if (match) return decodeHtmlEntities(match[2].trim());
 
   const reverseRegex = new RegExp(
-    `<meta\\s+[^>]*content=["']([^"']*)["'][^>]*(?:property|name)=["']${propertyOrName}["']`,
+    `<meta\\s+[^>]*content=(["'])([\\s\\S]*?)\\1[^>]*(?:property|name)=["']${propertyOrName}["']`,
     'i'
   );
   const reverseMatch = html.match(reverseRegex);
-  if (reverseMatch) return decodeHtmlEntities(reverseMatch[1].trim());
+  if (reverseMatch) return decodeHtmlEntities(reverseMatch[2].trim());
 
   return null;
+}
+
+function asRecord(value: unknown): Record<string, unknown> {
+  return value !== null && typeof value === 'object' && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : {};
+}
+
+function metadataText(value: unknown): string {
+  return typeof value === 'string' ? value.trim() : '';
+}
+
+function metadataImage(value: unknown): string {
+  const image = metadataText(value);
+  try {
+    return /^https?:$/.test(new URL(image).protocol) ? image : '';
+  } catch {
+    return '';
+  }
+}
+
+function canonicalTikTokUrl(value: string): string | undefined {
+  try {
+    const parsed = new URL(value);
+    if (
+      /^https?:$/.test(parsed.protocol) &&
+      /(?:^|\.)tiktok\.com$/i.test(parsed.hostname) &&
+      /^\/@[^/]+\/(?:video|photo)\/\d+\/?$/.test(parsed.pathname)
+    ) {
+      return `https://www.tiktok.com${parsed.pathname.replace(/\/$/, '')}`;
+    }
+  } catch {
+    // Redirects and metadata may contain invalid URLs.
+  }
+  return undefined;
+}
+
+async function fetchTikTok(url: string, json: boolean = false) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 8000);
+  try {
+    const response = await fetch(url, {
+      signal: controller.signal,
+      headers: { Accept: json ? 'application/json' : 'text/html' },
+    });
+    if (!response.ok) return undefined;
+    const data: unknown = json ? await response.json() : await response.text();
+    return { url: response.url, data };
+  } catch {
+    return undefined;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+function extractTikTokPage(html: string, url: string) {
+  let title = '';
+  let thumbnail = '';
+  const videoId = new URL(url).pathname.match(/\/(?:video|photo)\/(\d+)/)?.[1];
+  const scripts = html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi);
+  for (const [, attributes, content] of scripts) {
+    const id = attributes.match(/\bid=["']([^"']+)["']/i)?.[1];
+    if (id !== '__UNIVERSAL_DATA_FOR_REHYDRATION__' && id !== 'SIGI_STATE') continue;
+    try {
+      const data = asRecord(JSON.parse(content));
+      const scope = asRecord(data.__DEFAULT_SCOPE__);
+      const detail = asRecord(scope['webapp.video-detail']);
+      const item =
+        id === 'SIGI_STATE'
+          ? asRecord(asRecord(data.ItemModule)[videoId ?? ''])
+          : asRecord(asRecord(detail.itemInfo).itemStruct);
+      // Never use a recommendation's metadata for the shared video.
+      if (videoId && item.id !== videoId) continue;
+      const video = asRecord(item.video);
+      title ||= metadataText(item.desc);
+      thumbnail ||=
+        metadataImage(video.cover) ||
+        metadataImage(video.originCover) ||
+        metadataImage(video.dynamicCover);
+    } catch {
+      // Broken hydration JSON must not prevent Open Graph fallbacks.
+    }
+  }
+  title ||=
+    extractMeta(html, 'og:description') ||
+    extractMeta(html, 'twitter:description') ||
+    extractMeta(html, 'og:title') ||
+    extractMeta(html, 'twitter:title') ||
+    extractTitle(html) ||
+    '';
+  thumbnail ||=
+    metadataImage(extractMeta(html, 'og:image')) ||
+    metadataImage(extractMeta(html, 'twitter:image'));
+  return { title, thumbnail };
+}
+
+async function resolveTikTokMetadata(url: string): Promise<ResolvedMetadata> {
+  let resolvedUrl = canonicalTikTokUrl(url) ?? url;
+  let page: Awaited<ReturnType<typeof fetchTikTok>>;
+  // oEmbed expects the video URL, rather than vm/vt or /t/ share redirects.
+  if (!canonicalTikTokUrl(url)) {
+    page = await fetchTikTok(url);
+    resolvedUrl = canonicalTikTokUrl(page?.url ?? '') ?? resolvedUrl;
+  }
+  const oembed = await fetchTikTok(
+    `https://www.tiktok.com/oembed?url=${encodeURIComponent(resolvedUrl)}`,
+    true
+  );
+  const data = asRecord(oembed?.data);
+  let title = decodeHTML(metadataText(data.title));
+  let thumbnail = metadataImage(data.thumbnail_url);
+  if (!title || !thumbnail) {
+    page ??= await fetchTikTok(resolvedUrl);
+    resolvedUrl = canonicalTikTokUrl(page?.url ?? '') ?? resolvedUrl;
+    if (typeof page?.data === 'string') {
+      const metadata = extractTikTokPage(page.data, resolvedUrl);
+      title ||= metadata.title;
+      thumbnail ||= metadata.thumbnail;
+    }
+  }
+  return {
+    type: 'tiktok',
+    url: resolvedUrl,
+    title: title || 'TikTok Video',
+    thumbnail: thumbnail || 'https://www.google.com/s2/favicons?domain=tiktok.com&sz=128',
+  };
 }
 
 function extractTitle(html: string): string | null {
@@ -256,19 +382,7 @@ export async function resolveUrlMetadata(inputUrl: string): Promise<ResolvedMeta
   }
 
   if (/(?:^|\.)tiktok\.com$/i.test(hostname)) {
-    let title = 'TikTok Video';
-    let thumbnail = 'https://www.google.com/s2/favicons?domain=tiktok.com&sz=128';
-    try {
-      const response = await fetch(`https://www.tiktok.com/oembed?url=${encodeURIComponent(url)}`);
-      if (response.ok) {
-        const data = await response.json();
-        if (typeof data.title === 'string' && data.title.trim()) title = decodeHTML(data.title);
-        if (typeof data.thumbnail_url === 'string') thumbnail = data.thumbnail_url;
-      }
-    } catch {
-      // Keep a usable video card when TikTok metadata is unavailable.
-    }
-    return { type: 'tiktok', url, title, thumbnail };
+    return resolveTikTokMetadata(url);
   }
 
   // 2. Reddit Detection

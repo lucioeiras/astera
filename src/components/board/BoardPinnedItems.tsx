@@ -15,6 +15,8 @@ import {
 import { ItemCard } from '@/components/cards/ItemCard';
 import type { LibraryItem } from '@/lib/library/types';
 
+const PINNED_CARD_SCALE = 0.7;
+
 function getDefaultAspectRatio(item: LibraryItem): number {
   switch (item.type) {
     case 'book':
@@ -69,7 +71,7 @@ export function PinnedItemPreview({
       style={{
         width: width / 0.7,
         height: 100 / 0.7,
-        transform: [{ scale: 0.7 }],
+        transform: [{ scale: PINNED_CARD_SCALE }],
         transformOrigin: 'top left',
       }}
     >
@@ -161,7 +163,6 @@ export function BoardPinnedItems({ items, isEditing, onPress, onReorder, onRemov
             style={{
               width,
               height: 100,
-              borderRadius: 12,
               overflow: item.type === 'music' ? 'visible' : 'hidden',
             }}
           >

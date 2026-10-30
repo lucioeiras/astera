@@ -1,4 +1,5 @@
 import { useAppTheme } from '@/lib/theme';
+import { colorWithAlpha } from '@/lib/theme/palette';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { BlurView, type BlurTint } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -82,23 +83,31 @@ export function ProgressiveBlur({
       {maxDarkOpacity > 0 && (
         <LinearGradient
           colors={[
-            colors.canvas + '00',
-            colors.canvas +
+            colorWithAlpha(colors.canvas, '00'),
+            colorWithAlpha(
+              colors.canvas,
               Math.round(maxDarkOpacity * 0.4 * 255)
                 .toString(16)
-                .padStart(2, '0'),
-            colors.canvas +
+                .padStart(2, '0')
+            ),
+            colorWithAlpha(
+              colors.canvas,
               Math.round(maxDarkOpacity * 0.6 * 255)
                 .toString(16)
-                .padStart(2, '0'),
-            colors.canvas +
+                .padStart(2, '0')
+            ),
+            colorWithAlpha(
+              colors.canvas,
               Math.round(maxDarkOpacity * 0.8 * 255)
                 .toString(16)
-                .padStart(2, '0'),
-            colors.canvas +
+                .padStart(2, '0')
+            ),
+            colorWithAlpha(
+              colors.canvas,
               Math.round(maxDarkOpacity * 255)
                 .toString(16)
-                .padStart(2, '0'),
+                .padStart(2, '0')
+            ),
           ]}
           locations={[0, 0.35, 0.65, 0.85, 1]}
           style={StyleSheet.absoluteFill}

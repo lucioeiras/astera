@@ -1,6 +1,6 @@
 import { useAppTheme } from '@/lib/theme';
 import { Tabs } from 'expo-router';
-import { RotateCcw, Folder, CircleUser, LayoutGrid } from 'lucide-react-native';
+import { CircleUser, Folder, LayoutGrid, RotateCcw } from 'lucide-react-native';
 
 import { ProgressiveBlur } from '@/components/effects/ProgressiveBlur';
 import { FloatingTabOverlayProvider } from '@/components/menus/FloatingTabOverlay';
@@ -18,7 +18,7 @@ export default function TabLayout() {
         screenOptions={{
           headerShown: false,
           tabBarActiveTintColor: themeColors.foreground, // tailwind blue-500
-          tabBarInactiveTintColor: themeColors.secondary, // tailwind zinc-500
+          tabBarInactiveTintColor: themeColors.strongBorder, // tailwind zinc-500
           tabBarBackground: () => <ProgressiveBlur height={160} darkLayerOpacity={0.9} />,
           tabBarStyle: {
             position: 'absolute',
@@ -39,8 +39,8 @@ export default function TabLayout() {
           name="board"
           options={{
             title: translate('Board'),
-            tabBarIcon: ({ color }) => (
-              <LayoutGrid size={iconSize} color={color as string} strokeWidth={2} />
+            tabBarIcon: ({ color, focused }) => (
+              <LayoutGrid size={iconSize} color={color as string} strokeWidth={focused ? 2 : 1.5} />
             ),
           }}
         />
@@ -48,8 +48,8 @@ export default function TabLayout() {
           name="folders"
           options={{
             title: translate('Folders'),
-            tabBarIcon: ({ color }) => (
-              <Folder size={iconSize} color={color as string} strokeWidth={2} />
+            tabBarIcon: ({ color, focused }) => (
+              <Folder size={iconSize} color={color as string} strokeWidth={focused ? 2 : 1.5} />
             ),
           }}
         />
@@ -57,8 +57,8 @@ export default function TabLayout() {
           name="review"
           options={{
             title: translate('Review'),
-            tabBarIcon: ({ color }) => (
-              <RotateCcw size={iconSize} color={color as string} strokeWidth={2} />
+            tabBarIcon: ({ color, focused }) => (
+              <RotateCcw size={iconSize} color={color as string} strokeWidth={focused ? 2 : 1.5} />
             ),
           }}
         />
@@ -67,8 +67,8 @@ export default function TabLayout() {
           name="profile"
           options={{
             title: translate('Profile'),
-            tabBarIcon: ({ color }) => (
-              <CircleUser size={iconSize} color={color as string} strokeWidth={2} />
+            tabBarIcon: ({ color, focused }) => (
+              <CircleUser size={iconSize} color={color as string} strokeWidth={focused ? 2 : 1.5} />
             ),
           }}
         />

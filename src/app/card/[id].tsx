@@ -1,4 +1,5 @@
 import { useAppTheme } from '@/lib/theme';
+import { colorWithAlpha } from '@/lib/theme/palette';
 import { BlurView } from 'expo-blur';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
@@ -164,7 +165,17 @@ export default function CardDetailScreen() {
     <View style={StyleSheet.absoluteFill} className="flex-1">
       {/* Background Blur + Dark Layer */}
       <BlurView intensity={64} tint={isDark ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />
-      <View style={[StyleSheet.absoluteFill, { backgroundColor: themeColors.canvas + '80' }]} />
+      <View
+        style={[
+          StyleSheet.absoluteFill,
+          {
+            backgroundColor: colorWithAlpha(
+              themeColors.canvas,
+              item?.type === 'note' ? 'E6' : '66'
+            ),
+          },
+        ]}
+      />
 
       <Animated.View
         style={[

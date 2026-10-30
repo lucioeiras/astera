@@ -1,4 +1,5 @@
 import { useAppTheme } from '@/lib/theme';
+import { colorWithAlpha } from '@/lib/theme/palette';
 import { BlurView } from 'expo-blur';
 import { router, useFocusEffect } from 'expo-router';
 import { Check, X } from 'lucide-react-native';
@@ -46,7 +47,17 @@ export default function ReviewScreen() {
   const insets = useSafeAreaInsets();
   const { width: windowWidth } = useWindowDimensions();
   const sourceId = getSourceId(source);
-  const items = useMemo(() => (state.status === 'ready' ? state.result.items : []), [state]);
+  const items = useMemo(
+    () =>
+      state.status === 'ready'
+        ? state.result.items.filter(
+            (item) =>
+              !('progressStatus' in item) ||
+              (item.progressStatus !== 'in-progress' && item.progressStatus !== 'completed')
+          )
+        : [],
+    [state]
+  );
   const availableIds = useMemo(() => new Set(items.map((item) => item.id)), [items]);
   const [reviewQueue, setReviewQueue] = useState<ReviewQueueState | null>(null);
   const [restoreBackup, setRestoreBackup] = useState<DeletedItemBackup[] | null>(null);
@@ -59,7 +70,7 @@ export default function ReviewScreen() {
 
   if (state.status === 'ready') {
     if (!reviewQueue || reviewQueue.sourceId !== sourceId) {
-      setReviewQueue({ sourceId, ids: createReviewQueue(state.result.items) });
+      setReviewQueue({ sourceId, ids: createReviewQueue(items) });
     } else if (reviewQueue.ids.some((id) => !availableIds.has(id))) {
       setReviewQueue({
         ...reviewQueue,
@@ -344,7 +355,10 @@ export default function ReviewScreen() {
       />
       <View
         pointerEvents="none"
-        style={[StyleSheet.absoluteFill, { backgroundColor: themeColors.canvas + '8c' }]}
+        style={[
+          StyleSheet.absoluteFill,
+          { backgroundColor: colorWithAlpha(themeColors.canvas, '8c') },
+        ]}
       />
 
       <SafeAreaView className="flex-1 bg-transparent" edges={['top', 'left', 'right']}>
@@ -531,9 +545,5 @@ const BoardBackdrop = memo(
       </View>
     );
   },
-  (previous, next) =>
-    previous.sourceId === next.sourceId &&
-    previous.items.length > 0 &&
-    next.items.length > 0 &&
-    next.items.length <= previous.items.length
+  (previous, next) => previous.sourceId === next.sourceId && previous.items === next.items
 );

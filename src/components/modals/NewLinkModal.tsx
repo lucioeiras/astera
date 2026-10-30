@@ -17,6 +17,8 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ActionFooter } from '@/components/ActionFooter';
+import { ModalCloseButton } from '@/components/ModalCloseButton';
+import { ModalSaveButton } from '@/components/ModalSaveButton';
 import { Button } from '@/components/Button';
 import { TagsBox } from '@/components/TagsBox';
 import { useLibrary } from '@/hooks/useLibrary';
@@ -286,6 +288,27 @@ export function NewLinkModal({
           }}
           className="flex-1 w-full relative"
         >
+          <ModalCloseButton onPress={handleClose} disabled={saving} />
+          <ModalSaveButton>
+            <Button
+              size="small"
+              accessibilityLabel={translate('Save link')}
+              variant="primary"
+              onPress={handleSave}
+              disabled={!canSave}
+              icon={
+                saving ? (
+                  <ActivityIndicator size={20} color={themeColors.inverse} />
+                ) : (
+                  <Check
+                    size={20}
+                    color={canSave ? themeColors.inverse : themeColors.muted}
+                    strokeWidth={2}
+                  />
+                )
+              }
+            />
+          </ModalSaveButton>
           <ScrollView
             className="flex-1 w-full"
             contentContainerStyle={styles.scrollContent}
@@ -293,7 +316,7 @@ export function NewLinkModal({
             showsVerticalScrollIndicator={false}
           >
             {/* Header */}
-            <View className="gap-3 p-8 pt-0">
+            <View className="gap-3 px-8 py-8 pt-0">
               <Text className="font-sans-semibold text-2xl text-theme-foreground">
                 <LocalizedText>Add a new link</LocalizedText>
               </Text>
@@ -362,6 +385,7 @@ export function NewLinkModal({
 
             {/* Tags section */}
             <TagsBox
+              containerClassName="py-6 px-8 border-b border-theme-raised gap-4"
               tags={tags}
               autoTags={autoTags}
               onTagsChange={setTags}
@@ -404,33 +428,7 @@ export function NewLinkModal({
           </ScrollView>
 
           {/* Action buttons at the bottom */}
-          <ActionFooter bottomInset={insets.bottom}>
-            <Button
-              accessibilityLabel={translate('Cancel')}
-              onPress={handleClose}
-              disabled={saving}
-              icon={<X size={20} color={themeColors.foreground} strokeWidth={2} />}
-              text={translate('Cancel')}
-            />
-            <Button
-              accessibilityLabel={translate('Save link')}
-              variant="primary"
-              onPress={handleSave}
-              disabled={!canSave}
-              icon={
-                saving ? (
-                  <ActivityIndicator size={20} color={themeColors.inverse} />
-                ) : (
-                  <Check
-                    size={20}
-                    color={canSave ? themeColors.inverse : themeColors.muted}
-                    strokeWidth={2}
-                  />
-                )
-              }
-              text={translate('Save link')}
-            />
-          </ActionFooter>
+          <ActionFooter buttonSize="small" bottomInset={insets.bottom} />
         </View>
       </KeyboardAvoidingView>
     </Modal>
@@ -446,7 +444,7 @@ const createStyles = (themeColors: ThemeColors) =>
     },
     scrollContent: {
       flexGrow: 1,
-      paddingVertical: 20,
+      paddingTop: 56,
       paddingBottom: 40,
     },
     borderlessInput: {

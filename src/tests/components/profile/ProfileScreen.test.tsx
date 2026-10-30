@@ -10,6 +10,7 @@ const mockNavigate = jest.fn(),
   mockClearTag = jest.fn(),
   mockRefresh = jest.fn();
 let mockState: LibraryState;
+let mockSource = { kind: 'local', name: 'First library' };
 jest.mock('expo-router', () => ({
   router: {
     navigate: (...args: unknown[]) => mockNavigate(...args),
@@ -19,6 +20,7 @@ jest.mock('expo-router', () => ({
 jest.mock('@/hooks/useLibrary', () => ({
   useLibrary: () => ({
     state: mockState,
+    source: mockSource,
     currentFolderName: 'Test library',
     setSearchQuery: mockSearch,
     clearSearchTag: mockClearTag,
@@ -56,18 +58,21 @@ const ready = (items: LibraryItem[]) => {
 };
 beforeEach(() => {
   jest.clearAllMocks();
+  mockSource = { kind: 'local', name: 'First library' };
   ready([note]);
 });
 it('shows current-library stats and opens settings', async () => {
   await render(<ProfileScreen />);
   expect(screen.getByText('Test library')).toBeTruthy();
-  expect(screen.getByText('Saved cards')).toBeTruthy();
+  expect(screen.queryByText('Saved cards')).toBeNull();
+  expect(screen.getAllByText('Annual additions').length).toBeGreaterThan(0);
+  expect(screen.getByText('Completion history')).toBeTruthy();
   await fireEvent.press(screen.getByLabelText('Settings'));
   expect(mockPush).toHaveBeenCalledWith('/settings');
 });
 it('opens a calendar day on the board and resets previous filters', async () => {
   await render(<ProfileScreen />);
-  await fireEvent.press(screen.getByLabelText(/, 1 cards added$/));
+  await fireEvent.press(screen.getAllByLabelText(/, 1 cards added$/)[0]);
   expect(mockSearch).toHaveBeenCalledWith('');
   expect(mockClearTag).toHaveBeenCalled();
   expect(mockNavigate).toHaveBeenCalledWith({
@@ -98,13 +103,11 @@ it('updates chart counts by year and type, with a notice for undated cards', asy
   await fireEvent.press(screen.getByLabelText(`Year: ${year}`));
   await fireEvent.press(screen.getByLabelText(String(year - 1)));
   expect(screen.getByLabelText(`January ${year - 1}: 1 cards completed`)).toBeTruthy();
-  await fireEvent.press(screen.getByLabelText('Movies'));
+  await fireEvent.press(screen.getAllByLabelText('Movies')[0]);
   expect(screen.getByLabelText(`January ${year - 1}: 0 cards completed`)).toBeTruthy();
   expect(screen.queryByText(/have no completion date/)).toBeNull();
-  expect(screen.getByLabelText('Movies').props.accessibilityState.selected).toBe(true);
-  await fireEvent.press(screen.getByLabelText('Movies'));
+  await fireEvent.press(screen.getAllByLabelText('Movies')[0]);
   expect(screen.queryByLabelText('All types')).toBeNull();
-  expect(screen.getByLabelText('Movies').props.accessibilityState.selected).toBe(false);
   expect(screen.getByLabelText(`January ${year - 1}: 1 cards completed`)).toBeTruthy();
 });
 it('handles loading, errors, retry, and an empty library', async () => {
@@ -123,6 +126,36 @@ it('refreshes stats when the loaded library changes', async () => {
   const view = await render(<ProfileScreen />);
   ready([]);
   await view.rerender(<ProfileScreen />);
-  expect(screen.getByText('First card saved')).toBeTruthy();
-  expect(screen.getByText('—')).toBeTruthy();
+  expect(screen.queryByText('First card saved')).toBeNull();
+  expect(screen.getByText('Save your first card to start your library activity.')).toBeTruthy();
+});
+
+it('keeps timeline filters independent and resets pagination on library change', async () => {
+  const year = new Date().getFullYear();
+  const book: LibraryItem = {
+    ...note,
+    type: 'book',
+    title: 'Book',
+    isbn: '',
+    authors: [],
+    progressStatus: 'completed',
+    completedAt: new Date(year, 0, 1, 12).toISOString(),
+  };
+  ready(
+    Array.from({ length: 32 }, (_, index) => ({
+      ...book,
+      id: `book-${String(index).padStart(2, '0')}`,
+    }))
+  );
+  const view = await render(<ProfileScreen />);
+  await fireEvent.press(screen.getAllByLabelText('Movies')[1]);
+  expect(screen.queryByTestId('timeline-entry-book-00')).toBeNull();
+  expect(screen.getByLabelText(`January ${year}: 32 cards completed`)).toBeTruthy();
+  await fireEvent.press(screen.getAllByLabelText('Movies')[1]);
+  await fireEvent.press(screen.getByLabelText('Show more'));
+  expect(screen.getByTestId('timeline-entry-book-30')).toBeTruthy();
+  mockSource = { kind: 'local', name: 'Second library' };
+  await view.rerender(<ProfileScreen />);
+  expect(screen.queryByTestId('timeline-entry-book-30')).toBeNull();
+  expect(screen.getByTestId('timeline-entry-book-00')).toBeTruthy();
 });

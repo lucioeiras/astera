@@ -74,7 +74,7 @@ describe('MarkdownNote', () => {
       (level) => getByTestId(`markdown-heading-${level}`).props.style.fontFamily
     );
     expect(sizes).toEqual([34, 29, 25, 22, 20, 18]);
-    expect(lineHeights).toEqual([64, 48, 40, 36, 30, 28]);
+    expect(lineHeights).toEqual([40, 35, 30, 27, 24, 22]);
     expect(weights).toEqual([
       'InstrumentSans_700Bold',
       'InstrumentSans_700Bold',

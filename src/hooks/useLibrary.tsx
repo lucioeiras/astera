@@ -1,8 +1,10 @@
+import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 
 import { getDistinctTags, searchCachedItems, type ItemIndexFilter } from '@/lib/library/cache';
 import { getPinnedItems, MAX_PINNED_ITEMS } from '@/lib/library/pinned';
+import { LibraryAssetContext } from '@/lib/library/assetContext';
 import {
   addBookItemToLibrary,
   addGameItemToLibrary,
@@ -62,6 +64,8 @@ import type {
   VideoItem,
   QuoteItem,
 } from '@/lib/library/types';
+import { ARCHIVE_RETENTION_STORAGE_KEY, getExpiredArchivedIds } from '@/lib/library/archive';
+import type { ArchiveRetentionDays } from '@/lib/library/archive';
 
 export type LibraryState =
   | { status: 'loading' }
@@ -227,7 +231,20 @@ export function LibraryProvider({ children }: { children: React.ReactNode }) {
     const id = ++requestId.current;
     let state: LibraryState;
     try {
-      state = { status: 'ready', result: await loadLibrary(src) };
+      let result = await loadLibrary(src);
+      let retentionDays: ArchiveRetentionDays = 0;
+      try {
+        const stored = Number(await AsyncStorage.getItem(ARCHIVE_RETENTION_STORAGE_KEY));
+        if ([7, 30, 90].includes(stored)) retentionDays = stored as ArchiveRetentionDays;
+      } catch {
+        // Retention is optional; unreadable preferences preserve archived cards.
+      }
+      const expiredIds = getExpiredArchivedIds(result.items, retentionDays);
+      if (expiredIds.length > 0) {
+        await deleteItemsFromLibrary(src, expiredIds);
+        result = await loadLibrary(src);
+      }
+      state = { status: 'ready', result };
     } catch (e) {
       state = { status: 'error', error: e instanceof Error ? e.message : String(e) };
     }
@@ -795,7 +812,15 @@ export function LibraryProvider({ children }: { children: React.ReactNode }) {
     consumeAutoOpen,
   };
 
-  return <LibraryContext.Provider value={value}>{children}</LibraryContext.Provider>;
+  return (
+    <LibraryContext.Provider value={value}>
+      <LibraryAssetContext.Provider
+        value={Platform.OS === 'web' ? null : getLibraryDirectory(activeSource).uri}
+      >
+        {children}
+      </LibraryAssetContext.Provider>
+    </LibraryContext.Provider>
+  );
 }
 
 export function useLibrary(): LibraryContextValue {

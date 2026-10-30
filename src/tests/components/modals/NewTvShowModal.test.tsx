@@ -74,7 +74,7 @@ describe('NewTvShowModal', () => {
       await Promise.resolve();
     });
     await fireEvent.press(getByText('Example show'));
-    await waitFor(() => expect(getByText('Save TV show')).toBeTruthy());
+    await waitFor(() => expect(getByLabelText('Save TV show')).toBeTruthy());
     await fireEvent.press(getByLabelText('Save TV show'));
     await waitFor(() => expect(mockAddTvShowItem).toHaveBeenCalled());
 

@@ -5,12 +5,13 @@ import { Pressable, ScrollView, View, Text } from 'react-native';
 import { translate, useLocalization } from '@/lib/i18n';
 
 type Props = {
+  align?: 'left' | 'right';
   label: string;
   value: string;
   options: { value: string; label: string }[];
   onSelect: (value: string) => void;
 };
-export function ProfileSelect({ label, value, options, onSelect }: Props) {
+export function ProfileSelect({ label, value, options, onSelect, align = 'left' }: Props) {
   const { colors: themeColors } = useAppTheme();
   useLocalization();
   const [open, setOpen] = useState(false);
@@ -27,7 +28,7 @@ export function ProfileSelect({ label, value, options, onSelect }: Props) {
         onPress={() => setOpen((current) => !current)}
         onAccessibilityEscape={() => setOpen(false)}
         hitSlop={{ top: 5, bottom: 5 }}
-        className="flex-row items-center gap-2 rounded-full border border-theme-border px-4 py-2"
+        className="h-[42px] flex-row items-center gap-2 rounded-full border border-theme-raised px-4"
       >
         <Text className="font-sans-medium text-sm text-theme-body">
           {translate(options.find((o) => o.value === value)?.label ?? value)}
@@ -39,9 +40,10 @@ export function ProfileSelect({ label, value, options, onSelect }: Props) {
           testID={`${label.toLowerCase()}-dropdown`}
           accessibilityRole="menu"
           onAccessibilityEscape={() => setOpen(false)}
-          className="absolute left-0 overflow-hidden rounded-xl border border-theme-border bg-theme-surface"
+          className="absolute overflow-hidden rounded-xl border border-theme-border bg-theme-surface"
           style={{
             top: '100%',
+            ...(align === 'right' ? { right: 0 } : { left: 0 }),
             marginTop: 8,
             width: 144,
             zIndex: 20,

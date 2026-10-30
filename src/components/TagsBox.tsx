@@ -15,6 +15,7 @@ import {
   Clock,
   FileText,
   Clapperboard,
+  Tv,
   Folder,
   Gamepad2,
   Hash,
@@ -59,7 +60,7 @@ const cardTypeTags = {
   book: { label: 'Book', icon: BookOpen },
   music: { label: 'Music', icon: Music2 },
   movie: { label: 'Movie', icon: Clapperboard },
-  tvshow: { label: 'TV show', icon: Clapperboard },
+  tvshow: { label: 'TV show', icon: Tv },
   game: { label: 'Game', icon: Gamepad2 },
 } satisfies Record<
   LibraryItemType,
@@ -248,24 +249,20 @@ export function TagsBox({
     containerClassName ?? className ?? 'py-6 px-8 border-b border-theme-raised gap-4';
   const priorityTagStyles = {
     blue: {
-      container: 'bg-blue-500/15',
-      text: 'text-theme-blue',
-      icon: themeColors.blueSoft,
+      containerColor: themeColors.statusWant,
+      color: themeColors.statusWant,
     },
     amber: {
-      container: 'bg-amber-400/15',
-      text: 'text-theme-amber',
-      icon: themeColors.yellow,
+      containerColor: themeColors.statusInProgress,
+      color: themeColors.statusInProgress,
     },
     emerald: {
-      container: 'bg-emerald-400/15',
-      text: 'text-theme-green',
-      icon: themeColors.green,
+      containerColor: themeColors.statusCompleted,
+      color: themeColors.statusCompleted,
     },
     zinc: {
-      container: 'bg-theme-border/60',
-      text: 'text-theme-body',
-      icon: themeColors.secondary,
+      containerColor: themeColors.statusAbandoned,
+      color: themeColors.statusAbandoned,
     },
   } as const;
   const priorityTagIcons = {
@@ -304,19 +301,21 @@ export function TagsBox({
             onPress={priorityTag.onPress}
             accessibilityRole={priorityTag.onPress ? 'button' : undefined}
             accessibilityLabel={priorityTag.accessibilityLabel ?? priorityTag.label}
-            className={`flex-row items-center gap-1.5 rounded-full px-3 py-1 active:opacity-70 ${priorityTagStyles[priorityTag.tone].container}`}
+            className="flex-row items-center gap-1.5 rounded-full px-3 py-1 active:opacity-70"
+            style={{ backgroundColor: `${priorityTagStyles[priorityTag.tone].containerColor}26` }}
           >
             <PriorityTagIcon
               size={14}
-              color={priorityTagStyles[priorityTag.tone].icon}
+              color={priorityTagStyles[priorityTag.tone].color}
               strokeWidth={2}
             />
             <Text
-              className={`font-sans-medium text-base ${priorityTagStyles[priorityTag.tone].text}`}
+              className="font-sans-medium text-base"
+              style={{ color: priorityTagStyles[priorityTag.tone].color }}
             >
               {priorityTag.label}
             </Text>
-            <RefreshCw size={12} color={priorityTagStyles[priorityTag.tone].icon} />
+            <RefreshCw size={12} color={priorityTagStyles[priorityTag.tone].color} />
           </Pressable>
         ) : null}
 

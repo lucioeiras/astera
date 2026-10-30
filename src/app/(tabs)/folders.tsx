@@ -13,7 +13,7 @@ import {
 import { NewFolderModal } from '@/components/modals/NewFolderModal';
 import { FolderTile } from '@/components/organize/FolderTile';
 import { useLibrary } from '@/hooks/useLibrary';
-import { getTagGroups, matchesStatus, STATUS_FOLDERS } from '@/lib/library/organize';
+import { getTagGroups } from '@/lib/library/organize';
 import { getLibraryFolders, getSourceId, saveLibraryFolders } from '@/lib/library/storage';
 import { translate, useLocalization } from '@/lib/i18n';
 
@@ -95,11 +95,7 @@ export default function OrganizeScreen() {
 
   const createFolder = async (name: string): Promise<boolean> => {
     if (saved?.source !== sourceId) return false;
-    if (
-      [...folderNames, ...STATUS_FOLDERS.map((folder) => folder.title)].some(
-        (existing) => existing.toLocaleLowerCase() === name.toLocaleLowerCase()
-      )
-    ) {
+    if (folderNames.some((existing) => existing.toLocaleLowerCase() === name.toLocaleLowerCase())) {
       Alert.alert(translate('Folder already exists'), translate('Choose a different name.'));
       return false;
     }
@@ -160,15 +156,6 @@ export default function OrganizeScreen() {
     <SafeAreaView className="flex-1 bg-theme-canvas" edges={['top', 'left', 'right']}>
       <ScrollView contentContainerClassName="px-6 pb-32 pt-8" showsVerticalScrollIndicator={false}>
         <View className="flex-row flex-wrap">
-          {STATUS_FOLDERS.map((folder) => (
-            <FolderTile
-              key={`status:${folder.key}`}
-              title={folder.title}
-              status={folder.key}
-              items={items.filter((item) => matchesStatus(item, folder.key))}
-              onPress={() => openFolder('status', folder.key)}
-            />
-          ))}
           {folderNames.map((name) => (
             <FolderTile
               key={`tag:${name}`}

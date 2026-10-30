@@ -69,6 +69,18 @@ describe('parseItem', () => {
     expect(parseItem({ ...note, pinnedAt: 42 })).not.toHaveProperty('pinnedAt');
   });
 
+  it('preserves valid archive timestamps and removes malformed ones', () => {
+    const note = {
+      ...base,
+      type: 'note',
+      text: 'Archived',
+      archivedAt: '2026-02-03T04:05:06.000Z',
+    };
+    expect(parseItem(note)).toMatchObject({ archivedAt: note.archivedAt });
+    expect(parseItem({ ...note, archivedAt: 'not-a-date' })).not.toHaveProperty('archivedAt');
+    expect(parseItem({ ...note, archivedAt: 42 })).not.toHaveProperty('archivedAt');
+  });
+
   it('drops legacy TikTok progress statuses', () => {
     expect(
       parseItem({

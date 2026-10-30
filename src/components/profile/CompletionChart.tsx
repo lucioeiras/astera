@@ -32,6 +32,7 @@ export function CompletionChart({ months, year }: { months: LibraryItem[][]; yea
       <View className="gap-2">
         {MONTHS.map((month, index) => {
           const items = months[index] ?? [];
+          const height = items.length ? 80 : 24;
           return (
             <View key={month} className="flex-row items-center gap-3">
               <Text
@@ -49,14 +50,15 @@ export function CompletionChart({ months, year }: { months: LibraryItem[][]; yea
                 })}
               </Text>
               <ScrollView
+                testID={`completion-month-${index + 1}`}
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 className="flex-1 rounded-xl bg-theme-surface/60"
-                style={{ height: 80 }}
+                style={{ height }}
                 contentContainerStyle={{
                   flexGrow: 1,
-                  height: 80,
-                  padding: 8,
+                  height,
+                  padding: items.length ? 8 : 0,
                   gap: 4,
                   alignItems: 'center',
                 }}
@@ -85,7 +87,7 @@ export function CompletionChart({ months, year }: { months: LibraryItem[][]; yea
   );
 }
 
-function getArtwork(item: LibraryItem): string | undefined {
+export function getArtwork(item: LibraryItem): string | undefined {
   switch (item.type) {
     case 'book':
     case 'game':
@@ -101,7 +103,7 @@ function getArtwork(item: LibraryItem): string | undefined {
   }
 }
 
-function CompletionCover({ item, artwork }: { item: LibraryItem; artwork?: string }) {
+export function CompletionCover({ item, artwork }: { item: LibraryItem; artwork?: string }) {
   const { colors: themeColors } = useAppTheme();
   const [failed, setFailed] = useState(false);
   const title = getRelatedCardTitle(item);

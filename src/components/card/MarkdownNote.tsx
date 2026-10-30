@@ -1,7 +1,11 @@
+import { isNoteImageUri, NOTE_IMAGE_PATTERN } from '@/lib/noteImages';
+import { NOTE_BODY_TYPOGRAPHY, NOTE_HEADING_TYPOGRAPHY } from '@/lib/noteTypography';
 import { useAppTheme, type ThemeColors } from '@/lib/theme';
-import { useMemo } from 'react';
+import { openExternalLink } from '@/lib/linkOpening';
 import { Check } from 'lucide-react-native';
+import { useMemo } from 'react';
 import { Pressable, Text, View } from 'react-native';
+import { MarkdownNoteImage } from './MarkdownNoteImage';
 
 type MarkdownNoteProps = {
   markdown: string;
@@ -10,61 +14,45 @@ type MarkdownNoteProps = {
   compact?: boolean;
 };
 
-const HEADING_STYLES = (themeColors: ThemeColors) => [
-  {
-    fontSize: 34,
-    lineHeight: 64,
-    fontFamily: 'InstrumentSans_700Bold',
-    color: themeColors.foreground,
-  },
-  {
-    fontSize: 29,
-    lineHeight: 48,
-    fontFamily: 'InstrumentSans_700Bold',
-    color: themeColors.foreground,
-  },
-  {
-    fontSize: 25,
-    lineHeight: 40,
-    fontFamily: 'InstrumentSans_600SemiBold',
-    color: themeColors.bright,
-  },
-  {
-    fontSize: 22,
-    lineHeight: 36,
-    fontFamily: 'InstrumentSans_600SemiBold',
-    color: themeColors.bright,
-  },
-  {
-    fontSize: 20,
-    lineHeight: 30,
-    fontFamily: 'InstrumentSans_500Medium',
-    color: themeColors.heading,
-  },
-  {
-    fontSize: 18,
-    lineHeight: 28,
-    fontFamily: 'InstrumentSans_500Medium',
-    color: themeColors.body,
-  },
-];
+const HEADING_STYLES = (themeColors: ThemeColors) =>
+  NOTE_HEADING_TYPOGRAPHY.map((heading, index) => ({
+    ...heading,
+    color: [
+      themeColors.foreground,
+      themeColors.foreground,
+      themeColors.bright,
+      themeColors.bright,
+      themeColors.heading,
+      themeColors.body,
+    ][index],
+  }));
 
 function renderInline(value: string, themeColors: ThemeColors) {
-  const parts = value.split(/(\*\*[^*]+\*\*|`[^`]+`|\*[^*]+\*)/g);
+  const parts = value.split(/(\[[^\]]+\]\(https?:\/\/[^\s)]+\)|\*\*[^*]+\*\*|`[^`]+`|\*[^*]+\*)/g);
   return parts.map((part, index) => {
+    const link = /^\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)$/.exec(part);
     const bold = part.startsWith('**') && part.endsWith('**');
     const italic = !bold && part.startsWith('*') && part.endsWith('*');
     const code = part.startsWith('`') && part.endsWith('`');
     return (
       <Text
         key={index}
+        accessibilityRole={link ? 'link' : undefined}
+        onPress={link ? () => void openExternalLink(link[2]).catch(() => undefined) : undefined}
         style={[
+          link
+            ? {
+                color: themeColors.secondary,
+                textDecorationLine: 'underline',
+                textDecorationColor: 'rgba(113, 113, 122, 0.45)',
+              }
+            : null,
           bold ? { fontWeight: '700' } : null,
           italic ? { fontStyle: 'italic' } : null,
           code ? { fontFamily: 'monospace', color: themeColors.blueSoft } : null,
         ]}
       >
-        {bold || italic || code ? part.slice(bold ? 2 : 1, bold ? -2 : -1) : part}
+        {link ? link[1] : bold || italic || code ? part.slice(bold ? 2 : 1, bold ? -2 : -1) : part}
       </Text>
     );
   });
@@ -88,10 +76,7 @@ export function MarkdownNote({
     }, 0)
   );
   const content = (
-    <View
-      className="w-full gap-4"
-      style={compact ? { maxHeight: 176, overflow: 'hidden' } : undefined}
-    >
+    <View testID="markdown-note-content" className="w-full gap-4" style={{ flexShrink: 0 }}>
       {blocks.map((block, index) => {
         const blockStart = blockOffsets[index];
         const lines = block.split('\n');
@@ -104,6 +89,48 @@ export function MarkdownNote({
                   .slice(0, lineIndex)
                   .reduce((offset, previousLine) => offset + previousLine.length + 1, 0);
               const heading = /^(#{1,6})\s+(.*)$/.exec(line);
+              const images = Array.from(line.matchAll(NOTE_IMAGE_PATTERN));
+              if (images.length > 0) {
+                let offset = 0;
+                const textFragment = (fragment: string, offset: number) => (
+                  <MarkdownNote
+                    markdown={fragment}
+                    compact={compact}
+                    onMarkdownChange={
+                      onMarkdownChange
+                        ? (next) =>
+                            onMarkdownChange(
+                              markdown.slice(0, currentLineStart + offset) +
+                                next +
+                                markdown.slice(currentLineStart + offset + fragment.length)
+                            )
+                        : undefined
+                    }
+                  />
+                );
+                return (
+                  <View key={lineIndex} className="gap-2">
+                    {images.map((image, imageIndex) => {
+                      const start = offset;
+                      const preceding = line.slice(start, image.index);
+                      offset = image.index + image[0].length;
+                      return (
+                        <View key={imageIndex} className="gap-2">
+                          {preceding ? textFragment(preceding, start) : null}
+                          {isNoteImageUri(image[2]) ? (
+                            <MarkdownNoteImage uri={image[2]} alt={image[1]} compact={compact} />
+                          ) : (
+                            <Text style={{ ...NOTE_BODY_TYPOGRAPHY, color: themeColors.heading }}>
+                              {image[1] || 'Image'}
+                            </Text>
+                          )}
+                        </View>
+                      );
+                    })}
+                    {offset < line.length ? textFragment(line.slice(offset), offset) : null}
+                  </View>
+                );
+              }
               const legacyTaskList = /^\s*[-*+]\s+\[([ xX])\]\s+(.*)$/.exec(line);
               const symbolTaskList = /^\s*(?:[-*+]\s+)?([☐☑])\s+(.*)$/.exec(line);
               const taskList = legacyTaskList ?? symbolTaskList;
@@ -128,33 +155,43 @@ export function MarkdownNote({
                   ? heading
                     ? Math.max(15, (headingStyle?.fontSize ?? 25) - 10)
                     : 15
-                  : (headingStyle?.fontSize ?? 18),
+                  : (headingStyle?.fontSize ?? NOTE_BODY_TYPOGRAPHY.fontSize),
                 lineHeight: compact
                   ? heading
                     ? Math.max(20, (headingStyle?.lineHeight ?? 32) - 10)
-                    : 26
-                  : (headingStyle?.lineHeight ?? 32),
-                fontFamily: headingStyle?.fontFamily ?? 'InstrumentSans_400Regular',
-                color: quote ? themeColors.secondary : (headingStyle?.color ?? themeColors.body),
+                    : list
+                      ? 24
+                      : 26
+                  : list
+                    ? (headingStyle?.lineHeight ?? NOTE_BODY_TYPOGRAPHY.lineHeight) - 4
+                    : (headingStyle?.lineHeight ?? NOTE_BODY_TYPOGRAPHY.lineHeight),
+                fontFamily: headingStyle?.fontFamily ?? NOTE_BODY_TYPOGRAPHY.fontFamily,
+                color: quote ? themeColors.secondary : (headingStyle?.color ?? themeColors.heading),
               };
               if (taskList) {
                 const checkbox = (
                   <View
-                    className={`h-6 w-6 items-center justify-center rounded-md border-2 ${
+                    className={`items-center justify-center ${
                       isTaskChecked
                         ? 'border-theme-foreground bg-theme-foreground'
                         : 'border-theme-muted bg-transparent'
                     }`}
+                    style={{
+                      width: compact ? 20 : 24,
+                      height: compact ? 20 : 24,
+                      borderWidth: compact ? 1.5 : 2,
+                      borderRadius: compact ? 5 : 6,
+                    }}
                   >
                     {isTaskChecked && (
-                      <Check size={16} color={themeColors.inverse} strokeWidth={2} />
+                      <Check size={compact ? 13 : 16} color={themeColors.inverse} strokeWidth={2} />
                     )}
                   </View>
                 );
                 return (
                   <View
                     key={lineIndex}
-                    className="flex-row items-center gap-2 py-1"
+                    className={`flex-row items-start ${compact ? 'gap-2.5' : 'gap-3'} py-1`}
                     style={{ paddingLeft: 0 }}
                   >
                     {onMarkdownChange ? (
@@ -179,12 +216,26 @@ export function MarkdownNote({
                           isTaskChecked ? 'Mark task incomplete' : 'Mark task complete'
                         }
                         hitSlop={8}
-                        className="h-6 w-6 items-center justify-center"
+                        className="items-center justify-center"
+                        style={{
+                          width: compact ? 20 : 24,
+                          height: compact ? 20 : 24,
+                          marginTop: 2,
+                        }}
                       >
                         {checkbox}
                       </Pressable>
                     ) : (
-                      <View className="h-6 w-6 items-center justify-center">{checkbox}</View>
+                      <View
+                        className="items-center justify-center"
+                        style={{
+                          width: compact ? 20 : 24,
+                          height: compact ? 20 : 24,
+                          marginTop: 2,
+                        }}
+                      >
+                        {checkbox}
+                      </View>
                     )}
                     <Text
                       testID={`markdown-task-text-${lineIndex}`}

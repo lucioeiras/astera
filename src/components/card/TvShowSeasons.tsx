@@ -22,27 +22,19 @@ const STATUS_TAGS = (themeColors: ThemeColors) =>
   ({
     want: {
       Icon: Bookmark,
-      container: 'bg-blue-500/15',
-      text: 'text-theme-blue',
-      color: themeColors.blueSoft,
+      color: themeColors.statusWant,
     },
     'in-progress': {
       Icon: Clock,
-      container: 'bg-amber-400/15',
-      text: 'text-theme-amber',
-      color: themeColors.yellow,
+      color: themeColors.statusInProgress,
     },
     completed: {
       Icon: CircleCheck,
-      container: 'bg-emerald-400/15',
-      text: 'text-theme-green',
-      color: themeColors.green,
+      color: themeColors.statusCompleted,
     },
     abandoned: {
       Icon: Ban,
-      container: 'bg-theme-border/60',
-      text: 'text-theme-body',
-      color: themeColors.secondary,
+      color: themeColors.statusAbandoned,
     },
   }) as const;
 
@@ -134,12 +126,14 @@ export function TvShowSeasons({
                           progressStatus: nextStatus,
                         })
                       }
-                      className={`flex-row items-center gap-1 rounded-full px-2.5 py-1 active:opacity-70 ${statusTag.container}`}
+                      className="flex-row items-center gap-1 rounded-full px-2.5 py-1 active:opacity-70"
+                      style={{ backgroundColor: `${statusTag.color}26` }}
                       hitSlop={4}
                     >
                       <StatusIcon size={12} color={statusTag.color} strokeWidth={2} />
                       <Text
-                        className={`font-sans-medium text-xs ${statusTag.text}`}
+                        className="font-sans-medium text-xs"
+                        style={{ color: statusTag.color }}
                         numberOfLines={1}
                       >
                         {translate(LABELS[status])}

@@ -2,11 +2,10 @@ import { useAppTheme } from '@/lib/theme';
 import { decodeHTML } from 'entities';
 import * as Clipboard from 'expo-clipboard';
 import { File } from 'expo-file-system';
-import * as Linking from 'expo-linking';
-import * as MediaLibrary from 'expo-media-library';
+import * as MediaLibrary from 'expo-media-library/legacy';
 import { router } from 'expo-router';
 import * as Sharing from 'expo-sharing';
-import * as WebBrowser from 'expo-web-browser';
+import { openExternalLink } from '@/lib/linkOpening';
 import { Bookmark, SquarePen, Captions, Type, User } from 'lucide-react-native';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
@@ -38,6 +37,7 @@ import { TagsBox } from '@/components/TagsBox';
 import { useLibrary } from '@/hooks/useLibrary';
 import { transcribeAudio } from '@/lib/ai/transcribeAudio';
 import { isLinkableItem } from '@/lib/library/links';
+import { archiveUpdates, shouldAskToArchiveAfterCompletion } from '@/lib/library/archive';
 import { getRelatedItems } from '@/lib/library/related';
 import { getLibraryFolders, getSourceId } from '@/lib/library/storage';
 import {
@@ -494,17 +494,37 @@ export function CardDetailContent({
     }
   };
 
-  const handleProgressStatusPress = async () => {
-    if (!isTrackableItem(item)) return;
-
-    const nextStatus = getNextProgressStatus(item.type, progressStatus);
+  const saveProgressStatus = async (nextStatus: MediaProgressStatus, archive: boolean) => {
     setProgressStatus(nextStatus);
     try {
-      await updateItem(item.id, { progressStatus: nextStatus });
+      await updateItem(item.id, {
+        progressStatus: nextStatus,
+        ...(archive ? archiveUpdates(item, new Date().toISOString()) : {}),
+      });
     } catch (e) {
       setProgressStatus(progressStatus);
       console.warn('Failed to update progress status', e);
     }
+  };
+
+  const handleProgressStatusPress = () => {
+    if (!isTrackableItem(item)) return;
+
+    const nextStatus = getNextProgressStatus(item.type, progressStatus);
+    if (shouldAskToArchiveAfterCompletion(nextStatus, Boolean(item.archivedAt))) {
+      Alert.alert(translate('Completed'), translate('Would you like to archive this card?'), [
+        {
+          text: translate('Keep on board'),
+          onPress: () => void saveProgressStatus(nextStatus, false),
+        },
+        {
+          text: translate('Archive card'),
+          onPress: () => void saveProgressStatus(nextStatus, true),
+        },
+      ]);
+      return;
+    }
+    void saveProgressStatus(nextStatus, false);
   };
 
   const handleSaveGameLog = async (date: string, note: string, existingLog?: GamePlayLog) => {
@@ -821,11 +841,9 @@ export function CardDetailContent({
                 : undefined;
     if (!targetUrl) return;
     try {
-      if (await Linking.canOpenURL(targetUrl)) {
-        await WebBrowser.openBrowserAsync(targetUrl);
-      }
+      await openExternalLink(targetUrl);
     } catch {
-      await Linking.openURL(targetUrl);
+      // A failed browser launch is intentionally ignored, as before.
     }
   };
 

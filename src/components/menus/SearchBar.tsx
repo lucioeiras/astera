@@ -1,4 +1,5 @@
 import { useAppTheme } from '@/lib/theme';
+import { colorWithAlpha } from '@/lib/theme/palette';
 import { BlurView } from 'expo-blur';
 import {
   Bookmark,
@@ -98,7 +99,7 @@ export function SearchBar({
         >
           <View
             className="h-full flex-row items-center overflow-hidden rounded-full border border-theme-foreground/15 px-6 py-4 gap-4"
-            style={{ backgroundColor: themeColors.canvas + '33' }}
+            style={{ backgroundColor: colorWithAlpha(themeColors.canvas, '33') }}
           >
             <BlurView
               intensity={48}
@@ -128,10 +129,10 @@ export function SearchBar({
                 const iconColor =
                   (status
                     ? {
-                        want: themeColors.blueSoft,
-                        'in-progress': themeColors.yellow,
-                        completed: themeColors.green,
-                        abandoned: themeColors.secondary,
+                        want: themeColors.statusWant,
+                        'in-progress': themeColors.statusInProgress,
+                        completed: themeColors.statusCompleted,
+                        abandoned: themeColors.statusAbandoned,
                       }[status.key]
                     : undefined) ??
                   (isTag ? themeColors.blue : isDate ? themeColors.amber : themeColors.purple);
