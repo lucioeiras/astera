@@ -30,7 +30,7 @@ describe('NewFolderModal', () => {
     await waitFor(() => expect(onCreate).toHaveBeenCalled());
     expect(onClose).not.toHaveBeenCalled();
 
-    await fireEvent.press(view.getByLabelText('Cancel'));
+    await fireEvent.press(view.getByLabelText('Close'));
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 });

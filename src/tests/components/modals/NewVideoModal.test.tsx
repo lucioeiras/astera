@@ -67,7 +67,7 @@ describe('NewVideoModal', () => {
       <NewVideoModal visible videoAsset={{ uri: 'file:///clip.mp4' }} onClose={onClose} />
     );
 
-    await fireEvent.press(getByLabelText('Cancel'));
+    await fireEvent.press(getByLabelText('Close'));
     expect(onClose).toHaveBeenCalledTimes(1);
     expect(mockAddVideo).not.toHaveBeenCalled();
   });

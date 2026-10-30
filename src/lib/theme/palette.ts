@@ -29,7 +29,7 @@ export const palettes = {
   },
   light: {
     canvas: colors.white,
-    surface: colors.zinc[100],
+    surface: colors.zinc[200],
     raised: colors.zinc[300],
     border: colors.zinc[400],
     strongBorder: colors.zinc[500],

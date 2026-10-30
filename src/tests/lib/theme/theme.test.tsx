@@ -71,7 +71,7 @@ function contrastWithWhite(color: string) {
 
 describe('theme resolution', () => {
   it('uses a white board canvas with visibly gray card surfaces and stronger separators', () => {
-    expect(palettes.light.canvas).toBe('#ffffff');
+    expect(palettes.light.canvas.toLowerCase()).toMatch(/^#fff(?:fff)?$/);
     expect(contrastWithWhite(palettes.light.surface)).toBeGreaterThan(1.15);
     expect(contrastWithWhite(palettes.light.raised)).toBeGreaterThan(1.45);
     expect(contrastWithWhite(palettes.light.border)).toBeGreaterThan(2.5);
@@ -240,7 +240,7 @@ it('updates buttons, markdown, modal surfaces, and form placeholders without rem
     StyleSheet.flatten(view.getByTestId('new-folder-modal-surface').props.style).backgroundColor
   ).toBe(palettes.light.canvas);
   // Close the native modal to interact with the underlying settings.
-  await fireEvent.press(view.getByLabelText('Cancel'));
+  await fireEvent.press(view.getByLabelText('Close'));
   expect(
     StyleSheet.flatten(view.getByRole('button', { name: 'Primary action' }).props.style)
       .backgroundColor

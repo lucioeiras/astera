@@ -26,6 +26,7 @@ Use Expo Router para navegação e importe `Link`, `router` e `useLocalSearchPar
 
 ## Testes e validação
 
+- O usuário autorizou novamente a execução automática de testes em 30/10/2026, após corrigir o problema de travamento do computador. A restrição anterior de executar testes somente mediante pedido explícito foi revogada; siga as orientações de validação abaixo.
 - Toda funcionalidade ou correção de comportamento deve incluir ou atualizar testes automatizados adequados. Cubra o comportamento observável, incluindo casos inválidos, limites e estados de erro relevantes.
 - Para lógica pura, prefira testes unitários de entradas e saídas. Para componentes, teste interações, acessibilidade, estados e callbacks com React Native Testing Library. Para fluxos do usuário que cruzam telas ou persistência, acrescente um fluxo Maestro em `.maestro/flows/` quando viável.
 - Coloque testes Jest em `src/tests/`, espelhando o domínio do código testado. Exemplos: `src/tests/components/cards/` para `src/components/cards/` e `src/tests/lib/library/` para `src/lib/library/`.
