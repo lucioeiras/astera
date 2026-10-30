@@ -5,30 +5,30 @@ import {
   ArrowLeft,
   ArrowLeftRight,
   Circle,
+  CircleX,
   Cpu,
   Download,
   FolderOpen,
-  Mic,
-  Type,
   Languages,
+  Mic,
   Trash2,
-  CircleX,
+  Type,
 } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AppearanceSettings } from '@/components/AppearanceSettings';
-import { LinkOpeningSettings } from '@/components/LinkOpeningSettings';
 import { Button } from '@/components/Button';
+import { LinkOpeningSettings } from '@/components/LinkOpeningSettings';
 import { LocalizedText } from '@/components/LocalizedText';
 import { useLibrary } from '@/hooks/useLibrary';
 import { useLocalAI } from '@/lib/ai/useLocalAI';
 import { useWhisperModel } from '@/lib/ai/useWhisperModel';
 import { useLocalization } from '@/lib/i18n';
 import { languageOptions } from '@/lib/i18n/catalog';
-import { ARCHIVE_RETENTION_OPTIONS, ARCHIVE_RETENTION_STORAGE_KEY } from '@/lib/library/archive';
 import type { ArchiveRetentionDays } from '@/lib/library/archive';
+import { ARCHIVE_RETENTION_OPTIONS, ARCHIVE_RETENTION_STORAGE_KEY } from '@/lib/library/archive';
 
 export default function SettingsScreen() {
   const { colors: themeColors } = useAppTheme();
@@ -138,6 +138,51 @@ export default function SettingsScreen() {
           </Text>
         </View>
 
+        <View className="gap-4 border-b border-theme-raised px-8 pt-0 pb-6">
+          <View className="flex-row items-center gap-2">
+            <Circle size={16} color={themeColors.heading} />
+            <Text className="font-sans-semibold text-sm uppercase tracking-wider text-theme-heading">
+              <LocalizedText>Current space</LocalizedText>
+            </Text>
+          </View>
+          <Text className="font-sans text-base leading-relaxed text-theme-secondary">
+            <LocalizedText>
+              Cards, tags and local files in this space are kept together in one folder.
+            </LocalizedText>
+          </Text>
+          <Pressable
+            onPress={handleChangeFolder}
+            disabled={openingFolder}
+            accessibilityRole="button"
+            accessibilityLabel={t('Change space folder. Current space: %{name}', {
+              name: currentFolderName,
+            })}
+            accessibilityState={{
+              disabled: openingFolder,
+              busy: openingFolder,
+            }}
+            className="min-h-14 flex-row items-center gap-4 py-2 active:opacity-70"
+          >
+            <FolderOpen size={20} color={themeColors.body} />
+            <View className="flex-1">
+              <Text className="font-sans text-xs text-theme-muted">
+                <LocalizedText>Folder</LocalizedText>
+              </Text>
+              <Text
+                className="font-sans text-xl leading-tight text-theme-foreground"
+                numberOfLines={2}
+              >
+                {currentFolderName}
+              </Text>
+            </View>
+            {openingFolder ? (
+              <ActivityIndicator size="small" color={themeColors.muted} />
+            ) : (
+              <ArrowLeftRight size={20} color={themeColors.secondary} />
+            )}
+          </Pressable>
+        </View>
+
         <AppearanceSettings />
         <LinkOpeningSettings />
 
@@ -217,51 +262,6 @@ export default function SettingsScreen() {
               </Pressable>
             ))}
           </View>
-        </View>
-
-        <View className="gap-4 border-b border-theme-raised px-8 py-6">
-          <View className="flex-row items-center gap-2">
-            <Circle size={16} color={themeColors.heading} />
-            <Text className="font-sans-semibold text-sm uppercase tracking-wider text-theme-heading">
-              <LocalizedText>Current space</LocalizedText>
-            </Text>
-          </View>
-          <Text className="font-sans text-base leading-relaxed text-theme-secondary">
-            <LocalizedText>
-              Cards, tags and local files in this space are kept together in one folder.
-            </LocalizedText>
-          </Text>
-          <Pressable
-            onPress={handleChangeFolder}
-            disabled={openingFolder}
-            accessibilityRole="button"
-            accessibilityLabel={t('Change space folder. Current space: %{name}', {
-              name: currentFolderName,
-            })}
-            accessibilityState={{
-              disabled: openingFolder,
-              busy: openingFolder,
-            }}
-            className="min-h-14 flex-row items-center gap-4 py-2 active:opacity-70"
-          >
-            <FolderOpen size={20} color={themeColors.body} />
-            <View className="flex-1">
-              <Text className="font-sans text-xs text-theme-muted">
-                <LocalizedText>Folder</LocalizedText>
-              </Text>
-              <Text
-                className="font-sans text-xl leading-tight text-theme-foreground"
-                numberOfLines={2}
-              >
-                {currentFolderName}
-              </Text>
-            </View>
-            {openingFolder ? (
-              <ActivityIndicator size="small" color={themeColors.muted} />
-            ) : (
-              <ArrowLeftRight size={20} color={themeColors.secondary} />
-            )}
-          </Pressable>
         </View>
 
         <View className="gap-4 px-8 pt-6">
