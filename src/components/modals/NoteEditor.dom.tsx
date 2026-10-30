@@ -6,6 +6,8 @@ import type { DOMProps } from 'expo/dom';
 import { Asset } from 'expo-asset';
 import { NOTE_EDITOR_TYPOGRAPHY } from '@/lib/noteTypography';
 import type { EditorFontSources } from '@/lib/noteEditor/fonts';
+import type { BlockControlLabels } from '@/lib/noteEditor/blockControls';
+import type { SlashCommand } from '@/lib/noteEditor/slashCommands';
 import type { NoteEditorEngine } from '@/lib/noteEditor/engine';
 import type { EditorRequest, EditorResult } from '@/lib/noteEditor/bridge';
 import type { PickedImageAsset } from '@/lib/library/storage';
@@ -44,6 +46,7 @@ export type NoteEditorDOMProps = {
   request: EditorRequest | null;
   colors: {
     background: string;
+    surface: string;
     foreground: string;
     muted: string;
     border: string;
@@ -54,6 +57,11 @@ export type NoteEditorDOMProps = {
     inverse: string;
   };
   placeholder: string;
+  blockLabels: BlockControlLabels;
+  slashCommands: SlashCommand[];
+  slashMenuLabel: string;
+  slashEmptyLabel: string;
+  onInsert: (action: 'image' | 'lyrics') => Promise<void>;
   onReady: () => Promise<void>;
   onLoadFonts: () => Promise<EditorFontSources | null>;
   onChange: (markdown: string) => Promise<void>;
@@ -130,6 +138,11 @@ export default function NoteEditorDOM({ ref, ...props }: NoteEditorDOMProps) {
     void createNoteEditor({
       root,
       markdown: latest.current.value,
+      blockLabels: latest.current.blockLabels,
+      slashCommands: latest.current.slashCommands,
+      slashMenuLabel: latest.current.slashMenuLabel,
+      slashEmptyLabel: latest.current.slashEmptyLabel,
+      onInsert: (action) => latest.current.onInsert(action),
       placeholder: latest.current.placeholder,
       onChange: (markdown) => {
         void latest.current.onChange(markdown);
@@ -201,6 +214,7 @@ export default function NoteEditorDOM({ ref, ...props }: NoteEditorDOMProps) {
           '--note-bright': colors.bright,
           '--note-inverse': colors.inverse,
           '--note-background': colors.background,
+          '--note-surface': colors.surface,
           '--note-foreground': colors.foreground,
           '--note-muted': colors.muted,
           '--note-border': colors.border,
@@ -218,7 +232,7 @@ export default function NoteEditorDOM({ ref, ...props }: NoteEditorDOMProps) {
           {failed ? props.placeholder : '…'}
         </div>
       )}
-      <div ref={rootRef} />
+      <div ref={rootRef} className="note-editor-root" />
     </div>
   );
 }

@@ -23,6 +23,7 @@ import { File } from 'expo-file-system';
 import NoteEditorDOM, { type NoteEditorDOMHandle } from './NoteEditor.dom';
 import type { NoteRichTextInputHandle, NoteRichTextInputProps } from './NoteRichTextInput.types';
 import { NoteEditorBridge, type EditorRequest } from '@/lib/noteEditor/bridge';
+import { noteSlashCommands } from '@/lib/noteEditor/slashCommands';
 import { externalLink } from '@/lib/noteEditor/images';
 import { loadEditorFonts } from '@/lib/noteEditor/fonts';
 import { LibraryAssetContext } from '@/lib/library/assetContext';
@@ -152,12 +153,30 @@ export const NoteRichTextInput = forwardRef<NoteRichTextInputHandle, NoteRichTex
             bright: colors.bright,
             inverse: colors.inverse,
             background: colors.canvas,
+            surface: colors.surface,
             foreground: colors.heading,
             muted: props.placeholderTextColor,
             border: colors.strongBorder,
             link: colors.blueSoft,
           }}
           placeholder={props.placeholder}
+          slashCommands={noteSlashCommands(translate).filter(
+            ({ action }) => props.onInsert || (action !== 'image' && action !== 'lyrics')
+          )}
+          blockLabels={{
+            handle: translate('Hold a block to select it, then drag to move'),
+            menu: translate('Block options'),
+            selectBlock: translate('Select block'),
+            selectAll: translate('Select entire note'),
+            moveUp: translate('Move up'),
+            moveDown: translate('Move down'),
+            moved: translate('Block moved'),
+            deleteBlock: translate('Delete block'),
+            deleted: translate('Block deleted'),
+          }}
+          slashMenuLabel={translate('Formatting and insertion')}
+          slashEmptyLabel={translate('No commands found')}
+          onInsert={async (action) => currentProps.current.onInsert?.(action)}
           onReady={async () => {
             readyRef.current = true;
             setReady(true);
@@ -234,11 +253,13 @@ export const NoteRichTextInput = forwardRef<NoteRichTextInputHandle, NoteRichTex
         colors.bright,
         colors.inverse,
         colors.canvas,
+        colors.surface,
         colors.heading,
         colors.strongBorder,
         colors.blueSoft,
         props.placeholderTextColor,
         props.placeholder,
+        props.onInsert,
         bridge,
         resolveImage,
         reportError,

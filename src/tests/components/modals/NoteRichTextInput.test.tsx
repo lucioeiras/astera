@@ -13,6 +13,7 @@ const mockDOMRender = jest.fn();
 const mockDOMFocus = jest.fn();
 const mockColors = {
   canvas: '#fff',
+  surface: '#ededf0',
   heading: '#111',
   strongBorder: '#ccc',
   blueSoft: '#00f',
@@ -248,4 +249,17 @@ it('covers initial WebView painting and recovery with the active dark background
   } finally {
     mockColors.canvas = originalCanvas;
   }
+});
+
+it('exposes insertion commands only when supported and forwards requests to the host', async () => {
+  const view = await render(<NoteRichTextInput {...props} />);
+  expect(mockDOM.slashCommands.map(({ action }) => action)).not.toContain('image');
+  const onInsert = jest.fn(async () => {});
+  await view.rerender(<NoteRichTextInput {...props} onInsert={onInsert} />);
+  expect(mockDOM.slashCommands.map(({ action }) => action)).toEqual(
+    expect.arrayContaining(['image', 'lyrics'])
+  );
+  await mockDOM.onInsert('image');
+  await mockDOM.onInsert('lyrics');
+  expect(onInsert.mock.calls).toEqual([['image'], ['lyrics']]);
 });

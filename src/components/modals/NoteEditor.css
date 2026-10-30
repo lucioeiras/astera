@@ -238,3 +238,148 @@ body,
   white-space: pre-wrap;
   color: var(--note-muted);
 }
+
+.note-slash-menu {
+  position: fixed;
+  z-index: 20;
+  width: min(300px, calc(100vw - 16px));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 10px;
+  border: 1px solid color-mix(in srgb, var(--note-strong) 12%, transparent);
+  border-radius: 26px;
+  background: var(--note-surface);
+  color: var(--note-foreground);
+  box-shadow: 0 12px 36px #0000001a;
+  scrollbar-width: thin;
+  scrollbar-color: var(--note-border) transparent;
+}
+@supports ((backdrop-filter: blur(24px)) or (-webkit-backdrop-filter: blur(24px))) {
+  .note-slash-menu {
+    background: color-mix(in srgb, var(--note-surface) 78%, transparent);
+    -webkit-backdrop-filter: blur(24px) saturate(140%);
+    backdrop-filter: blur(24px) saturate(140%);
+  }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .note-slash-menu {
+    background: var(--note-surface);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+.note-slash-menu button {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 16px;
+  border: 0;
+  border-radius: 16px;
+  background: transparent;
+  color: inherit;
+  font:
+    500 16px/1.4 InstrumentSans,
+    sans-serif;
+  text-align: left;
+  cursor: pointer;
+}
+.note-slash-menu button:is(:hover, :focus-visible, [data-active='true']) {
+  background: color-mix(in srgb, var(--note-strong) 8%, transparent);
+}
+.note-slash-menu button:focus-visible {
+  outline: 2px solid var(--note-link);
+  outline-offset: -2px;
+}
+.note-slash-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  color: var(--note-strong);
+}
+.note-slash-empty {
+  padding: 16px;
+  color: var(--note-muted);
+  font-size: 15px;
+}
+
+.note-editor-root {
+  position: relative;
+}
+.note-editor-root.note-block-menu-open {
+  padding-bottom: var(--note-block-menu-space, 0px);
+}
+.note-block-gesture,
+.note-block-gesture * {
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -webkit-touch-callout: none !important;
+  cursor: grabbing !important;
+}
+.note-block-drag-source {
+  opacity: 0.3;
+}
+.note-block-drag-preview {
+  position: fixed;
+  z-index: 1000;
+  pointer-events: none;
+  background: transparent;
+  opacity: 0.5;
+}
+.note-block-drag-preview > * {
+  /* The clone contains inline computed styles from the selected source block. */
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+.note-block-drag-preview * {
+  pointer-events: none !important;
+}
+.note-block-drop-indicator {
+  position: absolute;
+  right: 32px;
+  left: 32px;
+  height: 3px;
+  border-radius: 999px;
+  background: var(--note-link);
+  pointer-events: none;
+}
+.note-block-menu button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.note-block-menu-divider {
+  height: 1px;
+  margin: 8px 12px;
+  background: color-mix(in srgb, var(--note-strong) 12%, transparent);
+}
+.note-block-announcement {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.astera-note-editor .milkdown .ProseMirror .ProseMirror-selectednode {
+  --note-block-selection: rgb(128 128 128 / 14%);
+  outline: none;
+  background: var(--note-block-selection);
+  border-radius: 8px;
+  /* Expand the highlight without shifting text or changing drag geometry. */
+  box-shadow: 0 0 0 8px var(--note-block-selection);
+}
+.astera-note-editor .ProseMirror[data-block-selected='true'],
+.astera-note-editor .ProseMirror[data-block-selected='true'] * {
+  caret-color: transparent !important;
+}
+
+.astera-note-editor .ProseMirror {
+  -webkit-touch-callout: none;
+}

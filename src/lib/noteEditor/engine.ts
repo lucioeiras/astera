@@ -1,3 +1,6 @@
+import { blockControls, defaultBlockControlLabels, type BlockControlLabels } from './blockControls';
+import { slashMenu } from './slashMenu';
+import { noteSlashCommands, type SlashCommand } from './slashCommands';
 import { CrepeBuilder } from '@milkdown/crepe/builder';
 import { cursor } from '@milkdown/crepe/feature/cursor';
 import { imageBlock } from '@milkdown/crepe/feature/image-block';
@@ -39,6 +42,11 @@ export type NoteEditorEngineOptions = {
   readClipboardImage: () => Promise<string | null>;
   openLink: (url: string) => void;
   onError: () => void;
+  blockLabels?: BlockControlLabels;
+  slashCommands?: SlashCommand[];
+  slashMenuLabel?: string;
+  slashEmptyLabel?: string;
+  onInsert?: (action: 'image' | 'lyrics') => Promise<void>;
 };
 
 export async function createNoteEditor(options: NoteEditorEngineOptions) {
@@ -57,7 +65,14 @@ export async function createNoteEditor(options: NoteEditorEngineOptions) {
   const keepVisible = () => {
     if (destroyed) return;
     const editor = view();
-    if (!editor.hasFocus()) return;
+    // Keyboard/font/image layout changes should reveal a typing caret, not
+    // scroll an entire selected block (or note) into the viewport.
+    if (
+      !editor.hasFocus() ||
+      !(editor.state.selection instanceof TextSelection) ||
+      !editor.state.selection.empty
+    )
+      return;
     editor.dispatch(editor.state.tr.scrollIntoView());
   };
   const capture = (id: string) => {
@@ -242,7 +257,41 @@ export async function createNoteEditor(options: NoteEditorEngineOptions) {
   // Keep ordinary Markdown image alt/title values. Crepe's block transform
   // otherwise interprets the alt text as an aspect ratio and rewrites it.
   await crepe.editor.remove([...remarkImageBlockPlugin, uploadPlugin]);
-  crepe.editor.use(opaqueBlock).use(preserveOpaque).use(ownInput);
+  crepe.editor
+    .use(opaqueBlock)
+    .use(preserveOpaque)
+    .use(ownInput)
+    .use(
+      $prose(() =>
+        slashMenu({
+          root: options.root,
+          commands: (options.slashCommands ?? noteSlashCommands((key) => key)).filter(
+            ({ action }) => options.onInsert || (action !== 'image' && action !== 'lyrics')
+          ),
+          label: options.slashMenuLabel ?? 'Formatting and insertion',
+          emptyLabel: options.slashEmptyLabel ?? 'No commands found',
+          run: (action) => {
+            if (action === 'image' || action === 'lyrics') {
+              void options.onInsert?.(action).catch(options.onError);
+            } else {
+              void engine.command({ method: 'format', action }).catch(options.onError);
+            }
+          },
+        })
+      )
+    );
+  crepe.editor.use(
+    $prose(() =>
+      blockControls({
+        root: options.root,
+        commands: options.slashCommands ?? noteSlashCommands((key) => key),
+        labels: options.blockLabels ?? defaultBlockControlLabels,
+        format: (action) => {
+          void engine.command({ method: 'format', action }).catch(options.onError);
+        },
+      })
+    )
+  );
   await crepe.create();
   session = new NoteEditorSession(options.markdown, crepe.getMarkdown());
   const viewport = window.visualViewport;
@@ -250,7 +299,7 @@ export async function createNoteEditor(options: NoteEditorEngineOptions) {
   options.root.addEventListener('load', keepVisible, true);
   document.fonts?.addEventListener('loadingdone', keepVisible);
 
-  return {
+  const engine = {
     async command(command: EditorCommand): Promise<string> {
       if (destroyed) throw new Error('Editor is unavailable');
       if (command.method === 'getMarkdown') {
@@ -390,5 +439,6 @@ export async function createNoteEditor(options: NoteEditorEngineOptions) {
       return view();
     },
   };
+  return engine;
 }
 export type NoteEditorEngine = Awaited<ReturnType<typeof createNoteEditor>>;

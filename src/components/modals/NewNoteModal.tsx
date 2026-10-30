@@ -473,13 +473,17 @@ export function NewNoteModal({
                 onReady={focusEditorOnOpen}
                 onChangeMarkdown={setText}
                 onImportImage={importImage}
+                onInsert={async (action) => {
+                  if (action === 'image') await handleImage();
+                  else await openLyricsPicker();
+                }}
                 onError={() =>
                   Alert.alert(
                     translate('Error'),
                     translate('Editor operation failed. Please try again.')
                   )
                 }
-                placeholder={translate('Type here...')}
+                placeholder={translate('Type here... Use / to see options.')}
                 placeholderTextColor={themeColors.muted}
               />
             </View>

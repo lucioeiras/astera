@@ -19,6 +19,7 @@ export type NoteRichTextInputProps = {
   onImportImage: (asset: PickedImageAsset) => Promise<string>;
   placeholder: string;
   placeholderTextColor: string;
+  onInsert?: (action: 'image' | 'lyrics') => Promise<void>;
   onReady?: () => void;
   onError?: () => void;
 };
