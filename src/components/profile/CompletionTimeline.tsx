@@ -18,7 +18,6 @@ import { CompletionTypeFilters } from './CompletionTypeFilters';
 
 export function CompletionTimeline({ items }: { items: LibraryItem[] }) {
   const { language } = useLocalization();
-  const { isDark } = useAppTheme();
   const locale = language === 'pt' ? 'pt-BR' : 'en-US';
   const [type, setType] = useState<TrackableType | null>(null);
   const [limit, setLimit] = useState(30);
