@@ -70,6 +70,9 @@ it('shows the annual best streak and stacked covers on days with multiple books'
   expect(screen.getByTestId('activity-day-2026-10-02').props.style.backgroundColor).not.toEqual(
     screen.getByTestId('activity-day-2026-10-13').props.style.backgroundColor
   );
+  expect(['#1e3a5f', '#dbeafe']).toContain(
+    screen.getByTestId('activity-day-2026-10-13').props.style.backgroundColor
+  );
   await fireEvent.press(screen.getByLabelText(/October 13, 2026, 2 cards logged/));
   await fireEvent.press(screen.getByLabelText('Open activity card Book b'));
   expect(router.push).toHaveBeenCalledWith({ pathname: '/card/[id]', params: { id: 'b' } });
@@ -83,13 +86,16 @@ it('opens a single logged book directly and does not open empty days', async () 
   await fireEvent.press(screen.getByLabelText(/October 2, 2026, 0 cards logged/));
   expect(router.push).not.toHaveBeenCalled();
 });
-it('limits the cover stack while keeping all books available in the day list', async () => {
+it('limits the preview to two covers and shows the total while keeping every card available', async () => {
   await render(
     <LogActivityCalendarSection
       items={['a', 'b', 'c', 'd'].map((id) => book(id, ['2026-10-13']))}
     />
   );
-  expect(screen.getByText('+1', { includeHiddenElements: true })).toBeTruthy();
+  expect(screen.getByTestId('activity-count-2026-10-13')).toHaveTextContent('4');
+  expect(
+    screen.queryByTestId('activity-stack-2026-10-13-c', { includeHiddenElements: true })
+  ).toBeNull();
   expect(
     screen.queryByTestId('activity-stack-2026-10-13-d', { includeHiddenElements: true })
   ).toBeNull();

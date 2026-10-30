@@ -1,4 +1,14 @@
 const portugueseCatalog = {
+  'Annual additions': 'Adições no ano',
+  'Activity year': 'Ano das adições',
+  Fewer: 'Menos',
+  More: 'Mais',
+  'Completion history': 'Histórico de conclusões',
+  '%{rating} out of %{count} stars': '%{rating} de %{count} estrelas',
+  Undated: 'Sem data',
+  'Season %{number}': 'Temporada %{number}',
+  'Rating: %{rating}': 'Nota: %{rating}',
+  'Show more': 'Mostrar mais',
   'Hold a block to select it, then drag to move':
     'Segure um bloco para selecionar e arraste para mover',
   'Block options': 'Opções do bloco',

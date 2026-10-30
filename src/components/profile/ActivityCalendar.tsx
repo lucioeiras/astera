@@ -27,7 +27,7 @@ export function ActivityCalendar({ month, byDay, onChangeMonth, onPressDate }: P
   const today = localDayKey(new Date());
   return (
     <View>
-      <View className="mb-4 flex-row items-center justify-between">
+      <View className="mb-2 flex-row items-center justify-between">
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={translate('Previous month')}
@@ -58,7 +58,7 @@ export function ActivityCalendar({ month, byDay, onChangeMonth, onPressDate }: P
       <View className="flex-row flex-wrap">
         {cells.map((day, i) => {
           if (day < 1 || day > days)
-            return <View key={i} style={{ width: '14.2857%', height: 64 }} />;
+            return <View key={i} style={{ width: '14.2857%', height: 48 }} />;
           const date = new Date(month.getFullYear(), month.getMonth(), day);
           const key = localDayKey(date);
           const count = byDay[key] ?? 0;
@@ -84,12 +84,12 @@ export function ActivityCalendar({ month, byDay, onChangeMonth, onPressDate }: P
                 count,
               })}
               onPress={() => onPressDate(key)}
-              style={{ width: '14.2857%', height: 64, padding: 2 }}
+              style={{ width: '14.2857%', height: 48, padding: 2 }}
             >
               <View
                 testID={`activity-day-${key}`}
                 style={{ backgroundColor }}
-                className={`flex-1 overflow-hidden rounded-xl p-1.5 ${key === today ? 'border border-theme-foreground' : ''}`}
+                className={`flex-1 overflow-hidden rounded-lg p-1 ${key === today ? 'border border-theme-foreground' : ''}`}
               >
                 <Text
                   className={`font-sans-medium text-xs ${isDark && count >= 5 ? 'text-theme-canvas' : count > 0 ? 'text-theme-foreground' : 'text-theme-muted'}`}
@@ -102,7 +102,7 @@ export function ActivityCalendar({ month, byDay, onChangeMonth, onPressDate }: P
                     numberOfLines={1}
                     adjustsFontSizeToFit
                     minimumFontScale={0.65}
-                    className={`absolute bottom-1.5 left-1.5 right-1.5 text-right font-sans-bold text-base ${isDark && count >= 5 ? 'text-theme-canvas' : count > 0 ? 'text-theme-foreground' : 'text-theme-muted'}`}
+                    className={`absolute bottom-1 left-1 right-1 text-right font-sans-bold text-sm ${isDark && count >= 5 ? 'text-theme-canvas' : count > 0 ? 'text-theme-foreground' : 'text-theme-muted'}`}
                   >
                     {count}
                   </Text>

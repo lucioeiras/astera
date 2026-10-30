@@ -14,14 +14,14 @@ import type { LibraryItem } from '@/lib/library/types';
 import { LocalizedText } from '@/components/LocalizedText';
 import { translate, useLocalization } from '@/lib/i18n';
 
-const COLORS = (themeColors: ThemeColors) => ({
+const COLORS = (themeColors: ThemeColors, isDark: boolean) => ({
   streak: themeColors.blue,
-  reading: themeColors.border,
+  reading: isDark ? '#1e3a5f' : '#dbeafe',
   empty: themeColors.surface,
 });
 
 export function LogActivityCalendarSection({ items }: { items: LibraryItem[] }) {
-  const { colors: themeColors } = useAppTheme();
+  const { colors: themeColors, isDark } = useAppTheme();
   const { language } = useLocalization();
   const locale = language === 'pt' ? 'pt-BR' : 'en-US';
   const [month, setMonth] = useState(
@@ -49,40 +49,41 @@ export function LogActivityCalendarSection({ items }: { items: LibraryItem[] }) 
   };
   return (
     <View className="border-t border-theme-raised px-8 py-6">
-      <Text className="font-sans-semibold text-sm uppercase tracking-wider text-theme-heading">
-        <LocalizedText>Activity</LocalizedText>
-      </Text>
-      <View
-        accessibilityLabel={translate('Filter activity by type')}
-        className="mt-4 flex-row flex-wrap items-center gap-2"
-      >
-        {(
-          [
-            { type: null, label: 'All', icon: LayoutGrid },
-            { type: 'book', label: 'Books', icon: BookOpen },
-            { type: 'game', label: 'Games', icon: Gamepad2 },
-          ] as const
-        ).map(({ type, label, icon: Icon }) => {
-          const selected = filter === type;
-          return (
-            <Button
-              key={label}
-              accessibilityLabel={translate(label)}
-              text={translate(label)}
-              icon={<Icon size={20} strokeWidth={2} />}
-              size="small"
-              compact
-              iconSize={16}
-              textWeight={selected ? 'semibold' : 'medium'}
-              variant={selected ? 'primary' : 'secondary'}
-              selected={selected}
-              onPress={() => {
-                setSelectedDay(null);
-                setFilter(type);
-              }}
-            />
-          );
-        })}
+      <View className="flex-row items-center justify-between gap-3">
+        <Text className="min-w-0 flex-1 font-sans-semibold text-sm uppercase tracking-wider text-theme-heading">
+          <LocalizedText>Activity</LocalizedText>
+        </Text>
+        <View
+          accessibilityLabel={translate('Filter activity by type')}
+          className="shrink-0 flex-row items-center gap-2"
+        >
+          {(
+            [
+              { type: null, label: 'All', icon: LayoutGrid },
+              { type: 'book', label: 'Books', icon: BookOpen },
+              { type: 'game', label: 'Games', icon: Gamepad2 },
+            ] as const
+          ).map(({ type, label, icon: Icon }) => {
+            const selected = filter === type;
+            return (
+              <Button
+                key={label}
+                accessibilityLabel={translate(label)}
+                icon={<Icon size={20} strokeWidth={2} />}
+                size="small"
+                compact
+                iconSize={16}
+                textWeight={selected ? 'semibold' : 'medium'}
+                variant={selected ? 'primary' : 'secondary'}
+                selected={selected}
+                onPress={() => {
+                  setSelectedDay(null);
+                  setFilter(type);
+                }}
+              />
+            );
+          })}
+        </View>
       </View>
       <View className="my-4 gap-1">
         <Text className="font-sans text-sm text-theme-secondary">
@@ -151,10 +152,10 @@ export function LogActivityCalendarSection({ items }: { items: LibraryItem[] }) 
           const books = activity.byDay[key] ?? [];
           const streak = activity.bestStreakDays.has(key);
           const backgroundColor = streak
-            ? COLORS(themeColors).streak
+            ? COLORS(themeColors, isDark).streak
             : books.length
-              ? COLORS(themeColors).reading
-              : COLORS(themeColors).empty;
+              ? COLORS(themeColors, isDark).reading
+              : COLORS(themeColors, isDark).empty;
           return (
             <Pressable
               key={key}
@@ -167,47 +168,42 @@ export function LogActivityCalendarSection({ items }: { items: LibraryItem[] }) 
               <View
                 testID={`activity-day-${key}`}
                 style={{ backgroundColor }}
-                className={`flex-1 overflow-hidden rounded-xl p-1.5 ${key === today ? 'border border-theme-foreground' : ''}`}
+                className={`flex-1 overflow-hidden rounded-xl p-1 ${key === today ? 'border border-theme-foreground' : ''}`}
               >
-                <Text
-                  className={`font-sans-medium text-xs ${streak ? 'text-theme-canvas' : books.length ? 'text-theme-foreground' : 'text-theme-muted'}`}
-                >
-                  {day}
-                </Text>
+                <View className="flex-row items-center justify-between gap-0.5">
+                  <Text
+                    className={`font-sans-medium text-xs ${streak ? 'text-theme-canvas' : books.length ? 'text-theme-foreground' : 'text-theme-muted'}`}
+                  >
+                    {day}
+                  </Text>
+                  {books.length > 1 && (
+                    <Text
+                      testID={`activity-count-${key}`}
+                      className={`font-sans-semibold text-[9px] ${streak ? 'text-theme-canvas' : 'text-theme-secondary'}`}
+                    >
+                      {books.length}
+                    </Text>
+                  )}
+                </View>
                 <View
-                  className="flex-1 items-center justify-end"
+                  className="flex-1 flex-row items-end justify-center gap-0.5 pt-1"
                   pointerEvents="none"
                   accessibilityElementsHidden
                   importantForAccessibility="no-hide-descendants"
                 >
-                  {books.slice(0, 3).map((book, coverIndex) => (
+                  {books.slice(0, 2).map((book) => (
                     <View
                       key={book.id}
                       testID={`activity-stack-${key}-${book.id}`}
                       style={{
-                        position: 'absolute',
-                        bottom: 0,
-                        left: '50%',
-                        marginLeft: -8 + (coverIndex - (Math.min(books.length, 3) - 1) / 2) * 2,
-                        width: 16,
-                        height: 24,
-                        zIndex: coverIndex,
+                        flex: 1,
+                        maxWidth: 18,
+                        aspectRatio: 18 / 26,
                       }}
                     >
                       <ActivityCover key={book.cover ?? book.id} book={book} />
                     </View>
                   ))}
-                  {books.length > 3 && (
-                    <View
-                      className="absolute bottom-0 right-0 rounded-tl bg-theme-canvas/90 px-1"
-                      style={{ zIndex: 4 }}
-                    >
-                      <Text className="font-sans-bold text-[10px] text-theme-foreground">
-                        <LocalizedText>+</LocalizedText>
-                        {books.length - 3}
-                      </Text>
-                    </View>
-                  )}
                 </View>
               </View>
             </Pressable>
@@ -216,11 +212,11 @@ export function LogActivityCalendarSection({ items }: { items: LibraryItem[] }) 
       </View>
       <View className="mt-4 flex-row flex-wrap items-center justify-center gap-x-4 gap-y-2">
         <Legend
-          color={COLORS(themeColors).streak}
+          color={COLORS(themeColors, isDark).streak}
           label={translate('Best %{year} streak', { year })}
         />
-        <Legend color={COLORS(themeColors).reading} label={translate('Active days')} />
-        <Legend color={COLORS(themeColors).empty} label={translate('No activity')} />
+        <Legend color={COLORS(themeColors, isDark).reading} label={translate('Active days')} />
+        <Legend color={COLORS(themeColors, isDark).empty} label={translate('No activity')} />
       </View>
       {activity.activeDays === 0 && (
         <Text className="mt-4 font-sans text-sm text-theme-muted">
