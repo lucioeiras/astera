@@ -5,6 +5,7 @@ import { BlurTargetView } from 'expo-blur';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { Plus, TriangleAlert } from 'lucide-react-native';
 import Sortable from 'react-native-sortables';
+import Animated, { FadeOut, LinearTransition } from 'react-native-reanimated';
 import {
   createContext,
   forwardRef,
@@ -929,7 +930,11 @@ export default function BoardScreen() {
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<LibraryItem>) => (
-      <View style={styles.cardWrapper}>
+      <Animated.View
+        style={styles.cardWrapper}
+        exiting={FadeOut.duration(360)}
+        layout={LinearTransition.duration(260)}
+      >
         <ItemCard
           item={item}
           compactAudioWaveform
@@ -944,7 +949,7 @@ export default function BoardScreen() {
           onPress={handleCardPress}
           onLongPress={handleCardLongPress}
         />
-      </View>
+      </Animated.View>
     ),
     [
       isEditing,
@@ -1376,9 +1381,9 @@ const CellRenderer = forwardRef<View, CellRendererProps>((props, ref) => {
   }, [index, isLeftColumn, reportItemCol]);
 
   return (
-    <View ref={ref} {...rest} style={[style]}>
+    <Animated.View ref={ref} {...rest} style={[style]} layout={LinearTransition.duration(260)}>
       {children}
-    </View>
+    </Animated.View>
   );
 });
 
