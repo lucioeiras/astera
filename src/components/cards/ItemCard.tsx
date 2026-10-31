@@ -37,6 +37,8 @@ type ItemCardProps = {
   fixedHeightBackgroundColor?: string;
   isEditing?: boolean;
   isSelected?: boolean;
+  accessibilityLabel?: string;
+  accessibilityHint?: string;
   onPress?: (item: LibraryItem) => void;
   onLongPress?: (item: LibraryItem) => void;
   onNoteTextChange?: (itemId: string, text: string) => void;
@@ -57,6 +59,8 @@ export const ItemCard = memo(function ItemCard({
   fixedHeightBackgroundColor,
   isEditing = false,
   isSelected = false,
+  accessibilityLabel,
+  accessibilityHint,
   onPress,
   onLongPress,
   onNoteTextChange,
@@ -305,6 +309,9 @@ export const ItemCard = memo(function ItemCard({
       onPress={onPress ? () => onPress(item) : undefined}
       onLongPress={onLongPress ? () => onLongPress(item) : undefined}
       delayLongPress={350}
+      accessibilityRole={accessibilityLabel ? 'button' : undefined}
+      accessibilityLabel={accessibilityLabel}
+      accessibilityHint={accessibilityHint}
       style={({ pressed }) =>
         pressed ? { opacity: 0.85, transform: [{ scale: 0.98 }] } : undefined
       }

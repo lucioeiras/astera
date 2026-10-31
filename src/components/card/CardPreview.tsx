@@ -12,6 +12,8 @@ import { MusicPreviewPlayer } from './MusicPreviewPlayer';
 import { ImageViewerModal } from './ImageViewerModal';
 import { translate, useLocalization } from '@/lib/i18n';
 
+type ImageSourceRect = { x: number; y: number; width: number; height: number };
+
 type CardPreviewProps = {
   item: LibraryItem;
   title: string;
@@ -39,6 +41,8 @@ export function CardPreview({
     title && 'title' in item ? ({ ...item, title } as LibraryItem) : item;
   const [isPlayingMusic, setIsPlayingMusic] = useState(false);
   const [isImageViewerOpen, setIsImageViewerOpen] = useState(false);
+  const [imageSourceRect, setImageSourceRect] = useState<ImageSourceRect | null>(null);
+  const imageCardRef = useRef<View>(null);
   const musicPlayerRef = useRef<{
     play: () => void;
     pause: () => void;
@@ -48,6 +52,12 @@ export function CardPreview({
     if (!musicPlayerRef.current) return;
     if (musicPlayerRef.current.playing) musicPlayerRef.current.pause();
     else musicPlayerRef.current.play();
+  }, []);
+  const handleOpenImage = useCallback(() => {
+    imageCardRef.current?.measureInWindow((x, y, width, height) => {
+      setImageSourceRect({ x, y, width, height });
+      setIsImageViewerOpen(true);
+    });
   }, []);
   return (
     <View
@@ -136,16 +146,16 @@ export function CardPreview({
       )}
 
       {!isNoteOrQuote && !isMusic && (
-        <View className="w-full max-w-sm">
+        <View ref={item.type === 'image' ? imageCardRef : undefined} className="w-full max-w-sm">
           {item.type === 'image' ? (
-            <Pressable
-              onPress={() => setIsImageViewerOpen(true)}
-              accessibilityRole="button"
+            <ItemCard
+              item={displayItem}
+              hideTitleAndAuthor
+              showAudioPlaybackRate
+              onPress={handleOpenImage}
               accessibilityLabel={translate('Open image')}
               accessibilityHint={translate('Opens image preview with zoom controls')}
-            >
-              <ItemCard item={displayItem} hideTitleAndAuthor showAudioPlaybackRate />
-            </Pressable>
+            />
           ) : (
             <ItemCard item={displayItem} hideTitleAndAuthor showAudioPlaybackRate />
           )}
@@ -177,10 +187,11 @@ export function CardPreview({
           )}
         </View>
       )}
-      {item.type === 'image' && (
+      {item.type === 'image' && isImageViewerOpen && (
         <ImageViewerModal
           uri={item.image}
-          visible={isImageViewerOpen}
+          visible
+          sourceRect={imageSourceRect}
           onClose={() => setIsImageViewerOpen(false)}
         />
       )}
