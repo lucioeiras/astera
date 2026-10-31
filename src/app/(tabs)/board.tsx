@@ -5,7 +5,12 @@ import { BlurTargetView } from 'expo-blur';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { Plus, TriangleAlert } from 'lucide-react-native';
 import Sortable from 'react-native-sortables';
-import Animated, { FadeOut, LinearTransition } from 'react-native-reanimated';
+import Animated, {
+  FadeInDown,
+  LinearTransition,
+  useAnimatedStyle,
+  withTiming,
+} from 'react-native-reanimated';
 import {
   createContext,
   forwardRef,
@@ -67,6 +72,7 @@ import { translate, useLocalization } from '@/lib/i18n';
 type BoardGridContextType = {
   lastIndices: { col0: number; col1: number };
   totalItems: number;
+  animateReorder: boolean;
   reportItemCol: (index: number, col: number) => void;
 };
 
@@ -94,6 +100,7 @@ type AddControlAction = {
 const BoardGridContext = createContext<BoardGridContextType>({
   lastIndices: { col0: -1, col1: -1 },
   totalItems: 0,
+  animateReorder: false,
   reportItemCol: () => {},
 });
 
@@ -204,6 +211,9 @@ export default function BoardScreen() {
   const typeFilterScrollOffsetRef = useRef(0);
   const [isFolderPickerOpen, setIsFolderPickerOpen] = useState(false);
   const [selectedCardIds, setSelectedCardIds] = useState<Set<string>>(new Set());
+  const [exitingCardIds, setExitingCardIds] = useState<Set<string>>(new Set());
+  const [enteringCardIds, setEnteringCardIds] = useState<Set<string>>(new Set());
+  const [animateReorder, setAnimateReorder] = useState(false);
   const [optimisticPinnedOrder, setOptimisticPinnedOrder] = useState<string[] | null>(null);
   const [restoreBackup, setRestoreBackup] = useState<DeletedItemBackup[] | null>(null);
   const [isToastVisible, setIsToastVisible] = useState(false);
@@ -606,14 +616,23 @@ export default function BoardScreen() {
     try {
       setIsEditing(false);
       setSelectedCardIds(new Set());
+      setExitingCardIds(new Set(idsToDelete));
+      await new Promise<void>((resolve) => setTimeout(resolve, 360));
 
-      const backups = await deleteItems(idsToDelete);
+      setAnimateReorder(true);
+      await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+      const deletion = deleteItems(idsToDelete);
+      setTimeout(() => setAnimateReorder(false), 320);
+      const backups = await deletion;
+      setExitingCardIds(new Set());
 
       if (backups.length > 0) {
         setRestoreBackup(backups);
         setIsToastVisible(true);
       }
     } catch (error) {
+      setAnimateReorder(false);
+      setExitingCardIds(new Set());
       console.error('Failed to delete cards:', error);
       Alert.alert(
         translate('Error'),
@@ -650,8 +669,17 @@ export default function BoardScreen() {
       const backups = restoreBackup;
       setIsToastVisible(false);
       setRestoreBackup(null);
+      setEnteringCardIds(new Set(backups.map((backup) => backup.id)));
+      setAnimateReorder(true);
+      await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
       await restoreItems(backups);
+      setTimeout(() => {
+        setEnteringCardIds(new Set());
+        setAnimateReorder(false);
+      }, 360);
     } catch (error) {
+      setEnteringCardIds(new Set());
+      setAnimateReorder(false);
       console.error('Failed to restore cards:', error);
       Alert.alert(
         translate('Error'),
@@ -889,9 +917,10 @@ export default function BoardScreen() {
     () => ({
       lastIndices,
       totalItems: displayedItems.length,
+      animateReorder,
       reportItemCol,
     }),
-    [lastIndices, displayedItems.length, reportItemCol]
+    [lastIndices, displayedItems.length, animateReorder, reportItemCol]
   );
 
   const extraData = useMemo(
@@ -930,10 +959,9 @@ export default function BoardScreen() {
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<LibraryItem>) => (
-      <Animated.View
-        style={styles.cardWrapper}
-        exiting={FadeOut.duration(360)}
-        layout={LinearTransition.duration(260)}
+      <BoardDeleteAnimatedCard
+        isExiting={exitingCardIds.has(item.id)}
+        isEntering={enteringCardIds.has(item.id)}
       >
         <ItemCard
           item={item}
@@ -949,11 +977,13 @@ export default function BoardScreen() {
           onPress={handleCardPress}
           onLongPress={handleCardLongPress}
         />
-      </Animated.View>
+      </BoardDeleteAnimatedCard>
     ),
     [
       isEditing,
       selectedCardIds,
+      exitingCardIds,
+      enteringCardIds,
       handleCardPress,
       handleCardLongPress,
       handleNoteTextChange,
@@ -1309,6 +1339,8 @@ export default function BoardScreen() {
                       showsVerticalScrollIndicator={false}
                       keyboardDismissMode="on-drag"
                       keyboardShouldPersistTaps="handled"
+                      onScrollBeginDrag={() => setAnimateReorder(false)}
+                      onMomentumScrollBegin={() => setAnimateReorder(false)}
                       refreshControl={
                         <RefreshControl
                           refreshing={refreshing}
@@ -1369,9 +1401,36 @@ type CellRendererProps = {
   [key: string]: any;
 };
 
+function BoardDeleteAnimatedCard({
+  children,
+  isExiting,
+  isEntering,
+}: {
+  children: React.ReactNode;
+  isExiting: boolean;
+  isEntering: boolean;
+}) {
+  const animatedStyle = useAnimatedStyle(
+    () => ({
+      opacity: withTiming(isExiting ? 0 : 1, { duration: 360 }),
+      transform: [{ scale: withTiming(isExiting ? 0.92 : 1, { duration: 360 }) }],
+    }),
+    [isExiting]
+  );
+
+  return (
+    <Animated.View
+      style={[styles.cardWrapper, animatedStyle]}
+      entering={isEntering ? FadeInDown.duration(320) : undefined}
+    >
+      {children}
+    </Animated.View>
+  );
+}
+
 const CellRenderer = forwardRef<View, CellRendererProps>((props, ref) => {
   const { style, children, index, ...rest } = props;
-  const { reportItemCol } = useContext(BoardGridContext);
+  const { reportItemCol, animateReorder } = useContext(BoardGridContext);
   const isLeftColumn = !style?.left || style.left < 1;
 
   useEffect(() => {
@@ -1381,7 +1440,12 @@ const CellRenderer = forwardRef<View, CellRendererProps>((props, ref) => {
   }, [index, isLeftColumn, reportItemCol]);
 
   return (
-    <Animated.View ref={ref} {...rest} style={[style]} layout={LinearTransition.duration(260)}>
+    <Animated.View
+      ref={ref}
+      {...rest}
+      style={[style]}
+      layout={animateReorder ? LinearTransition.duration(260) : undefined}
+    >
       {children}
     </Animated.View>
   );
