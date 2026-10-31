@@ -1,5 +1,13 @@
 import { useAppTheme } from '@/lib/theme';
-import { Archive, ArchiveRestore, FolderPlus, Pin, Trash2, X } from 'lucide-react-native';
+import {
+  Archive,
+  ArchiveRestore,
+  FolderMinus,
+  FolderPlus,
+  Pin,
+  Trash2,
+  X,
+} from 'lucide-react-native';
 import { Text, View } from 'react-native';
 
 import { Button } from '@/components/Button';
@@ -12,6 +20,8 @@ type CardSelectionBarProps = {
   bottomOffset?: number;
   onDelete: () => void;
   onAddToFolder: () => void;
+  removeFromFolderLabel?: string;
+  onRemoveFromFolder?: () => void;
   pinActionLabel?: string;
   onTogglePin?: () => void;
   archiveActionLabel?: string;
@@ -25,6 +35,8 @@ export function CardSelectionBar({
   bottomOffset = 0,
   onDelete,
   onAddToFolder,
+  removeFromFolderLabel,
+  onRemoveFromFolder,
   pinActionLabel,
   onTogglePin,
   archiveActionLabel,
@@ -75,6 +87,16 @@ export function CardSelectionBar({
             disabled={!hasSelection}
             onPress={onAddToFolder}
           />
+          {removeFromFolderLabel && onRemoveFromFolder && (
+            <Button
+              accessibilityLabel={translate(removeFromFolderLabel)}
+              variant="secondary"
+              contentColor={themeColors.foreground}
+              icon={<FolderMinus size={24} color={themeColors.foreground} strokeWidth={2} />}
+              disabled={!hasSelection}
+              onPress={onRemoveFromFolder}
+            />
+          )}
           {archiveActionLabel && onToggleArchive && (
             <Button
               accessibilityLabel={translate(archiveActionLabel)}

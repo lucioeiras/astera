@@ -288,6 +288,8 @@ const portugueseCatalog = {
   'Add personal thoughts or notes about this movie...':
     'Adicione suas impressões ou notas sobre este filme...',
   'Add selected cards to folder': 'Adicionar cartões selecionados à pasta',
+  'Remove selected cards from folder': 'Remover cartões selecionados da pasta',
+  'Could not remove cards from folder': 'Não foi possível remover os cartões da pasta',
   'Add selected lyrics to note': 'Adicionar trecho selecionado à nota',
   'Add song lyrics': 'Adicionar letra de música',
   'Allow microphone access to record audio.': 'Permita o acesso ao microfone para gravar áudio.',

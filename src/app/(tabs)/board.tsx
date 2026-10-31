@@ -621,6 +621,28 @@ export default function BoardScreen() {
     }
   }, [deleteItems, selectedCardIds]);
 
+  const handleRemoveSelectedFromFolder = useCallback(async () => {
+    if (activeFolderKind !== 'tag' || !activeFolderKey || selectedCardIds.size === 0) return;
+    const selected =
+      state.status === 'ready'
+        ? state.result.items.filter((item) => selectedCardIds.has(item.id))
+        : [];
+    try {
+      await updateItems(
+        selected.map((item) => ({
+          itemId: item.id,
+          updates: { tags: item.tags?.filter((tag) => tag.trim() !== activeFolderKey) ?? [] },
+        }))
+      );
+      handleCancelEdition();
+    } catch (error) {
+      Alert.alert(
+        translate('Could not remove cards from folder'),
+        error instanceof Error ? error.message : 'Please try again.'
+      );
+    }
+  }, [activeFolderKind, activeFolderKey, selectedCardIds, state, updateItems, handleCancelEdition]);
+
   const handleRestore = useCallback(async () => {
     if (!restoreBackup || restoreBackup.length === 0) return;
     try {
@@ -1182,6 +1204,12 @@ export default function BoardScreen() {
             bottomOffset={60 + insets.bottom}
             onDelete={handleDeleteSelected}
             onAddToFolder={() => setIsFolderPickerOpen(true)}
+            removeFromFolderLabel={
+              activeFolderKind === 'tag' ? 'Remove selected cards from folder' : undefined
+            }
+            onRemoveFromFolder={
+              activeFolderKind === 'tag' ? handleRemoveSelectedFromFolder : undefined
+            }
             pinActionLabel={pinActionLabel}
             onTogglePin={handleToggleSelectedPins}
             archiveActionLabel={archiveActionLabel}
@@ -1222,6 +1250,7 @@ export default function BoardScreen() {
       pinActionLabel,
       handleToggleSelectedPins,
       handleDeleteSelected,
+      handleRemoveSelectedFromFolder,
       handleCancelEdition,
       handleRestore,
       handleDismissToast,
