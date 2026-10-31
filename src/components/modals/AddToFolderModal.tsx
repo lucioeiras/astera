@@ -28,7 +28,7 @@ export function AddToFolderModal({ visible, items, onClose, onAdded }: Props) {
   useLocalization();
   const { source, state, updateItem } = useLibrary();
   const insets = useSafeAreaInsets();
-  const storageKey = `astera:folders:${getSourceId(source)}`;
+  const storageKey = `locus:folders:${getSourceId(source)}`;
   const [saved, setSaved] = useState<{ key: string; names: string[] } | null>(null);
   const [saving, setSaving] = useState(false);
   const [isCreateOpen, setIsCreateOpen] = useState(false);

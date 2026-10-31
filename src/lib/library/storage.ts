@@ -43,15 +43,15 @@ import {
 } from './types';
 
 // The native module won't exist if running in Expo Go.
-let AsteraLibraryAccess: {
+let LocusLibraryAccess: {
   bookmarkFolder: (uri: string) => string | null;
   resolveBookmark: (base64: string) => string | null;
 } | null = null;
 
 try {
-  AsteraLibraryAccess =
+  LocusLibraryAccess =
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    require('../../../modules/astera-library-access/src/AsteraLibraryAccessModule').default;
+    require('../../../modules/locus-library-access/src/LocusLibraryAccessModule').default;
 } catch {
   // Fallback for environments without custom native modules
 }
@@ -60,7 +60,7 @@ try {
  * Where the library is read from.
  *
  * - `local`: `<App Documents>/Library`. With `enableFileSharing` this shows up in
- *   the Files app under "On My iPhone › Astera" and in Finder when the phone is
+ *   the Files app under "On My iPhone › Locus" and in Finder when the phone is
  *   plugged in, so you can drop files in by hand.
  * - `folder`: any folder the user picked with the system document picker,
  *   including folders inside iCloud Drive. iOS grants security-scoped access for
@@ -102,13 +102,14 @@ export function getSourceId(source: LibrarySource): string {
   return source.kind === 'local' ? 'local' : source.uri;
 }
 
-const STORAGE_KEY = 'astera:librarySource';
-const RECENT_FOLDERS_KEY = 'astera:recentFolders';
-const FOLDERS_FILE_NAME = '.astera-folders.json';
+const STORAGE_KEY = 'locus:librarySource';
+const RECENT_FOLDERS_KEY = 'locus:recentFolders';
+const FOLDERS_FILE_NAME = '.locus-folders.json';
+const LEGACY_FOLDERS_FILE_NAME = '.astera-folders.json';
 const FOLDERS_SCHEMA_VERSION = 1;
 
 function getLegacyFoldersKey(source: LibrarySource): string {
-  return `astera:folders:${getSourceId(source)}`;
+  return `locus:folders:${getSourceId(source)}`;
 }
 
 function parseFolderNames(value: unknown): string[] {
@@ -124,9 +125,11 @@ function parseFolderNames(value: unknown): string[] {
 export async function getLibraryFolders(source: LibrarySource): Promise<string[]> {
   const root = getLibraryDirectory(source);
   const foldersFile = new File(root, FOLDERS_FILE_NAME);
+  const legacyFoldersFile = new File(root, LEGACY_FOLDERS_FILE_NAME);
+  const metadataFile = foldersFile.exists ? foldersFile : legacyFoldersFile;
 
-  if (foldersFile.exists) {
-    const parsed: unknown = JSON.parse(await foldersFile.text());
+  if (metadataFile.exists) {
+    const parsed: unknown = JSON.parse(await metadataFile.text());
     if (
       parsed &&
       typeof parsed === 'object' &&
@@ -134,7 +137,9 @@ export async function getLibraryFolders(source: LibrarySource): Promise<string[]
       parsed.version === FOLDERS_SCHEMA_VERSION &&
       'folders' in parsed
     ) {
-      return parseFolderNames(parsed.folders);
+      const folders = parseFolderNames(parsed.folders);
+      if (metadataFile === legacyFoldersFile) await saveLibraryFolders(source, folders);
+      return folders;
     }
     throw new Error('The folder metadata file has an unsupported format.');
   }
@@ -181,8 +186,8 @@ export async function getSavedLibrarySource(): Promise<LibrarySource | null> {
     if (parsed.kind === 'local') return { kind: 'local', name: parsed.name || 'App Library' };
 
     if (parsed.kind === 'folder') {
-      if (parsed.bookmark && AsteraLibraryAccess) {
-        const uri = AsteraLibraryAccess.resolveBookmark(parsed.bookmark);
+      if (parsed.bookmark && LocusLibraryAccess) {
+        const uri = LocusLibraryAccess.resolveBookmark(parsed.bookmark);
         if (uri) {
           return { kind: 'folder', uri, bookmark: parsed.bookmark, name: parsed.name };
         }
@@ -204,9 +209,9 @@ export async function saveLibrarySource(source: LibrarySource) {
 }
 
 export function resolveFolderSource(source: LibrarySource): LibrarySource {
-  if (source.kind === 'folder' && source.bookmark && AsteraLibraryAccess) {
+  if (source.kind === 'folder' && source.bookmark && LocusLibraryAccess) {
     try {
-      const uri = AsteraLibraryAccess.resolveBookmark(source.bookmark);
+      const uri = LocusLibraryAccess.resolveBookmark(source.bookmark);
       if (uri) {
         return { ...source, uri };
       }
@@ -293,7 +298,7 @@ export async function removeRecentFolder(id: string): Promise<SavedFolder[]> {
 /** Opens the system folder picker (Files / iCloud Drive). Throws if cancelled. */
 export async function pickLibraryFolder(): Promise<LibrarySource> {
   const dir = await Directory.pickDirectoryAsync();
-  const bookmark = AsteraLibraryAccess?.bookmarkFolder(dir.uri) ?? undefined;
+  const bookmark = LocusLibraryAccess?.bookmarkFolder(dir.uri) ?? undefined;
   const name = dir.name || getFolderDisplayName({ kind: 'folder', uri: dir.uri });
   const source: LibrarySource = { kind: 'folder', uri: dir.uri, bookmark, name };
   await saveLibrarySource(source);

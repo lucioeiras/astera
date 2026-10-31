@@ -34,6 +34,10 @@ const portugueseCatalog = {
   'Could not save note. Please try again.': 'Não foi possível salvar a nota. Tente novamente.',
   'Insert image': 'Inserir imagem',
   'Image unavailable': 'Imagem indisponível',
+  'Open image': 'Abrir imagem',
+  'Close image': 'Fechar imagem',
+  'Image preview': 'Pré-visualização da imagem',
+  'Opens image preview with zoom controls': 'Abre a imagem com controles de zoom',
   'Could not insert image. Please try again.':
     'Não foi possível inserir a imagem. Tente novamente.',
   All: 'Todos',
@@ -99,14 +103,14 @@ const portugueseCatalog = {
   Light: 'Claro',
   Dark: 'Escuro',
   'Select app appearance': 'Selecionar aparência do aplicativo',
-  'Choose the appearance used by Astera.': 'Escolha a aparência usada pelo Astera.',
+  'Choose the appearance used by Locus.': 'Escolha a aparência usada pelo Locus.',
   'Choose where links open.': 'Escolha onde os links serão abertos.',
   'Select link browser': 'Selecionar navegador para links',
   'Default browser': 'Navegador do dispositivo',
   'In-app browser': 'Navegador embutido',
   System: 'Sistema',
   Language: 'Idioma',
-  'Choose the language used by Astera.': 'Escolha o idioma usado pelo Astera.',
+  'Choose the language used by Locus.': 'Escolha o idioma usado pelo Locus.',
   'Current language': 'Idioma atual',
   'Back to profile': 'Voltar ao perfil',
   'No cards added on %{date} match your filters':
@@ -141,8 +145,8 @@ const portugueseCatalog = {
   Added: 'Adicionado em',
   'Added cards': 'Cartões adicionados',
   Album: 'Álbum',
-  'Astera is offline-first and believes files should remain under your control.':
-    'O Astera funciona offline e acredita que seus arquivos devem permanecer sob seu controle.',
+  'Locus is offline-first and believes files should remain under your control.':
+    'O Locus funciona offline e acredita que seus arquivos devem permanecer sob seu controle.',
   'Automatic transcription failed. Use the microphone action below to try again.':
     'A transcrição automática falhou. Use o botão do microfone abaixo para tentar novamente.',
   'Back to board': 'Voltar ao mural',

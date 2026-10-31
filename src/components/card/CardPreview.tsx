@@ -9,6 +9,7 @@ import { MarkdownNote } from '@/components/card/MarkdownNote';
 import { VinylRecord } from '@/components/effects/VinylRecord';
 import type { LibraryItem } from '@/lib/library/types';
 import { MusicPreviewPlayer } from './MusicPreviewPlayer';
+import { ImageViewerModal } from './ImageViewerModal';
 import { translate, useLocalization } from '@/lib/i18n';
 
 type CardPreviewProps = {
@@ -37,6 +38,7 @@ export function CardPreview({
   const displayItem: LibraryItem =
     title && 'title' in item ? ({ ...item, title } as LibraryItem) : item;
   const [isPlayingMusic, setIsPlayingMusic] = useState(false);
+  const [isImageViewerOpen, setIsImageViewerOpen] = useState(false);
   const musicPlayerRef = useRef<{
     play: () => void;
     pause: () => void;
@@ -135,7 +137,18 @@ export function CardPreview({
 
       {!isNoteOrQuote && !isMusic && (
         <View className="w-full max-w-sm">
-          <ItemCard item={displayItem} hideTitleAndAuthor showAudioPlaybackRate />
+          {item.type === 'image' ? (
+            <Pressable
+              onPress={() => setIsImageViewerOpen(true)}
+              accessibilityRole="button"
+              accessibilityLabel={translate('Open image')}
+              accessibilityHint={translate('Opens image preview with zoom controls')}
+            >
+              <ItemCard item={displayItem} hideTitleAndAuthor showAudioPlaybackRate />
+            </Pressable>
+          ) : (
+            <ItemCard item={displayItem} hideTitleAndAuthor showAudioPlaybackRate />
+          )}
         </View>
       )}
 
@@ -163,6 +176,13 @@ export function CardPreview({
             <MarkdownNote markdown={editedText} onMarkdownChange={onTextChange} />
           )}
         </View>
+      )}
+      {item.type === 'image' && (
+        <ImageViewerModal
+          uri={item.image}
+          visible={isImageViewerOpen}
+          onClose={() => setIsImageViewerOpen(false)}
+        />
       )}
     </View>
   );
