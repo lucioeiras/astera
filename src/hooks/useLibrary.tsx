@@ -668,7 +668,11 @@ export function LibraryProvider({ children }: { children: React.ReactNode }) {
 
       const updatesById = new Map(updatedItems.map((item) => [item.id, item]));
       setLoaded((prev) => {
-        if (prev && prev.state.status === 'ready') {
+        if (
+          prev &&
+          getSourceId(prev.source) === getSourceId(targetSource) &&
+          prev.state.status === 'ready'
+        ) {
           return {
             ...prev,
             state: {

@@ -185,23 +185,22 @@ export const TweetCard = ({
                 />
               );
 
-              if (onPress || onLongPress) {
-                return (
-                  <Pressable
-                    key={index}
-                    onPress={onPress}
-                    onLongPress={onLongPress}
-                    delayLongPress={350}
-                    style={({ pressed }) =>
-                      pressed ? { opacity: 0.85, transform: [{ scale: 0.98 }] } : undefined
-                    }
-                  >
-                    {imageElement}
-                  </Pressable>
-                );
-              }
-
-              return <View key={index}>{imageElement}</View>;
+              return (
+                <Pressable
+                  key={index}
+                  onPress={onPress}
+                  onLongPress={onLongPress}
+                  delayLongPress={350}
+                  disabled={!onPress && !onLongPress}
+                  style={({ pressed }) =>
+                    pressed && (onPress || onLongPress)
+                      ? { opacity: 0.85, transform: [{ scale: 0.98 }] }
+                      : undefined
+                  }
+                >
+                  {imageElement}
+                </Pressable>
+              );
             })}
           </ScrollView>
         )}

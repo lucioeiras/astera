@@ -1,7 +1,7 @@
 import { useAppTheme } from '@/lib/theme';
 import { Check } from 'lucide-react-native';
-import { memo } from 'react';
-import { Pressable, View } from 'react-native';
+import { memo, useCallback, useMemo } from 'react';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { getLinkableTitle, type LinkableItem } from '@/lib/library/links';
 import type { LibraryItem } from '@/lib/library/types';
@@ -67,12 +67,13 @@ export const ItemCard = memo(function ItemCard({
   onPinnedAspectRatioChange,
 }: ItemCardProps) {
   const { colors: themeColors } = useAppTheme();
-  const isInteractiveTweet =
-    item.type === 'tweet' &&
-    ((item.images?.length ?? 0) > 1 || Boolean(item.video?.url)) &&
-    !isEditing;
+  const hasInteractiveTweetMedia =
+    item.type === 'tweet' && ((item.images?.length ?? 0) > 1 || Boolean(item.video?.url));
+  const isInteractiveTweet = hasInteractiveTweetMedia && !isEditing;
+  const interactiveTweetPress = isInteractiveTweet ? onPress : undefined;
+  const interactiveTweetLongPress = isInteractiveTweet ? onLongPress : undefined;
 
-  const renderCardContent = () => {
+  const renderCardContent = useCallback(() => {
     switch (item.type) {
       case 'note':
         return (
@@ -165,8 +166,10 @@ export const ItemCard = memo(function ItemCard({
             images={item.images}
             video={item.video}
             hideMedia={compactMedia}
-            onPress={isInteractiveTweet && onPress ? () => onPress(item) : undefined}
-            onLongPress={isInteractiveTweet && onLongPress ? () => onLongPress(item) : undefined}
+            onPress={interactiveTweetPress ? () => interactiveTweetPress(item) : undefined}
+            onLongPress={
+              interactiveTweetLongPress ? () => interactiveTweetLongPress(item) : undefined
+            }
           />
         );
       case 'reddit':
@@ -237,7 +240,23 @@ export const ItemCard = memo(function ItemCard({
           />
         );
     }
-  };
+  }, [
+    compactAudioWaveform,
+    compactMedia,
+    compactTikTokThumbnail,
+    fixedHeight,
+    hideTitleAndAuthor,
+    interactiveTweetLongPress,
+    interactiveTweetPress,
+    item,
+    linkedItem,
+    onNoteTextChange,
+    onPinnedAspectRatioChange,
+    showAudioPlaybackRate,
+    stackedAudioControls,
+  ]);
+
+  const cardContent = useMemo(renderCardContent, [renderCardContent]);
 
   const cardBody = (
     <View
@@ -273,7 +292,7 @@ export const ItemCard = memo(function ItemCard({
           overflow: item.type === 'music' ? 'visible' : 'hidden',
         }}
       >
-        {renderCardContent()}
+        {cardContent}
       </View>
 
       {isSelected && (
@@ -300,8 +319,20 @@ export const ItemCard = memo(function ItemCard({
     </View>
   );
 
-  if (isInteractiveTweet) {
-    return <View className="w-full">{cardBody}</View>;
+  if (hasInteractiveTweetMedia) {
+    return (
+      <View className="w-full">
+        {cardBody}
+        {!isInteractiveTweet && (onPress || onLongPress) && (
+          <Pressable
+            onPress={onPress ? () => onPress(item) : undefined}
+            onLongPress={onLongPress ? () => onLongPress(item) : undefined}
+            delayLongPress={350}
+            style={StyleSheet.absoluteFill}
+          />
+        )}
+      </View>
+    );
   }
 
   return (

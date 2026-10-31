@@ -56,14 +56,7 @@ export function CardSelectionBar({
             icon={<X size={24} color={themeColors.foreground} strokeWidth={2} />}
             onPress={onCancel}
           />
-          <Button
-            accessibilityLabel={translate('Add selected cards to folder')}
-            variant="secondary"
-            contentColor={themeColors.foreground}
-            icon={<FolderPlus size={24} color={themeColors.foreground} strokeWidth={2} />}
-            disabled={!hasSelection}
-            onPress={onAddToFolder}
-          />
+
           {pinActionLabel && onTogglePin && (
             <Button
               accessibilityLabel={pinActionLabel}
@@ -74,6 +67,14 @@ export function CardSelectionBar({
               onPress={onTogglePin}
             />
           )}
+          <Button
+            accessibilityLabel={translate('Add selected cards to folder')}
+            variant="secondary"
+            contentColor={themeColors.foreground}
+            icon={<FolderPlus size={24} color={themeColors.foreground} strokeWidth={2} />}
+            disabled={!hasSelection}
+            onPress={onAddToFolder}
+          />
           {archiveActionLabel && onToggleArchive && (
             <Button
               accessibilityLabel={translate(archiveActionLabel)}

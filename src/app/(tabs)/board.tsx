@@ -893,6 +893,18 @@ export default function BoardScreen() {
     return linkedItems;
   }, [state]);
 
+  const handleNoteTextChange = useCallback(
+    (itemId: string, text: string) => {
+      updateItem(itemId, { text } as Partial<LibraryItem>).catch((error) => {
+        Alert.alert(
+          translate('Error'),
+          error instanceof Error ? error.message : 'Could not update note'
+        );
+      });
+    },
+    [updateItem]
+  );
+
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<LibraryItem>) => (
       <View style={styles.cardWrapper}>
@@ -905,21 +917,21 @@ export default function BoardScreen() {
               : undefined
           }
           isEditing={isEditing}
-          onNoteTextChange={(itemId, text) => {
-            updateItem(itemId, { text } as Partial<LibraryItem>).catch((error) => {
-              Alert.alert(
-                translate('Error'),
-                error instanceof Error ? error.message : 'Could not update note'
-              );
-            });
-          }}
+          onNoteTextChange={handleNoteTextChange}
           isSelected={selectedCardIds.has(item.id)}
           onPress={handleCardPress}
           onLongPress={handleCardLongPress}
         />
       </View>
     ),
-    [isEditing, selectedCardIds, handleCardPress, handleCardLongPress, linkableItems, updateItem]
+    [
+      isEditing,
+      selectedCardIds,
+      handleCardPress,
+      handleCardLongPress,
+      handleNoteTextChange,
+      linkableItems,
+    ]
   );
 
   const renderHeader = useCallback(() => {
@@ -1270,7 +1282,7 @@ export default function BoardScreen() {
                           tintColor={themeColors.secondary}
                         />
                       }
-                      ListHeaderComponent={renderHeader}
+                      ListHeaderComponent={renderHeader()}
                       ListEmptyComponent={renderEmpty}
                     />
                   </BoardGridContext.Provider>
